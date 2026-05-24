@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TramiteCard from './components/TramiteCard';
 
-const API_URL = 'http://localhost:8080/api/tramites';
+const API_URL = 'http://localhost:8081/api/tramites';
 
 export default function App() {
   const [tramites, setTramites] = useState([]);
