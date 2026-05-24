@@ -9,6 +9,7 @@ Sistema de gestión y optimización de rutas de transporte municipal con enfoque
 - [Descripción del Proyecto](#descripción-del-proyecto)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Arquitectura Hexagonal](#arquitectura-hexagonal)
 - [Requisitos Previos](#requisitos-previos)
 - [Instalación y Configuración](#instalación-y-configuración)
 - [Uso](#uso)
@@ -18,7 +19,7 @@ Sistema de gestión y optimización de rutas de transporte municipal con enfoque
 
 ## 📝 Descripción del Proyecto
 
-**Muni-Go** es una aplicación integral para la gestión de rutas de transporte municipal. El proyecto integra un backend robusto, una base de datos centralizada y una interfaz frontend intuitiva para optimizar la experiencia de viajeros y operadores de transporte.
+**Muni-Go** es una aplicación integral para la gestión de rutas de transporte municipal. El proyecto integra un backend robusto con arquitectura hexagonal, una base de datos centralizada y una interfaz frontend intuitiva.
 
 ### Características Principales:
 - 🗺️ Gestión y optimización de rutas de transporte
@@ -33,7 +34,7 @@ Sistema de gestión y optimización de rutas de transporte municipal con enfoque
 
 ```
 Muni-Go/
-├── 📂 backend/              # Servidor y lógica de negocio
+├── 📂 backend/              # Servidor y lógica de negocio (Arquitectura Hexagonal)
 ├── 📂 frontend/             # Interfaz de usuario
 ├── 📂 database/             # Esquemas y configuración de BD
 ├── 📂 docs/                 # Documentación del proyecto
@@ -44,7 +45,7 @@ Muni-Go/
 ### Descripción Detallada por Carpeta
 
 #### **🔧 `/backend`**
-Contiene toda la lógica del servidor y la API REST del proyecto.
+Contiene toda la lógica del servidor y la API REST del proyecto, implementada bajo el patrón de **Arquitectura Hexagonal**.
 
 **Responsabilidades:**
 - Implementación de endpoints REST
@@ -54,23 +55,46 @@ Contiene toda la lógica del servidor y la API REST del proyecto.
 - Integración con la base de datos
 
 **Tecnologías:**
-- **Lenguaje:** Java (29.4% del proyecto)
+- **Lenguaje:** Java
 - **Framework:** Spring Boot (recomendado)
-- **Patrón:** MVC (Model-View-Controller)
+- **Patrón:** Arquitectura Hexagonal
 
-**Estructura típica:**
+**Estructura Hexagonal:**
 ```
 backend/
 ├── src/
-│   ├── controllers/         # Controladores REST
-│   ├── services/            # Lógica de negocio
-│   ├── models/              # Entidades del sistema
-│   ├── repositories/        # Acceso a datos
-│   ├── security/            # Autenticación y autorización
-│   └── config/              # Configuraciones
-├── pom.xml                  # Dependencias Maven
-└── application.properties   # Configuración de la app
+│   ├── domain/                    # Núcleo del negocio
+│   │   ├── entities/              # Entidades del dominio
+│   │   ├── repositories/          # Interfaces de repositorios (puertos)
+│   │   ├── services/              # Servicios de dominio
+│   │   └── exceptions/            # Excepciones de negocio
+│   │
+│   ├── application/               # Lógica de aplicación
+│   │   ├── dto/                   # Data Transfer Objects
+│   │   ├── mappers/               # Mapeos entre capas
+│   │   ├── usecases/              # Casos de uso
+│   │   └── ports/                 # Puertos de entrada y salida
+│   │
+│   ├── infrastructure/            # Adaptadores (implementaciones)
+│   │   ├── persistence/           # Adaptadores de persistencia (JPA, Hibernate)
+│   │   ├── controllers/           # Controladores REST (adaptadores HTTP)
+│   │   ├── config/                # Configuración de la aplicación
+│   │   ├── security/              # Autenticación y autorización
+│   │   ├── external/              # Integraciones externas (mapas, servicios)
+│   │   └── messaging/             # Adaptadores de mensajería
+│   │
+│   └── main/
+│       └── Application.java       # Punto de entrada
+│
+├── pom.xml                        # Dependencias Maven
+└── application.properties         # Configuración de la app
 ```
+
+**Principios Hexagonales:**
+- **Independencia de frameworks:** La lógica de negocio no depende de Spring, bases de datos o tecnologías externas
+- **Testabilidad:** Fácil de probar sin dependencias externas
+- **Mantenibilidad:** Separación clara de responsabilidades
+- **Flexibilidad:** Cambiar implementaciones sin afectar el negocio
 
 ---
 
@@ -85,8 +109,8 @@ Interfaz de usuario que los usuarios interactúan directamente.
 - Visualización de mapas y rutas
 
 **Tecnologías:**
-- **Lenguajes:** JavaScript (59.7%), HTML (0.7%), CSS (10.2%)
-- **Framework:** React.js con Vite (actual setup)
+- **Lenguajes:** JavaScript, HTML, CSS
+- **Framework:** React.js con Vite
 - **Librerías adicionales:** Leaflet/Google Maps para mapas
 
 **Estructura típica:**
@@ -141,7 +165,7 @@ Documentación completa del proyecto.
 
 **Contenidos:**
 - Especificación de requisitos
-- Diagramas (UML, ER, arquitectura)
+- Diagramas (UML, ER, arquitectura hexagonal)
 - Guías de instalación y configuración
 - Manuales de usuario
 - Documentación API
@@ -163,22 +187,27 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 
 ## 🛠️ Tecnologías Utilizadas
 
-| Componente | Tecnología | Porcentaje |
-|-----------|-----------|-----------|
-| Frontend | JavaScript | 59.7% |
-| Backend | Java | 29.4% |
-| Estilos | CSS | 10.2% |
-| Estructura | HTML | 0.7% |
+| Componente | Tecnología |
+|-----------|-----------|
+| Frontend | JavaScript, React.js, Vite |
+| Backend | Java, Spring Boot |
+| Estilos | CSS, Tailwind CSS |
+| Estructura | HTML |
+| Base de Datos | PostgreSQL / MySQL |
+| ORM | JPA / Hibernate |
+| Autenticación | JWT |
+| Mapas | Leaflet / Google Maps |
 
-### Stack Recomendado Completo:
+### Stack Completo:
 
 **Backend:**
 - Java 11+
 - Spring Boot 3.x
-- Maven o Gradle
+- Maven
 - PostgreSQL/MySQL
 - REST API
 - JWT para autenticación
+- Arquitectura Hexagonal
 
 **Frontend:**
 - React.js 18+
@@ -198,6 +227,30 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 - Docker Compose
 - Git & GitHub
 - CI/CD (GitHub Actions)
+
+---
+
+## 🏗️ Arquitectura Hexagonal
+
+Muni-Go implementa la **Arquitectura Hexagonal (Puertos y Adaptadores)** en el backend para garantizar:
+
+### Ventajas:
+✅ **Independencia de frameworks:** El dominio no depende de tecnologías externas  
+✅ **Testabilidad:** Tests sin necesidad de bases de datos o servidores  
+✅ **Mantenibilidad:** Cambios en la persistencia sin afectar la lógica de negocio  
+✅ **Escalabilidad:** Fácil agregar nuevos adaptadores (REST, GraphQL, etc.)  
+✅ **Flexibilidad:** Intercambiar implementaciones sin modificar el negocio  
+
+### Capas:
+
+1. **Domain (Núcleo):** Contiene la lógica de negocio pura
+   - Entidades, repositorios (interfaces), servicios de dominio
+
+2. **Application:** Orquesta casos de uso y coordina el dominio
+   - DTOs, mappers, puertos, casos de uso
+
+3. **Infrastructure:** Implementaciones de adaptadores
+   - Persistencia (JPA), REST controllers, seguridad, configuraciones externas
 
 ---
 
@@ -319,6 +372,7 @@ Para contribuir al proyecto:
 - Comentar código complejo
 - Mantener funciones pequeñas y reutilizables
 - Escribir tests unitarios para funcionalidades críticas
+- Respetar la Arquitectura Hexagonal en el backend
 
 ---
 
