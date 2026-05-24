@@ -268,98 +268,31 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dynamic Mock Section - Active Procedures Tracking */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Active Procedures Tracking */}
-          <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-              Mis Trámites Activos (Simulación)
-            </h2>
-            <div className="bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm space-y-4">
-              {/* Active Item 1 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-150 dark:border-slate-800">
-                <div className="space-y-1 mb-3 sm:mb-0">
-                  <span className="inline-block text-[9px] font-bold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 rounded-md uppercase tracking-wide">
-                    Licencias
-                  </span>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white">
-                    Licencia de Funcionamiento de Bodega "Don Pepe"
-                  </h4>
-                  <span className="text-xs text-slate-400 dark:text-slate-500 block">
-                    ID Trámite: #4512 • Exp. 2026-000452
-                  </span>
-                </div>
-                <div className="flex flex-col sm:items-end space-y-2">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-250 dark:border-amber-900/50 w-fit">
-                    En Evaluación de Campo
-                  </span>
-                  <div className="w-full sm:w-36">
-                    <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-                      <span>Progreso</span>
-                      <span>70%</span>
-                    </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5">
-                      <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '70%' }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Active Item 2 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-150 dark:border-slate-800">
-                <div className="space-y-1 mb-3 sm:mb-0">
-                  <span className="inline-block text-[9px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/30 px-2.5 py-0.5 rounded-md uppercase tracking-wide">
-                    Certificados
-                  </span>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white">
-                    Certificado de Jurisdicción - Predio Lote 4 Mz. C
-                  </h4>
-                  <span className="text-xs text-slate-400 dark:text-slate-500 block">
-                    ID Trámite: #3895 • Exp. 2026-000215
-                  </span>
-                </div>
-                <div className="flex flex-col sm:items-end space-y-2">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-250 dark:border-emerald-900/50 w-fit">
-                    Aprobado • Listo
-                  </span>
-                  <div className="w-full sm:w-36">
-                    <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-                      <span>Progreso</span>
-                      <span>100%</span>
-                    </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5">
-                      <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: '100%' }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Novedades Section */}
+        <div className="space-y-6">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+            Novedades
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* News Item 1 */}
+            <div className="bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm text-left">
+              <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Tributario</span>
+              <h4 className="text-base font-bold text-slate-850 dark:text-white mt-2">
+                Campaña Tributaria Carabayllo 2026
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                Aprovecha hasta un 15% de descuento en Arbitrios pagando tu Impuesto Predial 2026 anual antes de fin de mes.
+              </p>
             </div>
-          </div>
-
-          {/* Quick FAQ / News Box */}
-          <div className="lg:col-span-1 space-y-6">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-              Novedades
-            </h2>
-            <div className="bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm space-y-4 text-left">
-              <div className="pb-4 border-b border-slate-150 dark:border-slate-800">
-                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Tributario</span>
-                <h4 className="text-sm font-bold text-slate-850 dark:text-white mt-1">
-                  Campaña Tributaria Carabayllo 2026
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  Aprovecha hasta un 15% de descuento en Arbitrios pagando tu Impuesto Predial 2026 anual antes de fin de mes.
-                </p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Tecnología</span>
-                <h4 className="text-sm font-bold text-slate-850 dark:text-white mt-1">
-                  Nueva Mesa de Partes Virtual
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  Presenta solicitudes formales e ingresa expedientes en PDF directamente las 24 horas a través del portal de Muni-Go.
-                </p>
-              </div>
+            {/* News Item 2 */}
+            <div className="bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm text-left">
+              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Tecnología</span>
+              <h4 className="text-base font-bold text-slate-850 dark:text-white mt-2">
+                Nueva Mesa de Partes Virtual
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                Presenta solicitudes formales e ingresa expedientes en PDF directamente las 24 horas a través del portal de Muni-Go.
+              </p>
             </div>
           </div>
         </div>
