@@ -65,7 +65,7 @@ export default function App() {
       ...prev,
       [id]: !prev[id]
     }));
-  };  const getResumenIA = (tramite) => {
+  }; const getResumenIA = (tramite) => {
     if (!tramite) return '';
     switch (tramite.id) {
       case 1:
@@ -94,7 +94,7 @@ export default function App() {
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-3xl p-8 sm:p-10 shadow-lg text-white">
           <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="absolute right-10 top-10 w-24 h-24 bg-indigo-500/20 rounded-full blur-lg pointer-events-none" />
-          
+
           <div className="max-w-2xl relative z-10">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-500/30 text-blue-100 border border-blue-400/20 mb-4 uppercase tracking-wider">
               Portal del Ciudadano de Carabayllo
@@ -192,7 +192,7 @@ export default function App() {
               </svg>
             </button>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Category Licencias */}
             <div
@@ -382,7 +382,7 @@ export default function App() {
 
         {/* 2-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-          
+
           {/* Left Column (Sidebar Categories Radio Buttons Selector) */}
           <div className="lg:col-span-1 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 p-6 rounded-2xl shadow-sm">
             <h3 className="text-sm font-bold text-slate-850 dark:text-white uppercase tracking-wider mb-5 flex items-center">
@@ -406,21 +406,19 @@ export default function App() {
                       onChange={() => setSelectedCategory(category)}
                       className="sr-only"
                     />
-                    <div className={`w-4.5 h-4.5 rounded-full border-2 transition-all flex items-center justify-center ${
-                      selectedCategory === category
-                        ? 'border-blue-600 bg-blue-600'
-                        : 'border-slate-300 dark:border-slate-650 group-hover:border-blue-400 bg-transparent'
-                    }`}>
+                    <div className={`w-4.5 h-4.5 rounded-full border-2 transition-all flex items-center justify-center ${selectedCategory === category
+                      ? 'border-blue-600 bg-blue-600'
+                      : 'border-slate-300 dark:border-slate-650 group-hover:border-blue-400 bg-transparent'
+                      }`}>
                       {selectedCategory === category && (
                         <div className="w-2 h-2 rounded-full bg-white animate-scale-up" />
                       )}
                     </div>
                   </div>
-                  <span className={`text-sm font-semibold transition-colors ${
-                    selectedCategory === category
-                      ? 'text-slate-900 dark:text-white font-bold'
-                      : 'text-slate-550 dark:text-slate-405 group-hover:text-slate-900 dark:group-hover:text-slate-200'
-                  }`}>
+                  <span className={`text-sm font-semibold transition-colors ${selectedCategory === category
+                    ? 'text-slate-900 dark:text-white font-bold'
+                    : 'text-slate-550 dark:text-slate-405 group-hover:text-slate-900 dark:group-hover:text-slate-200'
+                    }`}>
                     {category}
                   </span>
                 </label>
@@ -430,7 +428,7 @@ export default function App() {
 
           {/* Right Column (Search Input & Horizontal Procedure List) */}
           <div className="lg:col-span-3 space-y-6">
-            
+
             {/* Search Bar */}
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -522,7 +520,7 @@ export default function App() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold">
               M
             </div>
-            <span className="font-bold text-lg text-slate-850 dark:text-white">Gob<span className="text-blue-600">Tech</span></span>
+            <span className="font-bold text-lg text-slate-850 dark:text-white">Muni<span className="text-blue-600">Go</span></span>
           </div>
           <button
             onClick={() => setIsMenuOpen(false)}
@@ -536,21 +534,19 @@ export default function App() {
         <nav className="space-y-2">
           <button
             onClick={() => { setView('dashboard'); setSelectedTramite(null); setIsMenuOpen(false); }}
-            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center cursor-pointer transition-all ${
-              view === 'dashboard' && !selectedTramite
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40'
-            }`}
+            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center cursor-pointer transition-all ${view === 'dashboard' && !selectedTramite
+              ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+              }`}
           >
             Inicio / Dashboard
           </button>
           <button
             onClick={() => { setView('catalog'); setSelectedCategory('Todas'); setSelectedTramite(null); setIsMenuOpen(false); }}
-            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center cursor-pointer transition-all ${
-              view === 'catalog' && !selectedTramite
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40'
-            }`}
+            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center cursor-pointer transition-all ${view === 'catalog' && !selectedTramite
+              ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+              }`}
           >
             Catálogo de Trámites
           </button>
@@ -600,7 +596,7 @@ export default function App() {
             ) : (
               <div className="flex items-center space-x-3 border-l border-slate-200 dark:border-slate-700 pl-4">
                 <div>
-                  <span className="font-bold text-xl text-slate-850 dark:text-white tracking-tight">Gob<span className="text-blue-600">Tech</span></span>
+                  <span className="font-bold text-xl text-slate-850 dark:text-white tracking-tight">Muni<span className="text-blue-600">Go</span></span>
                   <span className="text-[10px] text-slate-400 block font-bold -mt-1 uppercase tracking-wide">TRÁMITES MUNICIPALES</span>
                 </div>
               </div>
@@ -614,21 +610,19 @@ export default function App() {
               <div className="hidden md:flex items-center space-x-1.5 mr-2">
                 <button
                   onClick={() => { setView('dashboard'); setSelectedTramite(null); }}
-                  className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                    view === 'dashboard'
-                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
-                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
-                  }`}
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${view === 'dashboard'
+                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                    }`}
                 >
                   Inicio
                 </button>
                 <button
                   onClick={() => { setView('catalog'); setSelectedCategory('Todas'); setSelectedTramite(null); }}
-                  className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                    view === 'catalog'
-                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
-                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
-                  }`}
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${view === 'catalog'
+                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                    }`}
                 >
                   Catálogo
                 </button>
