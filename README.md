@@ -49,7 +49,6 @@ Contiene toda la lógica del servidor y la API REST del proyecto, implementada b
 
 **Responsabilidades:**
 - Implementación de endpoints REST
-- Autenticación y autorización de usuarios
 - Validación de datos
 - Procesamiento de lógica de negocio
 - Integración con la base de datos
