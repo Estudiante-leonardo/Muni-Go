@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Send } from 'lucide-react';
 
-export default function PanelChatbot() {
+export default function PanelChatbot({ tramite }) {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'ia',
-      text: '¡Hola! Soy tu Asistente Municipal IA. ¿En qué trámite o consulta te puedo orientar hoy?'
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Initialize chat history whenever the selected procedure changes
+  useEffect(() => {
+    if (tramite) {
+      setMessages([
+        {
+          id: 1,
+          sender: 'ia',
+          text: `¡Hola! Soy tu Asistente Municipal IA. Estoy aquí para ayudarte específicamente con tu consulta sobre "${tramite.nombre}". ¿Qué duda tienes sobre los requisitos o el proceso?`
+        }
+      ]);
+    }
+  }, [tramite]);
 
   // Auto-scroll to the bottom of the chat when messages update
   useEffect(() => {
@@ -29,7 +36,6 @@ export default function PanelChatbot() {
       text: userMessageText
     };
 
-    // Add user message to history
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
@@ -40,13 +46,13 @@ export default function PanelChatbot() {
       const normalizedQuery = userMessageText.toLowerCase();
 
       if (normalizedQuery.includes('croquis') || normalizedQuery.includes('dibujo')) {
-        replyText = 'El croquis de distribución puede ser dibujado a mano alzada. No necesitas un arquitecto para locales pequeños; solo asegúrate de marcar claramente las calles principales, los accesos y las dimensiones básicas.';
+        replyText = 'El croquis de distribución puede ser dibujado a mano alzada, no necesitas un arquitecto para locales pequeños. Solo marca calles principales e ingresos.';
       } else if (normalizedQuery.includes('fut') || normalizedQuery.includes('formulario')) {
-        replyText = 'El Formulario Único de Trámite (FUT) es totalmente gratuito y lo puedes solicitar físicamente en Mesa de Partes o descargarlo de forma remota desde la sección de formatos de nuestro portal web.';
+        replyText = `El Formulario Único de Trámite (FUT) es totalmente gratuito y se pide en mesa de partes para iniciar la solicitud de "${tramite.nombre}".`;
       } else if (normalizedQuery.includes('tiempo')) {
-        replyText = 'Este trámite municipal tiene un tiempo estimado de resolución de entre 7 a 15 días hábiles a partir de la correcta presentación de todos los requisitos.';
+        replyText = `Este trámite (${tramite.nombre}) demora aproximadamente ${tramite.tiempoEstimado} hábiles una vez entregados todos los requisitos oficiales.`;
       } else {
-        replyText = 'Para esta consulta específica, te invitamos a acercarte a la ventanilla de atención al ciudadano en el palacio municipal para brindarte una asesoría personalizada.';
+        replyText = `Para resolver dudas adicionales sobre el trámite de "${tramite.nombre}", te invitamos a acercarte a la ventanilla de atención al ciudadano en el palacio municipal.`;
       }
 
       const iaMessage = {
@@ -61,12 +67,12 @@ export default function PanelChatbot() {
   };
 
   return (
-    <div className="flex flex-col h-[500px] w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden font-sans">
+    <div className="flex flex-col h-[520px] w-full bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden font-sans">
       {/* Header */}
       <div className="flex items-center space-x-3 bg-blue-600 px-4 py-3.5 text-white">
         <Bot className="w-6 h-6 text-blue-100" />
         <div>
-          <h3 className="font-bold text-sm leading-none">Asistente Municipal IA</h3>
+          <h3 className="font-bold text-sm leading-none">Asistente de IA del Trámite</h3>
           <span className="text-[10px] text-blue-200 font-medium">En línea</span>
         </div>
       </div>
@@ -115,7 +121,7 @@ export default function PanelChatbot() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Pregúntale a la IA sobre este trámite..."
+          placeholder="Pregúntale a la IA sobre este trámite... Ej: ¿Cómo hago el croquis?"
           className="flex-grow px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm text-slate-800 placeholder-slate-400"
         />
         <button
