@@ -23,9 +23,7 @@ Sistema de gestión y optimización de rutas de transporte municipal con enfoque
 
 ### Características Principales:
 - 🗺️ Gestión y optimización de rutas de transporte
-- 👥 Control de acceso y perfiles de usuario
-- 📊 Análisis de datos de transporte
-- 🔐 Seguridad y autenticación
+- 📊 Análisis de datos
 - 📱 Interfaz responsiva y amigable
 
 ---
@@ -62,31 +60,21 @@ Contiene toda la lógica del servidor y la API REST del proyecto, implementada b
 ```
 backend/
 ├── src/
-│   ├── domain/                    # Núcleo del negocio
-│   │   ├── entities/              # Entidades del dominio
-│   │   ├── repositories/          # Interfaces de repositorios (puertos)
-│   │   ├── services/              # Servicios de dominio
-│   │   └── exceptions/            # Excepciones de negocio
+│   ├── domain/                    
+│   │   ├── model/              
+│   │   ├── ports/          
 │   │
-│   ├── application/               # Lógica de aplicación
-│   │   ├── dto/                   # Data Transfer Objects
-│   │   ├── mappers/               # Mapeos entre capas
-│   │   ├── usecases/              # Casos de uso
-│   │   └── ports/                 # Puertos de entrada y salida
+│   ├── application/               
 │   │
-│   ├── infrastructure/            # Adaptadores (implementaciones)
-│   │   ├── persistence/           # Adaptadores de persistencia (JPA, Hibernate)
-│   │   ├── controllers/           # Controladores REST (adaptadores HTTP)
-│   │   ├── config/                # Configuración de la aplicación
-│   │   ├── security/              # Autenticación y autorización
-│   │   ├── external/              # Integraciones externas (mapas, servicios)
-│   │   └── messaging/             # Adaptadores de mensajería
+│   ├── infrastructure/            
+│   │   ├── adapters/                
+│   │   ├── config/              
 │   │
 │   └── main/
-│       └── Application.java       # Punto de entrada
+│       └── Application.java       
 │
-├── pom.xml                        # Dependencias Maven
-└── application.properties         # Configuración de la app
+├── pom.xml                        
+└── application.properties         
 ```
 
 **Principios Hexagonales:**
@@ -104,28 +92,20 @@ Interfaz de usuario que los usuarios interactúan directamente.
 - Presentación de datos
 - Interacción del usuario
 - Consumo de APIs del backend
-- Validación de formularios en cliente
-- Visualización de mapas y rutas
 
 **Tecnologías:**
 - **Lenguajes:** JavaScript, HTML, CSS
-- **Framework:** React.js con Vite
-- **Librerías adicionales:** Leaflet/Google Maps para mapas
+- **Framework:** React.jsx
 
 **Estructura típica:**
 ```
 frontend/
 ├── src/
-│   ├── components/          # Componentes reutilizables
-│   ├── pages/               # Páginas principales
-│   ├── services/            # Servicios HTTP
-│   ├── styles/              # CSS y estilos
-│   ├── utils/               # Funciones utilitarias
-│   └── App.jsx              # Componente raíz
-├── public/                  # Assets estáticos
-├── package.json             # Dependencias npm
-├── vite.config.js           # Configuración de Vite
-└── .env                     # Variables de entorno
+│   ├── components/          
+│   └── App.jsx              
+├── public/                  
+├── package.json             
+├── vite.config.js           
 ```
 
 ---
@@ -143,18 +123,12 @@ Esquemas, scripts de inicialización y configuración de la base de datos.
 **Estructura típica:**
 ```
 database/
-├── schema/
-│   ├── usuarios.sql         # Tabla de usuarios
-│   ├── rutas.sql            # Tabla de rutas
-│   ├── paradas.sql          # Tabla de paradas
-│   └── historial.sql        # Tabla de historial
-├── seeders/                 # Datos iniciales
-├── migrations/              # Scripts de migración
-└── backup/                  # Copias de seguridad
+├── cripts/
+│   ├── init.sql         
 ```
 
 **Tecnologías:**
-- Base de datos relacional (PostgreSQL, MySQL)
+- Base de datos relacional (PostgreSQL)
 - SQL para definición de esquemas
 
 ---
@@ -164,10 +138,8 @@ Documentación completa del proyecto.
 
 **Contenidos:**
 - Especificación de requisitos
-- Diagramas (UML, ER, arquitectura hexagonal)
+- Diagramas (wareframe, arquitectura hexagonal)
 - Guías de instalación y configuración
-- Manuales de usuario
-- Documentación API
 - Reportes y análisis
 - **Informe APF (Análisis de Procesos y Funcionalidades)**
 
@@ -188,14 +160,12 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 
 | Componente | Tecnología |
 |-----------|-----------|
-| Frontend | JavaScript, React.js, Vite |
+| Frontend | JavaScript, React.jsx, Vite |
 | Backend | Java, Spring Boot |
 | Estilos | CSS, Tailwind CSS |
 | Estructura | HTML |
-| Base de Datos | PostgreSQL / MySQL |
+| Base de Datos | PostgreSQL |
 | ORM | JPA / Hibernate |
-| Autenticación | JWT |
-| Mapas | Leaflet / Google Maps |
 
 ### Stack Completo:
 
@@ -203,7 +173,7 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 - Java 11+
 - Spring Boot 3.x
 - Maven
-- PostgreSQL/MySQL
+- PostgreSQL
 - REST API
 - JWT para autenticación
 - Arquitectura Hexagonal
@@ -221,11 +191,7 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 - MySQL (alternativa)
 - JPA/Hibernate para ORM
 
-**DevOps:**
-- Docker
-- Docker Compose
-- Git & GitHub
-- CI/CD (GitHub Actions)
+
 
 ---
 
@@ -284,10 +250,6 @@ cd database
 # En PostgreSQL:
 createdb muni_go
 
-# Ejecutar scripts de esquema
-psql -U usuario -d muni_go -f schema/usuarios.sql
-psql -U usuario -d muni_go -f schema/rutas.sql
-psql -U usuario -d muni_go -f schema/paradas.sql
 ```
 
 ### 3️⃣ Configurar Backend
@@ -296,7 +258,7 @@ psql -U usuario -d muni_go -f schema/paradas.sql
 cd ../backend
 
 # Configurar credenciales de BD en application.properties:
-# spring.datasource.url=jdbc:postgresql://localhost:5432/muni_go
+# spring.datasource.url=jdbc:postgresql://localhost:5432/muni_db
 # spring.datasource.username=tu_usuario
 # spring.datasource.password=tu_contraseña
 # spring.jpa.hibernate.ddl-auto=update
@@ -344,14 +306,7 @@ npm run dev
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/api/rutas` | Obtener todas las rutas |
-| GET | `/api/rutas/:id` | Obtener ruta por ID |
-| GET | `/api/paradas` | Obtener todas las paradas |
-| GET | `/api/horarios` | Obtener horarios disponibles |
-| POST | `/api/usuarios/registro` | Registrar nuevo usuario |
-| POST | `/api/usuarios/login` | Iniciar sesión |
-| POST | `/api/reservas` | Crear nueva reserva |
-| GET | `/api/reservas/usuario` | Obtener reservas del usuario |
+| GET | `/api/tramites` | Obtener todas los tramites |
 
 ---
 
@@ -364,14 +319,7 @@ Para contribuir al proyecto:
 3. Push a la rama: `git push origin feature/tu-feature`
 4. Abrir un Pull Request describiendo los cambios
 
-### Estándares de Código:
-- **JavaScript:** Usar nomenclatura camelCase
-- **Java:** Seguir convenciones JavaBean (camelCase)
-- **SQL:** Usar UPPER_CASE para palabras clave
-- Comentar código complejo
-- Mantener funciones pequeñas y reutilizables
-- Escribir tests unitarios para funcionalidades críticas
-- Respetar la Arquitectura Hexagonal en el backend
+
 
 ---
 
