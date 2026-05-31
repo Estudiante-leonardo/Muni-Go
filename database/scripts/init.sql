@@ -1,6 +1,9 @@
 CREATE DATABASE muni_db;
 -- Eliminar tablas si existen para reiniciar el estado
 DROP TABLE IF EXISTS requisitos CASCADE;
+DROP TABLE IF EXISTS formatos CASCADE;
+DROP TABLE IF EXISTS pasos CASCADE;
+DROP TABLE IF EXISTS lugares CASCADE;
 DROP TABLE IF EXISTS tramites CASCADE;
 
 -- Crear tabla de trámites
@@ -19,6 +22,36 @@ CREATE TABLE requisitos (
     tramite_id BIGINT NOT NULL,
     descripcion VARCHAR(255) NOT NULL,
     CONSTRAINT fk_tramite FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
+);
+
+-- Crear tabla de formatos
+CREATE TABLE formatos (
+    id BIGSERIAL PRIMARY KEY,
+    tramite_id BIGINT NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
+    url_descarga VARCHAR(500) NOT NULL,
+    CONSTRAINT fk_tramite_formatos FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
+);
+
+-- Crear tabla de pasos
+CREATE TABLE pasos (
+    id BIGSERIAL PRIMARY KEY,
+    tramite_id BIGINT NOT NULL,
+    numero INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descripcion TEXT NOT NULL,
+    CONSTRAINT fk_tramite_pasos FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
+);
+
+-- Crear tabla de lugares
+CREATE TABLE lugares (
+    id BIGSERIAL PRIMARY KEY,
+    tramite_id BIGINT UNIQUE NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
+    horario VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_tramite_lugares FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
 );
 
 -- Insertar datos de prueba para H1
@@ -58,3 +91,27 @@ INSERT INTO requisitos (tramite_id, descripcion) VALUES
 (6, 'Código de contribuyente municipal (código de predio)'),
 (6, 'Copia de DNI del propietario o representante legal'),
 (6, 'Declaración Jurada de Autoavalúo (PU y HR) del año en curso');
+
+-- Insertar formatos
+INSERT INTO formatos (tramite_id, nombre, descripcion, url_descarga) VALUES
+(1, 'Formato Único de Trámite (FUT)', 'Documento PDF - 120 KB', '/formatos/fut.pdf'),
+(1, 'Declaración Jurada de Defensa Civil', 'Documento PDF - 85 KB', '/formatos/dj_defensa.pdf'),
+(2, 'Formato Único de Trámite (FUT)', 'Documento PDF - 120 KB', '/formatos/fut.pdf'),
+(3, 'Formulario Único de Edificación (FUE)', 'Documento PDF - 250 KB', '/formatos/fue.pdf');
+
+-- Insertar pasos
+INSERT INTO pasos (tramite_id, numero, titulo, descripcion) VALUES
+(1, 1, 'Preparar Expediente', 'Junta todos los requisitos y llena los formatos descargados en un folder.'),
+(1, 2, 'Acercarse a Sede', 'Dirígete a la Municipalidad de Carabayllo. Si tu trámite tiene costo, pasa primero por caja.'),
+(1, 3, 'Mesa de Partes', 'Entrega tus documentos. Te asignarán un número para que consultes luego el resultado.'),
+(2, 1, 'Llenar Formulario', 'Completa el FUT indicando el motivo de la solicitud.'),
+(2, 2, 'Mesa de Partes', 'Entrega los documentos presencialmente o a través de la Mesa de Partes Virtual.');
+
+-- Insertar lugares
+INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
+(1, 'Municipalidad de Carabayllo', 'Plaza Central del distrito', 'L-V de 8:00 AM a 4:30 PM'),
+(2, 'Municipalidad de Carabayllo', 'Plaza Central del distrito', 'L-V de 8:00 AM a 4:30 PM'),
+(3, 'Sede de Obras Privadas', 'Av. Túpac Amaru Km 18', 'L-V de 8:00 AM a 1:00 PM'),
+(4, 'Sede de Obras Privadas', 'Av. Túpac Amaru Km 18', 'L-V de 8:00 AM a 1:00 PM'),
+(5, 'Subgerencia de Transporte', 'Agencia Municipal Lomas', 'L-V de 8:00 AM a 4:00 PM'),
+(6, 'Agencia de Administración Tributaria', 'Palacio Municipal', 'L-V de 8:00 AM a 5:30 PM');
