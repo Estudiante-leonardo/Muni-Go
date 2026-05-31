@@ -3,6 +3,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import PanelChatbot from '../PanelChatbot';
+import { MunicipalidadProvider } from '../../context/MunicipalidadContext';
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +13,8 @@ export default function Layout() {
   const isDetail = !!params.id;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#131419] transition-colors duration-300 flex flex-col font-sans text-left relative">
+    <MunicipalidadProvider>
+      <div className="min-h-screen bg-slate-50 dark:bg-[#131419] transition-colors duration-300 flex flex-col font-sans text-left relative">
       
       <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       
@@ -48,5 +50,6 @@ export default function Layout() {
         </div>
       </footer>
     </div>
+    </MunicipalidadProvider>
   );
 }
