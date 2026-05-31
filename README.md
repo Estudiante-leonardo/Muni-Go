@@ -101,11 +101,14 @@ Interfaz de usuario que los usuarios interactúan directamente.
 ```
 frontend/
 ├── src/
-│   ├── components/          
-│   └── App.jsx              
-├── public/                  
-├── package.json             
-├── vite.config.js           
+│   ├── components/
+│   ├── pages/
+│   ├── routes/
+│   ├── utils/
+│   └── App.jsx
+├── public/
+├── package.json
+├── vite.config.js
 ```
 
 ---
@@ -180,6 +183,7 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 
 **Frontend:**
 - React.js 18+
+- React Router Dom v6
 - Vite (bundler)
 - Axios/Fetch API
 - Leaflet o Google Maps
@@ -281,12 +285,28 @@ cd ../frontend
 # Instalar dependencias
 npm install
 
-# Crear archivo .env
-echo "VITE_API_URL=http://localhost:8080/api" > .env
+# Crear archivo .env (opcional, si se usa)
+echo "VITE_API_URL=http://localhost:8081/api" > .env
 
-# Iniciar servidor de desarrollo
+# Iniciar servidor de desarrollo independiente
 npm run dev
 ```
+
+**Frontend disponible en:** `http://localhost:5173`
+
+### 5️⃣ Ejecución Rápida (Ambos a la vez)
+
+En la raíz del proyecto (Muni-Go), hemos configurado `concurrently` para facilitar el desarrollo. 
+
+```bash
+# Estando en la carpeta raíz (Muni-Go)
+# 1. Instalar dependencias globales, de backend y frontend de una vez (configurado en package.json)
+npm run install:all
+
+# 2. Levantar servidor Spring Boot y Vite en simultáneo
+npm run dev
+```
+Con este comando tendrás ambos entornos corriendo al mismo tiempo en la misma terminal.
 
 **Frontend disponible en:** `http://localhost:5173`
 

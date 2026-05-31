@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "concurrently": "^10.0.0"
+  },
+  "scripts": {
+    "backend": "cd backend && mvn spring-boot:run",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "install:all": "npm install && cd frontend && npm install"
+  }
+}
