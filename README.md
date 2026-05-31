@@ -1,6 +1,6 @@
 # Muni-Go 🚌
 
-Sistema de gestión y optimización de rutas de transporte municipal con enfoque en eficiencia, accesibilidad y experiencia del usuario.
+Sistema de gestión de trámites municipales multi-distrito. Un portal virtual para consultar requisitos, costos y tiempos de trámites respaldado por inteligencia artificial.
 
 ---
 
@@ -19,12 +19,13 @@ Sistema de gestión y optimización de rutas de transporte municipal con enfoque
 
 ## 📝 Descripción del Proyecto
 
-**Muni-Go** es una aplicación integral para la gestión de rutas de transporte municipal. El proyecto integra un backend robusto con arquitectura hexagonal, una base de datos centralizada y una interfaz frontend intuitiva.
+**Muni-Go** es una plataforma centralizada (Ventanilla Única) que consolida la información de trámites de múltiples municipalidades en un solo lugar. El proyecto integra un backend robusto con arquitectura hexagonal en Spring Boot y Java, una base de datos PostgreSQL y una interfaz frontend dinámica en React.
 
 ### Características Principales:
-- 🗺️ Gestión y optimización de rutas de transporte
-- 📊 Análisis de datos
-- 📱 Interfaz responsiva y amigable
+- 🏛️ **Multimunicipalidad:** Permite cambiar de municipalidad en tiempo real y ver solo los trámites y categorías de la entidad seleccionada.
+- 📑 **Catálogo Dinámico:** Categorías y trámites generados dinámicamente según la base de datos de cada distrito.
+- 🤖 **Asistente IA:** Resúmenes generados por inteligencia artificial para facilitar la comprensión de los requisitos.
+- 📱 **Interfaz Responsiva:** Diseño armónico e intuitivo adaptado a dispositivos móviles.
 
 ---
 
@@ -173,7 +174,7 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 ### Stack Completo:
 
 **Backend:**
-- Java 11+
+- Java 17
 - Spring Boot 3.x
 - Maven
 - PostgreSQL
@@ -317,10 +318,9 @@ Con este comando tendrás ambos entornos corriendo al mismo tiempo en la misma t
 ### Acceso a la Aplicación
 
 1. Abrir navegador en `http://localhost:5173`
-2. Registrarse o iniciar sesión
-3. Explorar rutas de transporte
-4. Ver paradas y horarios
-5. Realizar búsquedas y reservas
+2. Seleccionar la municipalidad deseada desde el menú superior.
+3. Explorar el catálogo de trámites dinámico.
+4. Consultar detalles de trámites, requisitos, y resúmenes con IA.
 
 ### APIs Principales
 
