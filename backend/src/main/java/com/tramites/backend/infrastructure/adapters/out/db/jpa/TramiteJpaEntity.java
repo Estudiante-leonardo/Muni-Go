@@ -29,10 +29,19 @@ public class TramiteJpaEntity {
     @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<RequisitoJpaEntity> requisitos;
 
+    @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<FormatoJpaEntity> formatos;
+
+    @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<PasoJpaEntity> pasos;
+
+    @OneToOne(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private LugarJpaEntity lugar;
+
     public TramiteJpaEntity() {
     }
 
-    public TramiteJpaEntity(Long id, String nombre, String descripcion, BigDecimal costo, String tiempoEstimado, String categoria, List<RequisitoJpaEntity> requisitos) {
+    public TramiteJpaEntity(Long id, String nombre, String descripcion, BigDecimal costo, String tiempoEstimado, String categoria, List<RequisitoJpaEntity> requisitos, List<FormatoJpaEntity> formatos, List<PasoJpaEntity> pasos, LugarJpaEntity lugar) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -40,6 +49,9 @@ public class TramiteJpaEntity {
         this.tiempoEstimado = tiempoEstimado;
         this.categoria = categoria;
         this.requisitos = requisitos;
+        this.formatos = formatos;
+        this.pasos = pasos;
+        this.lugar = lugar;
     }
 
     public Long getId() {
@@ -96,5 +108,29 @@ public class TramiteJpaEntity {
 
     public void setRequisitos(List<RequisitoJpaEntity> requisitos) {
         this.requisitos = requisitos;
+    }
+
+    public List<FormatoJpaEntity> getFormatos() {
+        return formatos;
+    }
+
+    public void setFormatos(List<FormatoJpaEntity> formatos) {
+        this.formatos = formatos;
+    }
+
+    public List<PasoJpaEntity> getPasos() {
+        return pasos;
+    }
+
+    public void setPasos(List<PasoJpaEntity> pasos) {
+        this.pasos = pasos;
+    }
+
+    public LugarJpaEntity getLugar() {
+        return lugar;
+    }
+
+    public void setLugar(LugarJpaEntity lugar) {
+        this.lugar = lugar;
     }
 }
