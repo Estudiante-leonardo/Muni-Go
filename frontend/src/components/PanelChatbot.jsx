@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Send } from 'lucide-react';
 
-export default function PanelChatbot({ tramite }) {
+export default function PanelChatbot({ tramite, onClose }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -85,14 +85,21 @@ export default function PanelChatbot({ tramite }) {
   };
 
   return (
-    <div className="flex flex-col h-[520px] w-full bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden font-sans">
+    <div className="flex flex-col h-full w-full bg-white dark:bg-[#16171d] overflow-hidden font-sans">
       {/* Header */}
-      <div className="flex items-center space-x-3 bg-blue-600 px-4 py-3.5 text-white">
-        <Bot className="w-6 h-6 text-blue-100" />
-        <div>
-          <h3 className="font-bold text-sm leading-none">Asistente de IA del Trámite</h3>
-          <span className="text-[10px] text-blue-200 font-medium">En línea</span>
+      <div className="flex items-center justify-between bg-blue-600 px-4 py-3.5 text-white">
+        <div className="flex items-center space-x-3">
+          <Bot className="w-6 h-6 text-blue-100" />
+          <div>
+            <h3 className="font-bold text-sm leading-none">Asistente de IA del Trámite</h3>
+            <span className="text-[10px] text-blue-200 font-medium">En línea</span>
+          </div>
         </div>
+        {onClose && (
+          <button onClick={onClose} className="p-1 hover:bg-blue-700 rounded-lg transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        )}
       </div>
 
       {/* Messages List Area */}
