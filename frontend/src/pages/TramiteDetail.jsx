@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getResumenIA } from '../utils/helpers';
 import PanelChatbot from '../components/PanelChatbot';
+import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
 const API_URL = 'http://localhost:8081/api/tramites';
 
@@ -15,33 +16,48 @@ export default function TramiteDetail() {
   const [error, setError] = useState(null);
   const [checkedRequisitos, setCheckedRequisitos] = useState({});
 
+  const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
+
   // --- Lógica y Estado ---
   useEffect(() => {
     setLoading(true);
-    axios.get(`${API_URL}/${id}`)
-      .then(response => {
-        setSelectedTramite(response.data);
-        setError(null);
+    axios.get(API_URL)
+      .then(res => {
+        const tramite = res.data.find(t => t.id === parseInt(id));
+        if (tramite) {
+          setSelectedTramite(tramite);
+        } else {
+          setError('Trámite no encontrado');
+        }
       })
-      .catch(err => {
-        console.error('Fetching individual procedure failed, getting all...', err);
-        axios.get(API_URL)
-          .then(res => {
-            const tramite = res.data.find(t => t.id === parseInt(id));
-            if (tramite) {
-              setSelectedTramite(tramite);
-            } else {
-              setError('Trámite no encontrado');
-            }
-          })
-          .catch(() => {
-            setError('No se pudo conectar con el servidor backend.');
-          });
+      .catch(() => {
+        setError('No se pudo conectar con el servidor backend.');
       })
       .finally(() => {
         setLoading(false);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (!selectedTramite || !selectedMunicipalidadId) return;
+
+    if (selectedTramite.municipalidadId && selectedTramite.municipalidadId !== selectedMunicipalidadId) {
+      axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
+        .then(res => {
+          const matchingTramite = res.data.find(t => t.nombre === selectedTramite.nombre);
+          if (matchingTramite) {
+            navigate(`/tramites/${matchingTramite.id}`);
+          } else {
+            alert('Esta municipalidad no cuenta con este trámite específico.');
+            setSelectedMunicipalidadId(selectedTramite.municipalidadId);
+          }
+        })
+        .catch(err => {
+          console.error('Error verificando trámite en otra municipalidad', err);
+          setSelectedMunicipalidadId(selectedTramite.municipalidadId);
+        });
+    }
+  }, [selectedMunicipalidadId, selectedTramite, navigate, setSelectedMunicipalidadId]);
 
   if (loading) {
     return (

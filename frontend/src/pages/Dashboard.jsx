@@ -1,8 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { MunicipalidadContext } from '../context/MunicipalidadContext';
+
+const API_URL = 'http://localhost:8081/api/tramites';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { selectedMunicipalidadId, municipalidades } = useContext(MunicipalidadContext);
+  
+  const [tramitesCount, setTramitesCount] = useState(0);
+  const [dynamicCategories, setDynamicCategories] = useState([]);
+
+  const currentMuni = municipalidades.find(m => m.id === selectedMunicipalidadId);
+  const muniName = currentMuni ? currentMuni.nombre.replace('Municipalidad de ', '') : '...';
+
+  useEffect(() => {
+    if (selectedMunicipalidadId) {
+      axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
+        .then(response => {
+          setTramitesCount(response.data.length);
+          const uniqueCats = Array.from(new Set(response.data.map(t => t.categoria)));
+          setDynamicCategories(uniqueCats.slice(0, 4)); // Show top 4 categories on dashboard
+        })
+        .catch(err => console.error(err));
+    }
+  }, [selectedMunicipalidadId]);
 
   // --- Interfaz de Usuario ---
   return (
@@ -14,7 +37,7 @@ export default function Dashboard() {
 
         <div className="max-w-2xl relative z-10">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-500/30 text-blue-100 border border-blue-400/20 mb-4 uppercase tracking-wider">
-            Portal del Ciudadano de Carabayllo
+            Portal del Ciudadano de {muniName}
           </span>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight mb-4 text-white leading-tight">
             Muni-Go: Tu Municipalidad Virtual
@@ -45,7 +68,7 @@ export default function Dashboard() {
             </svg>
           </div>
           <div>
-            <span className="text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1">6</span>
+            <span className="text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1">{tramitesCount}</span>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Servicios Listos</span>
           </div>
         </div>
@@ -102,73 +125,29 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div
-            onClick={() => navigate('/tramites?category=Licencias')}
-            className="p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-500 dark:hover:border-blue-450 cursor-pointer transition-all text-left group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-slate-850 dark:text-white group-hover:text-blue-600 transition-colors mb-1.5 text-base">
-              Licencias
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-              Licencias de funcionamiento comercial, edificación residencial y conducir mototaxis.
-            </p>
-          </div>
-
-          <div
-            onClick={() => navigate('/tramites?category=Certificados')}
-            className="p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-500 dark:hover:border-emerald-450 cursor-pointer transition-all text-left group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-slate-850 dark:text-white group-hover:text-emerald-600 transition-colors mb-1.5 text-base">
-              Certificados
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-              Certificados de domicilio, de jurisdicción territorial y de no adeudo fiscal.
-            </p>
-          </div>
-
-          <div
-            onClick={() => navigate('/tramites?category=Impuestos')}
-            className="p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-purple-500 dark:hover:border-purple-450 cursor-pointer transition-all text-left group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-4 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-slate-850 dark:text-white group-hover:text-purple-600 transition-colors mb-1.5 text-base">
-              Impuestos
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-              Declaración y pago de impuesto predial, arbitrios de limpieza y seguridad ciudadana.
-            </p>
-          </div>
-
-          <div
-            onClick={() => navigate('/tramites?category=Obras')}
-            className="p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-amber-500 dark:hover:border-amber-450 cursor-pointer transition-all text-left group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-slate-850 dark:text-white group-hover:text-amber-600 transition-colors mb-1.5 text-base">
-              Obras
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-              Declaratoria de fábrica municipal, regularización de planos y conformidad de obra.
-            </p>
-          </div>
+          {dynamicCategories.map((cat, index) => {
+            const colors = ['blue', 'emerald', 'purple', 'amber'];
+            const color = colors[index % colors.length];
+            return (
+              <div
+                key={cat}
+                onClick={() => navigate(`/tramites?category=${cat}`)}
+                className={`p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-${color}-500 dark:hover:border-${color}-450 cursor-pointer transition-all text-left group`}
+              >
+                <div className={`w-10 h-10 rounded-lg bg-${color}-50 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400 flex items-center justify-center mb-4 transition-colors`}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className={`font-bold text-slate-850 dark:text-white group-hover:text-${color}-600 transition-colors mb-1.5 text-base`}>
+                  {cat}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                  Trámites y servicios relacionados a {cat.toLowerCase()}.
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -181,7 +160,7 @@ export default function Dashboard() {
           <div className="bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm text-left">
             <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Tributario</span>
             <h4 className="text-base font-bold text-slate-850 dark:text-white mt-2">
-              Campaña Tributaria Carabayllo 2026
+              Campaña Tributaria {muniName} 2026
             </h4>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
               Aprovecha hasta un 15% de descuento en Arbitrios pagando tu Impuesto Predial 2026 anual antes de fin de mes.

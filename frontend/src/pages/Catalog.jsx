@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TramiteCard from '../components/TramiteCard';
+import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
 const API_URL = 'http://localhost:8081/api/tramites';
-const categories = ['Todas', 'Licencias', 'Certificados', 'Impuestos', 'Obras'];
 
 export default function Catalog() {
   const [tramites, setTramites] = useState([]);
   const [filteredTramites, setFilteredTramites] = useState([]);
+  const [categories, setCategories] = useState(['Todas']);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,14 +18,21 @@ export default function Catalog() {
   const selectedCategory = searchParams.get('category') || 'Todas';
 
   const navigate = useNavigate();
+  const { selectedMunicipalidadId, municipalidades } = React.useContext(MunicipalidadContext);
+  
+  const currentMuni = municipalidades.find(m => m.id === selectedMunicipalidadId);
 
   // --- Lógica y Estado ---
   useEffect(() => {
+    if (!selectedMunicipalidadId) return;
+
     setLoading(true);
-    axios.get(API_URL)
+    axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
       .then(response => {
         setTramites(response.data);
         setFilteredTramites(response.data);
+        const uniqueCats = Array.from(new Set(response.data.map(t => t.categoria)));
+        setCategories(['Todas', ...uniqueCats]);
         setError(null);
       })
       .catch(err => {
@@ -34,7 +42,7 @@ export default function Catalog() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [selectedMunicipalidadId]);
 
   useEffect(() => {
     let result = tramites;
@@ -67,11 +75,11 @@ export default function Catalog() {
     <div className="animate-fade-in text-left">
       {/* Encabezado */}
       <div className="text-left mb-8">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0">
           Catálogo de Trámites
         </h1>
         <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">
-          Revisando los servicios disponibles para <span className="font-bold text-slate-800 dark:text-slate-200">Carabayllo</span>.
+          Revisando los servicios disponibles para <span className="font-bold text-slate-800 dark:text-slate-200">{currentMuni ? currentMuni.nombre.replace('Municipalidad de ', '') : '...'}</span>.
         </p>
       </div>
 
