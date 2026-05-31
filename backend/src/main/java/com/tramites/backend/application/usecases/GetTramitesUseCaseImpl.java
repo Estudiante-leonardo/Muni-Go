@@ -13,7 +13,10 @@ public class GetTramitesUseCaseImpl implements GetTramitesUseCase {
     }
 
     @Override
-    public List<Tramite> execute() {
+    public List<Tramite> execute(Long municipalidadId) {
+        if (municipalidadId != null) {
+            return tramiteRepositoryPort.findByMunicipalidadId(municipalidadId);
+        }
         return tramiteRepositoryPort.findAll();
     }
 }

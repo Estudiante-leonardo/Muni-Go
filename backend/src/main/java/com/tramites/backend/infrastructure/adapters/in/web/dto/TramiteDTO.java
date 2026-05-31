@@ -9,6 +9,7 @@ public class TramiteDTO {
     private Double costo;
     private String tiempoEstimado;
     private String categoria;
+    private Long municipalidadId;
     private List<RequisitoDTO> requisitos;
     private List<FormatoDTO> formatos;
     private List<PasoDTO> pasos;
@@ -17,13 +18,14 @@ public class TramiteDTO {
     public TramiteDTO() {
     }
 
-    public TramiteDTO(Long id, String nombre, String descripcion, Double costo, String tiempoEstimado, String categoria, List<RequisitoDTO> requisitos, List<FormatoDTO> formatos, List<PasoDTO> pasos, LugarDTO lugar) {
+    public TramiteDTO(Long id, String nombre, String descripcion, Double costo, String tiempoEstimado, String categoria, Long municipalidadId, List<RequisitoDTO> requisitos, List<FormatoDTO> formatos, List<PasoDTO> pasos, LugarDTO lugar) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costo = costo;
         this.tiempoEstimado = tiempoEstimado;
         this.categoria = categoria;
+        this.municipalidadId = municipalidadId;
         this.requisitos = requisitos;
         this.formatos = formatos;
         this.pasos = pasos;
@@ -76,6 +78,14 @@ public class TramiteDTO {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public Long getMunicipalidadId() {
+        return municipalidadId;
+    }
+
+    public void setMunicipalidadId(Long municipalidadId) {
+        this.municipalidadId = municipalidadId;
     }
 
     public List<RequisitoDTO> getRequisitos() {

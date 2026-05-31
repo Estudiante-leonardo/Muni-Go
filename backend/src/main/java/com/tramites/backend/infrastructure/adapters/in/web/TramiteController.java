@@ -8,6 +8,7 @@ import com.tramites.backend.infrastructure.adapters.in.web.dto.LugarDTO;
 import com.tramites.backend.infrastructure.adapters.in.web.dto.TramiteDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -25,8 +26,8 @@ public class TramiteController {
     }
 
     @GetMapping
-    public List<TramiteDTO> getTramites() {
-        return getTramitesUseCase.execute().stream()
+    public List<TramiteDTO> getTramites(@RequestParam(required = false) Long municipalidadId) {
+        return getTramitesUseCase.execute(municipalidadId).stream()
                 .map(tramite -> new TramiteDTO(
                         tramite.getId(),
                         tramite.getNombre(),
@@ -34,6 +35,7 @@ public class TramiteController {
                         tramite.getCosto(),
                         tramite.getTiempoEstimado(),
                         tramite.getCategoria(),
+                        tramite.getMunicipalidadId(),
                         tramite.getRequisitos() != null ? tramite.getRequisitos().stream()
                                 .map(req -> new RequisitoDTO(req.getId(), req.getDescripcion()))
                                 .collect(Collectors.toList()) : null,

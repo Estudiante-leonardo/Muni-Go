@@ -27,6 +27,13 @@ public class TramitePostgresAdapter implements TramiteRepositoryPort {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Tramite> findByMunicipalidadId(Long municipalidadId) {
+        return tramiteJpaRepository.findByMunicipalidadId(municipalidadId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
     private Tramite toDomain(TramiteJpaEntity entity) {
         if (entity == null) {
             return null;
@@ -65,6 +72,7 @@ public class TramitePostgresAdapter implements TramiteRepositoryPort {
                 entity.getCosto() != null ? entity.getCosto().doubleValue() : 0.0,
                 entity.getTiempoEstimado(),
                 entity.getCategoria(),
+                entity.getMunicipalidadId(),
                 requirements,
                 formatos,
                 pasos,

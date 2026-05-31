@@ -9,6 +9,7 @@ public class Tramite {
     private Double costo;
     private String tiempoEstimado;
     private String categoria;
+    private Long municipalidadId;
     private List<Requisito> requisitos;
     private List<Formato> formatos;
     private List<Paso> pasos;
@@ -17,13 +18,14 @@ public class Tramite {
     public Tramite() {
     }
 
-    public Tramite(Long id, String nombre, String descripcion, Double costo, String tiempoEstimado, String categoria, List<Requisito> requisitos, List<Formato> formatos, List<Paso> pasos, Lugar lugar) {
+    public Tramite(Long id, String nombre, String descripcion, Double costo, String tiempoEstimado, String categoria, Long municipalidadId, List<Requisito> requisitos, List<Formato> formatos, List<Paso> pasos, Lugar lugar) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costo = costo;
         this.tiempoEstimado = tiempoEstimado;
         this.categoria = categoria;
+        this.municipalidadId = municipalidadId;
         this.requisitos = requisitos;
         this.formatos = formatos;
         this.pasos = pasos;
@@ -76,6 +78,14 @@ public class Tramite {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public Long getMunicipalidadId() {
+        return municipalidadId;
+    }
+
+    public void setMunicipalidadId(Long municipalidadId) {
+        this.municipalidadId = municipalidadId;
     }
 
     public List<Requisito> getRequisitos() {

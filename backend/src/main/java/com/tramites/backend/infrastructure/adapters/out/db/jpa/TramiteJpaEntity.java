@@ -26,6 +26,9 @@ public class TramiteJpaEntity {
     @Column(nullable = false)
     private String categoria;
 
+    @Column(name = "municipalidad_id", nullable = false)
+    private Long municipalidadId;
+
     @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<RequisitoJpaEntity> requisitos;
 
@@ -41,13 +44,14 @@ public class TramiteJpaEntity {
     public TramiteJpaEntity() {
     }
 
-    public TramiteJpaEntity(Long id, String nombre, String descripcion, BigDecimal costo, String tiempoEstimado, String categoria, List<RequisitoJpaEntity> requisitos, List<FormatoJpaEntity> formatos, List<PasoJpaEntity> pasos, LugarJpaEntity lugar) {
+    public TramiteJpaEntity(Long id, String nombre, String descripcion, BigDecimal costo, String tiempoEstimado, String categoria, Long municipalidadId, List<RequisitoJpaEntity> requisitos, List<FormatoJpaEntity> formatos, List<PasoJpaEntity> pasos, LugarJpaEntity lugar) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costo = costo;
         this.tiempoEstimado = tiempoEstimado;
         this.categoria = categoria;
+        this.municipalidadId = municipalidadId;
         this.requisitos = requisitos;
         this.formatos = formatos;
         this.pasos = pasos;
@@ -100,6 +104,14 @@ public class TramiteJpaEntity {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public Long getMunicipalidadId() {
+        return municipalidadId;
+    }
+
+    public void setMunicipalidadId(Long municipalidadId) {
+        this.municipalidadId = municipalidadId;
     }
 
     public List<RequisitoJpaEntity> getRequisitos() {

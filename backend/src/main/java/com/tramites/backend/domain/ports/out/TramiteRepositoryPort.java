@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface TramiteRepositoryPort {
     List<Tramite> findAll();
+    List<Tramite> findByMunicipalidadId(Long municipalidadId);
 }
