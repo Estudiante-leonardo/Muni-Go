@@ -4,7 +4,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import TramiteCard from '../components/TramiteCard';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
-const API_URL = 'http://localhost:8081/api/tramites';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+const API_URL = `${API_BASE_URL}/tramites`;
 
 export default function Catalog() {
   const [tramites, setTramites] = useState([]);

@@ -5,7 +5,8 @@ import { getResumenIA } from '../utils/helpers';
 import PanelChatbot from '../components/PanelChatbot';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
-const API_URL = 'http://localhost:8081/api/tramites';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+const API_URL = `${API_BASE_URL}/tramites`;
 
 export default function TramiteDetail() {
   const { id } = useParams();
