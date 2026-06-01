@@ -111,9 +111,13 @@ Interfaz de usuario que los usuarios interactúan directamente.
 ```
 frontend/
 ├── src/
+│   ├── assets/
 │   ├── components/
+│   │        └── layout/
+│   ├── contexts/
 │   ├── pages/
 │   ├── routes/
+│   ├── services/
 │   ├── utils/
 │   └── App.jsx
 ├── public/
