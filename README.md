@@ -7,6 +7,7 @@ Sistema de gestión de trámites municipales multi-distrito. Un portal virtual p
 ## 📋 Tabla de Contenidos
 
 - [Descripción del Proyecto](#descripción-del-proyecto)
+- [Enlaces de Despliegue](#enlaces-de-despliegue)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Arquitectura Hexagonal](#arquitectura-hexagonal)
@@ -26,6 +27,14 @@ Sistema de gestión de trámites municipales multi-distrito. Un portal virtual p
 - 📑 **Catálogo Dinámico:** Categorías y trámites generados dinámicamente según la base de datos de cada distrito.
 - 🤖 **Asistente IA:** Resúmenes generados por inteligencia artificial para facilitar la comprensión de los requisitos.
 - 📱 **Interfaz Responsiva:** Diseño armónico e intuitivo adaptado a dispositivos móviles.
+
+---
+
+## 🌐 Enlaces de Despliegue
+
+- **Frontend (Aplicación Web):** [https://muni-go-a6xj.onrender.com/](https://muni-go-a6xj.onrender.com/)
+- **Backend (API REST):** [https://munigo-backend.onrender.com](https://munigo-backend.onrender.com)
+- **Base de Datos:** PostgreSQL en [Supabase](https://supabase.com/)
 
 ---
 
