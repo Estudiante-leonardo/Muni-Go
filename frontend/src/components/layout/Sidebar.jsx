@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-export default function Sidebar({ isMenuOpen, setIsMenuOpen }) {
+export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
   const location = useLocation();
 
   const isDashboard = location.pathname === '/';
@@ -55,13 +55,12 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen }) {
           >
             Catálogo de Trámites
           </Link>
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); }}
-            className="block px-4 py-3 rounded-xl text-sm font-medium text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+          <button
+            onClick={() => { setIsMenuOpen(false); if (onOpenFaq) onOpenFaq(); }}
+            className="w-full text-left block px-4 py-3 rounded-xl text-sm font-medium text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40 cursor-pointer"
           >
             Preguntas Frecuentes
-          </a>
+          </button>
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); }}

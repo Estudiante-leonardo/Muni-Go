@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MunicipalidadContext } from '../../context/MunicipalidadContext';
+import logo from '../../assets/Logo.jpeg';
 
 export default function Navbar({ setIsMenuOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  
+
   const { municipalidades, selectedMunicipalidadId, setSelectedMunicipalidadId } = useContext(MunicipalidadContext);
 
   const isDashboard = location.pathname === '/';
@@ -39,9 +40,9 @@ export default function Navbar({ setIsMenuOpen }) {
             </button>
           ) : (
             <div className="flex items-center space-x-3 border-l border-slate-200 dark:border-slate-700 pl-3 sm:pl-4">
-              <Link to="/" className="cursor-pointer hover:opacity-80 transition-opacity">
-                <span className="font-bold text-lg sm:text-xl text-slate-850 dark:text-white tracking-tight">Muni<span className="text-blue-600">Go</span></span>
-                <span className="text-[9px] sm:text-[10px] text-slate-400 hidden sm:block font-bold -mt-1 uppercase tracking-wide">TRÁMITES MUNICIPALES</span>
+              <Link to="/" className="cursor-pointer hover:opacity-80 transition-opacity flex flex-col items-center sm:items-start justify-center">
+                <img src={logo} alt="Muni-Go Logo" className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain rounded-md transform -translate-y-3" />
+                <span className="text-[9px] sm:text-[10px] text-slate-400 hidden sm:block font-bold -mt-8 uppercase tracking-wide">TRÁMITES MUNICIPALES</span>
               </Link>
             </div>
           )}

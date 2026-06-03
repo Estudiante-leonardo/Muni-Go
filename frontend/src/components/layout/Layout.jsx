@@ -3,11 +3,13 @@ import { Outlet, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import PanelChatbot from '../PanelChatbot';
+import FaqModal from '../FaqModal';
 import { MunicipalidadProvider } from '../../context/MunicipalidadContext';
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
   
   const params = useParams();
   const isDetail = !!params.id;
@@ -16,7 +18,7 @@ export default function Layout() {
     <MunicipalidadProvider>
       <div className="min-h-screen bg-slate-50 dark:bg-[#131419] transition-colors duration-300 flex flex-col font-sans text-left relative">
       
-      <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} onOpenFaq={() => setIsFaqOpen(true)} />
       
       <Navbar setIsMenuOpen={setIsMenuOpen} />
 
@@ -43,12 +45,22 @@ export default function Layout() {
       </div>
 
       <footer className="bg-white dark:bg-[#16171d] border-t border-slate-200 dark:border-slate-800 py-8 mt-auto transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center gap-4">
+          <div className="flex space-x-6">
+            <button onClick={() => setIsFaqOpen(true)} className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 cursor-pointer">
+              Preguntas Frecuentes
+            </button>
+            <a href="#" className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400">
+              Contacto
+            </a>
+          </div>
           <p className="text-xs text-slate-405 dark:text-slate-500 font-bold">
             &copy; 2026 Municipalidad Virtual - Plataforma Muni-Go. Todos los derechos reservados.
           </p>
         </div>
       </footer>
+      
+      <FaqModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} />
     </div>
     </MunicipalidadProvider>
   );
