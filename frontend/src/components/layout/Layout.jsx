@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, useParams, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import PanelChatbot from '../PanelChatbot';
@@ -12,7 +12,12 @@ export default function Layout() {
   const [isFaqOpen, setIsFaqOpen] = useState(false);
   
   const params = useParams();
+  const location = useLocation();
   const isDetail = !!params.id;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <MunicipalidadProvider>
@@ -29,7 +34,8 @@ export default function Layout() {
       <div className={`${isDetail ? 'lg:hidden' : ''}`}>
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className={`fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-750 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer z-50 ${isChatOpen ? 'hidden' : ''}`}
+          aria-label={isChatOpen ? "Cerrar asistente de IA" : "Abrir asistente de IA"}
+          className={`fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-750 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer z-50 focus:outline-none focus:ring-4 focus:ring-blue-300 ${isChatOpen ? 'hidden' : ''}`}
         >
           <svg className="w-6 h-6 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L1 17l1.338-3.123C1.582 12.868 1 11.5 1 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
@@ -47,10 +53,10 @@ export default function Layout() {
       <footer className="bg-white dark:bg-[#16171d] border-t border-slate-200 dark:border-slate-800 py-8 mt-auto transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center gap-4">
           <div className="flex space-x-6">
-            <button onClick={() => setIsFaqOpen(true)} className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 cursor-pointer">
+            <button onClick={() => setIsFaqOpen(true)} className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1">
               Preguntas Frecuentes
             </button>
-            <a href="#" className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400">
+            <a href="#" className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1">
               Contacto
             </a>
           </div>

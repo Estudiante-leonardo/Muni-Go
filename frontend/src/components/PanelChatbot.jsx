@@ -1,11 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send } from 'lucide-react';
+import { Bot, Send, Mic } from 'lucide-react';
 
 export default function PanelChatbot({ tramite, onClose }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
 
   // Initialize chat history whenever the selected procedure changes
   useEffect(() => {
@@ -29,7 +40,12 @@ export default function PanelChatbot({ tramite, onClose }) {
   }, [tramite]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages, isTyping]);
 
   const handleSubmit = (e) => {
@@ -96,14 +112,14 @@ export default function PanelChatbot({ tramite, onClose }) {
           </div>
         </div>
         {onClose && (
-          <button onClick={onClose} className="p-1 hover:bg-blue-700 rounded-lg transition-colors">
+          <button onClick={onClose} aria-label="Cerrar asistente de IA" className="p-1 hover:bg-blue-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         )}
       </div>
 
       {/* Messages List Area */}
-      <div className="flex-grow bg-gray-50 overflow-y-auto p-4 flex flex-col space-y-3">
+      <div ref={chatContainerRef} className="flex-grow bg-gray-50 overflow-y-auto p-4 flex flex-col space-y-3" aria-live="polite" aria-atomic="false">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -150,8 +166,17 @@ export default function PanelChatbot({ tramite, onClose }) {
           className="flex-grow px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm text-slate-800 placeholder-slate-400"
         />
         <button
+          type="button"
+          aria-label="Hablar por micrófono (Próximamente)"
+          title="Próximamente: Dictado por voz"
+          className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors flex items-center justify-center cursor-pointer"
+        >
+          <Mic className="w-4 h-4" />
+        </button>
+        <button
           type="submit"
           disabled={!input.trim() || isTyping}
+          aria-label="Enviar mensaje"
           className="p-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" />

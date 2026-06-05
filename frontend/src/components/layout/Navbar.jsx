@@ -20,7 +20,8 @@ export default function Navbar({ setIsMenuOpen }) {
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button
             onClick={() => setIsMenuOpen(true)}
-            className="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl focus:outline-none transition-colors cursor-pointer"
+            aria-label="Abrir menú de navegación"
+            className="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
@@ -30,7 +31,8 @@ export default function Navbar({ setIsMenuOpen }) {
           {isDetail ? (
             <button
               onClick={() => navigate('/tramites')}
-              className="flex items-center text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 dark:text-slate-350 dark:hover:text-blue-400 transition-colors border-l border-slate-200 dark:border-slate-700 pl-2 sm:pl-4 cursor-pointer"
+              aria-label="Volver al catálogo de trámites"
+              className="flex items-center text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 dark:text-slate-350 dark:hover:text-blue-400 transition-colors border-l border-slate-200 dark:border-slate-700 pl-2 sm:pl-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
             >
               <svg className="w-4 h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -40,7 +42,7 @@ export default function Navbar({ setIsMenuOpen }) {
             </button>
           ) : (
             <div className="flex items-center space-x-3 border-l border-slate-200 dark:border-slate-700 pl-3 sm:pl-4">
-              <Link to="/" className="cursor-pointer hover:opacity-80 transition-opacity flex flex-col items-center sm:items-start justify-center">
+              <Link to="/" aria-label="Inicio Muni-Go" className="cursor-pointer hover:opacity-80 transition-opacity flex flex-col items-center sm:items-start justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
                 <img src={logo} alt="Muni-Go Logo" className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain rounded-md transform -translate-y-3" />
                 <span className="text-[9px] sm:text-[10px] text-slate-400 hidden sm:block font-bold -mt-8 uppercase tracking-wide">TRÁMITES MUNICIPALES</span>
               </Link>
@@ -50,10 +52,10 @@ export default function Navbar({ setIsMenuOpen }) {
 
         <div className="flex items-center space-x-4">
           {!isDetail && (
-            <div className="hidden md:flex items-center space-x-1.5 mr-2">
+            <nav className="hidden md:flex items-center space-x-1.5 mr-2" aria-label="Navegación principal">
               <Link
                 to="/"
-                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${isDashboard
+                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDashboard
                   ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
@@ -62,17 +64,18 @@ export default function Navbar({ setIsMenuOpen }) {
               </Link>
               <Link
                 to="/tramites"
-                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${isCatalog
+                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${isCatalog
                   ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
               >
                 Catálogo
               </Link>
-            </div>
+            </nav>
           )}
           <div className="relative">
             <select
+              aria-label="Seleccionar Municipalidad"
               value={selectedMunicipalidadId || ''}
               onChange={(e) => setSelectedMunicipalidadId(e.target.value ? Number(e.target.value) : null)}
               className="appearance-none text-xs font-semibold pl-3 pr-8 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer w-[130px] sm:w-auto truncate"
