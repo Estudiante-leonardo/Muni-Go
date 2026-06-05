@@ -71,6 +71,25 @@ export default function Catalog() {
     }
   };
 
+  const handleCategoryKeyDown = (e, index, category) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        const prev = index > 0 ? index - 1 : categories.length - 1;
+        document.getElementById(`category-${prev}`)?.focus();
+      } else {
+        const next = index < categories.length - 1 ? index + 1 : 0;
+        document.getElementById(`category-${next}`)?.focus();
+      }
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCategoryChange(category);
+      setTimeout(() => {
+        document.getElementById('tramite-card-0')?.focus();
+      }, 50);
+    }
+  };
+
   // --- Interfaz de Usuario ---
   return (
     <div className="animate-fade-in text-left">
@@ -96,37 +115,52 @@ export default function Catalog() {
             Categorías
           </h3>
 
-          <div className="space-y-4">
-            {categories.map((category) => (
-              <label
-                key={category}
-                className="flex items-center space-x-3 cursor-pointer group select-none"
-              >
-                <div className="relative flex items-center justify-center">
-                  <input
-                    type="radio"
-                    name="category"
-                    checked={selectedCategory === category}
-                    onChange={() => handleCategoryChange(category)}
-                    className="sr-only"
-                  />
-                  <div className={`w-4.5 h-4.5 rounded-full border-2 transition-all flex items-center justify-center ${selectedCategory === category
-                    ? 'border-blue-600 bg-blue-600'
-                    : 'border-slate-300 dark:border-slate-650 group-hover:border-blue-400 bg-transparent'
-                    }`}>
-                    {selectedCategory === category && (
-                      <div className="w-2 h-2 rounded-full bg-white animate-scale-up" />
-                    )}
+          <div className="space-y-4" role="radiogroup" aria-label="Filtro de categorías">
+            {categories.map((category, index) => {
+              const isSelected = selectedCategory === category;
+              return (
+                <label
+                  key={category}
+                  id={`category-${index}`}
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
+                  onKeyDown={(e) => handleCategoryKeyDown(e, index, category)}
+                  onClick={() => {
+                    handleCategoryChange(category);
+                    setTimeout(() => {
+                      document.getElementById('tramite-card-0')?.focus();
+                    }, 50);
+                  }}
+                  className="flex items-center space-x-3 cursor-pointer group select-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1 -ml-1"
+                >
+                  <div className="relative flex items-center justify-center">
+                    <input
+                      type="radio"
+                      name="category"
+                      tabIndex={-1}
+                      checked={isSelected}
+                      onChange={() => handleCategoryChange(category)}
+                      className="sr-only"
+                    />
+                    <div className={`w-4.5 h-4.5 rounded-full border-2 transition-all flex items-center justify-center ${isSelected
+                      ? 'border-blue-600 bg-blue-600'
+                      : 'border-slate-300 dark:border-slate-650 group-hover:border-blue-400 bg-transparent'
+                      }`}>
+                      {isSelected && (
+                        <div className="w-2 h-2 rounded-full bg-white animate-scale-up" />
+                      )}
+                    </div>
                   </div>
-                </div>
-                <span className={`text-sm font-semibold transition-colors ${selectedCategory === category
-                  ? 'text-slate-900 dark:text-white font-bold'
-                  : 'text-slate-550 dark:text-slate-405 group-hover:text-slate-900 dark:group-hover:text-slate-200'
-                  }`}>
-                  {category}
-                </span>
-              </label>
-            ))}
+                  <span className={`text-sm font-semibold transition-colors ${isSelected
+                    ? 'text-slate-900 dark:text-white font-bold'
+                    : 'text-slate-550 dark:text-slate-405 group-hover:text-slate-900 dark:group-hover:text-slate-200'
+                    }`}>
+                    {category}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </div>
 
@@ -140,6 +174,7 @@ export default function Catalog() {
               </svg>
             </span>
             <input
+              id="search-input"
               type="text"
               placeholder="Buscar trámite por nombre..."
               value={searchQuery}
@@ -185,9 +220,10 @@ export default function Catalog() {
             </div>
           ) : (
             <div className="flex flex-col space-y-4">
-              {filteredTramites.map((tramite) => (
+              {filteredTramites.map((tramite, index) => (
                 <TramiteCard
                   key={tramite.id}
+                  id={`tramite-card-${index}`}
                   tramite={tramite}
                   onClick={() => navigate(`/tramites/${tramite.id}`)}
                 />

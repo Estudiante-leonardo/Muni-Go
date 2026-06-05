@@ -27,13 +27,37 @@ export default function FaqModal({ isOpen, onClose }) {
   const [openIndex, setOpenIndex] = useState(null);
 
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape' && isOpen) {
+    const handleKeyDown = (e) => {
+      if (!isOpen) return;
+
+      if (e.key === 'Escape') {
         onClose();
+      } else if (e.key === 'Tab') {
+        const firstElement = document.getElementById('close-faq');
+        const lastElement = document.getElementById('last-faq-link');
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement?.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement?.focus();
+          }
+        }
       }
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener('keydown', handleKeyDown);
+
+    if (isOpen) {
+      setTimeout(() => {
+        document.getElementById('close-faq')?.focus();
+      }, 50);
+    }
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -47,17 +71,24 @@ export default function FaqModal({ isOpen, onClose }) {
       />
 
       {/* Modal Content */}
-      <div className="relative bg-white dark:bg-[#16171d] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col transform transition-all border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div 
+        role="dialog" 
+        aria-modal="true" 
+        aria-labelledby="faq-title"
+        className="relative bg-white dark:bg-[#16171d] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col transform transition-all border border-slate-200 dark:border-slate-700 overflow-hidden"
+      >
 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
           <div>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white">Preguntas Frecuentes</h2>
+            <h2 id="faq-title" className="text-xl font-bold text-slate-800 dark:text-white">Preguntas Frecuentes</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Encuentra respuestas rápidas a tus consultas comunes.</p>
           </div>
           <button
+            id="close-faq"
             onClick={onClose}
-            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Cerrar modal de preguntas frecuentes"
+            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -107,7 +138,7 @@ export default function FaqModal({ isOpen, onClose }) {
         {/* Footer */}
         <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            ¿No encontraste lo que buscabas? <br /> Usa nuestro <button onClick={onClose} className="text-blue-600 dark:text-blue-400 font-bold hover:underline">chatbot asistente</button> en la pantalla principal.
+            ¿No encontraste lo que buscabas? <br /> Usa nuestro <button id="last-faq-link" onClick={onClose} className="text-blue-600 dark:text-blue-400 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1">chatbot asistente</button> en la pantalla principal.
           </p>
         </div>
       </div>

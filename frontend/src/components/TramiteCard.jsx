@@ -8,13 +8,26 @@ const CATEGORY_COLORS = {
   'Impuestos': 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-900/50'
 };
 
-export default function TramiteCard({ tramite, onClick }) {
+export default function TramiteCard({ tramite, onClick, id }) {
   const badgeColor = CATEGORY_COLORS[tramite.categoria] || 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
 
   return (
     <div 
+      id={id}
       onClick={onClick}
-      className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md cursor-pointer transition-all duration-250 select-none group"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          onClick();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          const activeCategory = document.querySelector('label[role="radio"][aria-checked="true"]');
+          if (activeCategory) {
+            activeCategory.focus();
+          }
+        }
+      }}
+      tabIndex={0}
+      className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md cursor-pointer transition-all duration-250 select-none group focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       <div className="flex-grow pr-4">
         {/* Title */}

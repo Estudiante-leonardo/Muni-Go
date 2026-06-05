@@ -5,13 +5,41 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
   const location = useLocation();
 
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape' && isMenuOpen) {
+    const handleKeyDown = (e) => {
+      if (!isMenuOpen) return;
+      
+      if (e.key === 'Escape') {
         setIsMenuOpen(false);
+      } else if (e.key === 'Tab') {
+        const firstElement = document.getElementById('close-sidebar');
+        const lastElement = document.getElementById('last-sidebar-link');
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement?.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement?.focus();
+          }
+        }
       }
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener('keydown', handleKeyDown);
+
+    if (isMenuOpen) {
+      setTimeout(() => {
+        document.getElementById('close-sidebar')?.focus();
+      }, 50);
+    } else {
+      setTimeout(() => {
+        document.getElementById('hamburger-menu')?.focus();
+      }, 50);
+    }
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMenuOpen, setIsMenuOpen]);
 
   const isDashboard = location.pathname === '/';
@@ -25,7 +53,9 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
         onClick={() => setIsMenuOpen(false)}
       />
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-white dark:bg-[#16171d] border-r border-slate-200 dark:border-slate-800 shadow-xl p-6 transition-transform duration-300 ease-in-out transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        inert={!isMenuOpen ? true : undefined}
+        aria-hidden={!isMenuOpen}
+        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-white dark:bg-[#16171d] border-r border-slate-200 dark:border-slate-800 shadow-xl p-6 transition-all duration-300 ease-in-out transform ${isMenuOpen ? 'translate-x-0 visible' : '-translate-x-full invisible'
           }`}
       >
         <div className="flex items-center justify-between mb-8">
@@ -36,6 +66,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
             <span className="font-bold text-lg text-slate-850 dark:text-white">Muni<span className="text-blue-600">Go</span></span>
           </div>
           <button
+            id="close-sidebar"
             onClick={() => setIsMenuOpen(false)}
             aria-label="Cerrar menú lateral"
             className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-650 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -73,6 +104,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
             Preguntas Frecuentes
           </button>
           <a
+            id="last-sidebar-link"
             href="#"
             onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); }}
             className="block px-4 py-3 rounded-xl text-sm font-medium text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40 focus:outline-none focus:ring-2 focus:ring-blue-500"

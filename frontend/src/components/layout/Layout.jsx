@@ -17,6 +17,11 @@ export default function Layout() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Programmatically move focus to the hamburger menu to start the tab order from the top
+    const hamburger = document.getElementById('hamburger-menu');
+    if (hamburger) {
+      hamburger.focus({ preventScroll: true });
+    }
   }, [location.pathname]);
 
   return (
