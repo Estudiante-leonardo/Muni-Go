@@ -1,6 +1,7 @@
 package com.tramites.backend.infrastructure.adapters.out.db.jpa;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -29,13 +30,16 @@ public class TramiteJpaEntity {
     @Column(name = "municipalidad_id", nullable = false)
     private Long municipalidadId;
 
-    @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @BatchSize(size = 20)
     private List<RequisitoJpaEntity> requisitos;
 
     @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @BatchSize(size = 20)
     private List<FormatoJpaEntity> formatos;
 
     @OneToMany(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @BatchSize(size = 20)
     private List<PasoJpaEntity> pasos;
 
     @OneToOne(mappedBy = "tramite", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
