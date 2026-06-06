@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
@@ -9,6 +9,27 @@
 </head>
 
 <body>
+  <a href="#main-content"
+     class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4
+            focus:z-[200] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white
+            focus:rounded-lg focus:text-sm focus:font-bold">
+    Ir al contenido principal
+  </a>
+
+  <!-- SVG Filters for Colorblind Modes -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;">
+    <filter id="deuteranopia">
+      <feColorMatrix type="matrix" values="
+        0.367  0.861 -0.228  0  0
+        0.280  0.673 -0.043  0  0
+       -0.012  0.043  0.969  0  0
+        0      0      0      1  0" />
+    </filter>
+    <filter id="monochrome">
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+  </svg>
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
