@@ -70,22 +70,28 @@ Contiene toda la lógica del servidor y la API REST del proyecto, implementada b
 **Estructura Hexagonal:**
 ```
 backend/
-├── src/
+├── src/main/java/com/tramites/backend/
 │   ├── domain/                    
-│   │   ├── model/              
-│   │   ├── ports/          
+│   │   ├── model/                 # Entidades del negocio (Tramite, Municipalidad, Requisito, etc.)
+│   │   └── ports/                 # Interfaces de entrada/salida (in/out)
 │   │
 │   ├── application/               
+│   │   └── usecases/              # Casos de uso (GetTramitesUseCaseImpl, etc.)
 │   │
 │   ├── infrastructure/            
-│   │   ├── adapters/                
-│   │   ├── config/              
+│   │   ├── adapters/
+│   │   │   ├── in/web/            # REST controllers
+│   │   │   │   ├── dto/           # DTOs de entrada/salida
+│   │   │   │   ├── health/        # HealthController
+│   │   │   │   ├── TramiteController.java
+│   │   │   │   └── MunicipalidadController.java
+│   │   │   └── out/db/jpa/        # Adaptadores JPA (TramitePostgresAdapter, etc.)
+│   │   └── config/                # Configuraciones (WebConfig, BeanConfiguration, GlobalExceptionHandler)
 │   │
-│   └── main/
-│       └── Application.java       
+│   └── BackendApplication.java       
 │
 ├── pom.xml                        
-└── application.properties         
+└── src/main/resources/application.properties         
 ```
 
 **Principios Hexagonales:**
@@ -109,19 +115,21 @@ Interfaz de usuario que los usuarios interactúan directamente.
 - **Framework:** React.jsx
 - **Estilos:** Tailwind CSS v4
 
-**Estructura típica:**
+**Estructura del frontend:**
 ```
 frontend/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │   ├── layout/
-│   │   └── accessibility/      # Panel de accesibilidad
+│   │   ├── layout/               # Sidebar, Layout, Navbar
+│   │   └── accessibility/        # Panel de accesibilidad
 │   ├── context/
 │   │   ├── MunicipalidadContext.jsx
 │   │   └── AccesibilidadContext.jsx  # Estado de accesibilidad global
 │   ├── hooks/
-│   │   └── useTTS.js           # Text-to-Speech hook
+│   │   └── useTTS.js             # Text-to-Speech hook
+│   ├── lib/
+│   │   └── constants.js          # Constantes centralizadas (API_BASE_URL, endpoints)
 │   ├── pages/
 │   ├── routes/
 │   ├── utils/
@@ -149,8 +157,41 @@ Muni-Go incluye un **panel de accesibilidad global** (FAB en esquina inferior iz
 - Skip-to-content link al primer tab del teclado
 - Títulos de página dinámicos con `react-helmet-async`
 - Todos los botones de icono tienen `aria-label`
-- Navegación completa por teclado en menús desplegables, sidebar y modales
+- Navegación por teclado con Arrow keys en radiogroup de categorías (WAI-ARIA)
+- Atributos `aria-expanded` y `aria-controls` en acordeón de FAQ
+- `aria-atomic="true"` en contenedor de chat para lectores de pantalla
 - Focus trapping en sidebar y modal de FAQ
+
+---
+
+## 🚀 Mejoras de Rendimiento (Backend)
+
+Se implementaron las siguientes optimizaciones para reducir los tiempos de respuesta del backend:
+
+| Optimización | Descripción | Impacto |
+|---|---|---|
+| **@BatchSize en colecciones LAZY** | Reemplaza carga EAGER por LAZY con `@BatchSize(20)`. Las colecciones (requisitos, formatos, pasos) se cargan en lotes de 20 en vez de 1x1, eliminando el problema N+1. | Alto |
+| **@Cacheable en consultas frecuentes** | Las listas de trámites y municipalidades se cachean en memoria. Las respuestas repetidas no tocan la BD. | Medio |
+| **Cierre de View temprano** | `spring.jpa.open-in-view=false` evita que Hibernate haga lazy loading durante la serialización JSON. | Alto |
+| **Pool HikariCP optimizado** | Conexiones mínimas (2), máximas (10), timeout (5s) y max lifetime (60s) configurados. | Medio |
+| **show-sql deshabilitado** | Elimina overhead de logging de cada query en producción. | Bajo |
+| **BigDecimal para valores monetarios** | `costo` cambiado de `Double` a `BigDecimal` para evitar pérdida de precisión en operaciones financieras. | Medio |
+| **GlobalExceptionHandler** | Manejo centralizado de errores HTTP con mensajes descriptivos en español y logging estructurado. | Medio |
+| **Health endpoint liviano** | `GET /api/health` sin conexión a BD para monitoreo rápido del servicio. | Bajo |
+| **CORS configurable** | Orígenes permitidos externalizados a variable de entorno `CORS_ALLOWED_ORIGINS`. | Bajo |
+
+### Mantener el Backend Activo en Render (Plan Gratis)
+
+Render duerme el servicio tras 15 minutos sin actividad. Para mantenerlo activo:
+
+```bash
+# Usar UptimeRobot (gratis, 5 monitores)
+# Configurar un monitor HTTP a:
+#   https://tu-app.onrender.com/api/health
+#   Intervalo: cada 10 minutos
+```
+
+Alternativas gratuitas: [cron-job.org](https://cron-job.org) (sin límite de monitores), [UptimeRobot](https://uptimerobot.com) (hasta 5 monitores).
 
 ---
 
@@ -214,13 +255,14 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 ### Stack Completo:
 
 **Backend:**
-- Java 17
-- Spring Boot 3.x
+- Java 21
+- Spring Boot 4.0.6
 - Maven
 - PostgreSQL
 - REST API
-- JWT para autenticación
 - Arquitectura Hexagonal
+- Hibernate 7.2 + HikariCP (pool)
+- Spring Cache (SimpleCacheManager)
 
 **Frontend:**
 - React 19+
@@ -357,6 +399,18 @@ Con este comando tendrás ambos entornos corriendo al mismo tiempo en la misma t
 
 ## 💻 Uso
 
+### Variables de Entorno para Producción
+
+Al desplegar en Render, configurar las siguientes variables en el dashboard:
+
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `DB_URL` | URL de conexión PostgreSQL | `jdbc:postgresql://host:5432/muni_db` |
+| `DB_USERNAME` | Usuario de BD | `postgres` |
+| `DB_PASSWORD` | Contraseña de BD | *(sin default en producción)* |
+| `PORT` | Puerto del servidor | `8081` |
+| `CORS_ALLOWED_ORIGINS` | Orígenes CORS permitidos | `https://muni-go-frontend.onrender.com` |
+
 ### Acceso a la Aplicación
 
 1. Abrir navegador en `http://localhost:5173`
@@ -368,7 +422,9 @@ Con este comando tendrás ambos entornos corriendo al mismo tiempo en la misma t
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/api/tramites` | Obtener todas los tramites |
+| GET | `/api/tramites?municipalidadId={id}` | Obtener trámites por municipalidad |
+| GET | `/api/municipalidades` | Obtener todas las municipalidades |
+| GET | `/api/health` | Health check del servicio |
 
 ---
 
@@ -399,6 +455,6 @@ Este proyecto está disponible bajo licencia MIT.
 
 ---
 
-**Última actualización:** Mayo 2026  
-**Versión:** 1.0.0  
+**Última actualización:** Junio 2026  
+**Versión:** 1.1.0  
 **Estado:** En desarrollo
