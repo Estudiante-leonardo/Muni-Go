@@ -27,6 +27,7 @@ Sistema de gestión de trámites municipales multi-distrito. Un portal virtual p
 - 📑 **Catálogo Dinámico:** Categorías y trámites generados dinámicamente según la base de datos de cada distrito.
 - 🤖 **Asistente IA:** Resúmenes generados por inteligencia artificial para facilitar la comprensión de los requisitos.
 - 📱 **Interfaz Responsiva:** Diseño armónico e intuitivo adaptado a dispositivos móviles.
+- ♿ **Accesibilidad:** Panel de accesibilidad global con modo daltónico (deuteranopia y monocromático), control de tamaño de texto, alto contraste, modo oscuro manual y reducción de animaciones. Text-to-Speech integrado para lectura en voz alta de trámites.
 
 ---
 
@@ -106,6 +107,7 @@ Interfaz de usuario que los usuarios interactúan directamente.
 **Tecnologías:**
 - **Lenguajes:** JavaScript, HTML, CSS
 - **Framework:** React.jsx
+- **Estilos:** Tailwind CSS v4
 
 **Estructura típica:**
 ```
@@ -113,17 +115,42 @@ frontend/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │        └── layout/
-│   ├── contexts/
+│   │   ├── layout/
+│   │   └── accessibility/      # Panel de accesibilidad
+│   ├── context/
+│   │   ├── MunicipalidadContext.jsx
+│   │   └── AccesibilidadContext.jsx  # Estado de accesibilidad global
+│   ├── hooks/
+│   │   └── useTTS.js           # Text-to-Speech hook
 │   ├── pages/
 │   ├── routes/
-│   ├── services/
 │   ├── utils/
 │   └── App.jsx
 ├── public/
 ├── package.json
 ├── vite.config.js
 ```
+
+### Funcionalidades de Accesibilidad
+
+Muni-Go incluye un **panel de accesibilidad global** (FAB en esquina inferior izquierda) con las siguientes opciones:
+
+| Funcionalidad | Descripción |
+|---|---|
+| 🌈 **Modo daltónico** | Filtros CSS para Deuteranopia (verde) y Monocromático (escala de grises). Los badges de categorías incluyen iconos + color para no depender solo del color. |
+| 🔤 **Tamaño de texto** | 3 niveles: Normal (100%), Grande (120%), Extra Grande (140%) que escalan toda la interfaz. |
+| 🌗 **Modo oscuro** | Toggle manual con 3 estados: Sistema (sigue al SO), Claro y Oscuro. Accesible desde el navbar en desktop y el panel en todos los dispositivos. |
+| ♿ **Alto contraste** | Sobrescribe colores con máximo contraste (fondo negro/texto blanco o viceversa) eliminando sombras y decoraciones. |
+| 🌀 **Reducir animaciones** | Desactiva todas las transiciones, animaciones y movimientos de la interfaz. Compatible con `prefers-reduced-motion`. |
+| 📢 **Text-to-Speech** | Botón "Escuchar" en cada tarjeta de trámite y en la vista de detalle. Lee en voz alta (Web Speech API) el nombre, descripción, requisitos y pasos. |
+
+**Otras mejoras de accesibilidad:**
+- `lang="es"` en el HTML raíz
+- Skip-to-content link al primer tab del teclado
+- Títulos de página dinámicos con `react-helmet-async`
+- Todos los botones de icono tienen `aria-label`
+- Navegación completa por teclado en menús desplegables, sidebar y modales
+- Focus trapping en sidebar y modal de FAQ
 
 ---
 
@@ -179,7 +206,7 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 |-----------|-----------|
 | Frontend | JavaScript, React.jsx, Vite |
 | Backend | Java, Spring Boot |
-| Estilos | CSS, Tailwind CSS |
+| Estilos | CSS, Tailwind CSS v4 |
 | Estructura | HTML |
 | Base de Datos | PostgreSQL |
 | ORM | JPA / Hibernate |
@@ -196,13 +223,15 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 - Arquitectura Hexagonal
 
 **Frontend:**
-- React.js 18+
-- React Router Dom v6
+- React 19+
+- React Router Dom v7
 - Vite (bundler)
-- Axios/Fetch API
-- Leaflet o Google Maps
-- CSS/Tailwind CSS o Bootstrap
-- Node.js 16+ & npm 8+
+- Axios
+- Tailwind CSS v4
+- Lucide React (iconos)
+- react-helmet-async (títulos dinámicos)
+- Web Speech API (Text-to-Speech)
+- Node.js 18+ & npm 9+
 
 **Base de Datos:**
 - PostgreSQL (recomendado)
