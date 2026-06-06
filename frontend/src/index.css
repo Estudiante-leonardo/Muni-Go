@@ -3,6 +3,36 @@
 @variant dark (&:where(.dark, .dark *));
 @variant light (&:where(.light, .light *));
 
+@theme {
+  --color-slate-150: #e9eaec;
+  --color-slate-250: #d0d2d6;
+  --color-slate-405: #91959c;
+  --color-slate-550: #6b6f76;
+  --color-slate-650: #505359;
+  --color-slate-805: #2f3136;
+  --color-slate-850: #26282c;
+  --color-red-705: #b91c1c;
+  --color-slate-350: #b0b3b9;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-up {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@utility animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+@utility animate-scale-up {
+  animation: scale-up 0.2s ease-out;
+}
+
 :root,
 :root.light {
   --text: #6b6375;
