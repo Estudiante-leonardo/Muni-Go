@@ -4,32 +4,58 @@ import { Helmet } from 'react-helmet-async';
 import { HelpCircle } from 'lucide-react';
 import axios from 'axios';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
+import { API_ENDPOINTS } from '../lib/constants';
 import logoSvg from '../assets/Logo-MuniGo.svg';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-const API_URL = `${API_BASE_URL}/tramites`;
+const categoryCardStyles = {
+  blue: {
+    card: 'hover:border-blue-500 dark:hover:border-blue-400',
+    iconBg: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400',
+    text: 'group-hover:text-blue-600'
+  },
+  emerald: {
+    card: 'hover:border-emerald-500 dark:hover:border-emerald-400',
+    iconBg: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400',
+    text: 'group-hover:text-emerald-600'
+  },
+  purple: {
+    card: 'hover:border-purple-500 dark:hover:border-purple-400',
+    iconBg: 'bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400',
+    text: 'group-hover:text-purple-600'
+  },
+  amber: {
+    card: 'hover:border-amber-500 dark:hover:border-amber-400',
+    iconBg: 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400',
+    text: 'group-hover:text-amber-600'
+  }
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { selectedMunicipalidadId, municipalidades } = useContext(MunicipalidadContext);
+  const { selectedMunicipalidadId, municipalidades, loading: muniLoading } = useContext(MunicipalidadContext);
   
   const [tramitesCount, setTramitesCount] = useState(0);
   const [dynamicCategories, setDynamicCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { onOpenFaq } = useOutletContext();
   const currentMuni = municipalidades.find(m => m.id === selectedMunicipalidadId);
   const muniName = currentMuni ? currentMuni.nombre.replace('Municipalidad de ', '') : '...';
 
   useEffect(() => {
-    if (selectedMunicipalidadId) {
-      axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
-        .then(response => {
-          setTramitesCount(response.data.length);
-          const uniqueCats = Array.from(new Set(response.data.map(t => t.categoria)));
-          setDynamicCategories(uniqueCats.slice(0, 4)); // Show top 4 categories on dashboard
-        })
-        .catch(err => console.error(err));
-    }
+    if (!selectedMunicipalidadId) return;
+
+    setLoading(true);
+    axios.get(`${API_ENDPOINTS.TRAMITES}?municipalidadId=${selectedMunicipalidadId}`)
+      .then(response => {
+        setTramitesCount(response.data.length);
+        const uniqueCats = Array.from(new Set(response.data.map(t => t.categoria)));
+        setDynamicCategories(uniqueCats.slice(0, 4));
+      })
+      .catch(() => {})
+      .finally(() => {
+        setLoading(false);
+      });
   }, [selectedMunicipalidadId]);
 
   // --- Interfaz de Usuario ---
@@ -193,18 +219,19 @@ export default function Dashboard() {
           {dynamicCategories.map((cat, index) => {
             const colors = ['blue', 'emerald', 'purple', 'amber'];
             const color = colors[index % colors.length];
+            const styles = categoryCardStyles[color];
             return (
               <div
                 key={cat}
                 onClick={() => navigate(`/tramites?category=${cat}`)}
-                className={`p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-${color}-500 dark:hover:border-${color}-450 cursor-pointer transition-all text-left group`}
+                className={`p-6 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-sm hover:shadow-md ${styles.card} cursor-pointer transition-all text-left group`}
               >
-                <div className={`w-10 h-10 rounded-lg bg-${color}-50 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400 flex items-center justify-center mb-4 transition-colors`}>
+                <div className={`w-10 h-10 rounded-lg ${styles.iconBg} flex items-center justify-center mb-4 transition-colors`}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className={`font-bold text-slate-850 dark:text-white group-hover:text-${color}-600 transition-colors mb-1.5 text-base`}>
+                <h3 className={`font-bold text-slate-850 dark:text-white ${styles.text} transition-colors mb-1.5 text-base`}>
                   {cat}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
