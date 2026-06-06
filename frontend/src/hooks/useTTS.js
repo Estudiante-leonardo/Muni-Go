@@ -1,9 +1,8 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 
 export default function useTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const utteranceRef = useRef(null);
 
   const speak = useCallback((text, options = {}) => {
     if (!('speechSynthesis' in window)) return;
@@ -18,7 +17,6 @@ export default function useTTS() {
     utterance.onpause = () => setIsPaused(true);
     utterance.onresume = () => setIsPaused(false);
     utterance.onerror = () => { setIsSpeaking(false); setIsPaused(false); };
-    utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
   }, []);
 
