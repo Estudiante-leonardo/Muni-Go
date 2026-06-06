@@ -107,8 +107,11 @@ export default function FaqModal({ isOpen, onClose }) {
                   className={`border rounded-xl transition-all duration-300 ${isOpen ? 'border-blue-500 shadow-md bg-blue-50/30 dark:bg-blue-900/10 dark:border-blue-500/50' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
                 >
                   <button
-                    className="w-full text-left px-5 py-4 flex items-center justify-between focus:outline-none"
+                    id={`faq-trigger-${index}`}
+                    className="w-full text-left px-5 py-4 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl"
                     onClick={() => setOpenIndex(isOpen ? null : index)}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-panel-${index}`}
                   >
                     <span className={`font-semibold text-[15px] ${isOpen ? 'text-blue-700 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200'}`}>
                       {faq.question}
@@ -123,6 +126,9 @@ export default function FaqModal({ isOpen, onClose }) {
                     </svg>
                   </button>
                   <div
+                    id={`faq-panel-${index}`}
+                    role="region"
+                    aria-labelledby={`faq-trigger-${index}`}
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
                   >
                     <div className="px-5 pb-5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">

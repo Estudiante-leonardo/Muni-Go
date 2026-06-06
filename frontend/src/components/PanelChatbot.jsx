@@ -119,7 +119,7 @@ export default function PanelChatbot({ tramite, onClose }) {
       </div>
 
       {/* Messages List Area */}
-      <div ref={chatContainerRef} className="flex-grow bg-gray-50 overflow-y-auto p-4 flex flex-col space-y-3" aria-live="polite" aria-atomic="false">
+      <div ref={chatContainerRef} className="flex-grow bg-gray-50 overflow-y-auto p-4 flex flex-col space-y-3" aria-live="polite" aria-atomic="true">
         {messages.map((msg) => (
           <div
             key={msg.id}
