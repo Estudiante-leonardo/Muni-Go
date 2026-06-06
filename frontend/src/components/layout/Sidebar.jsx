@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import logoSvg from '../../assets/Logo-MuniGo.svg';
 
 export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
   const location = useLocation();
@@ -60,10 +61,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
       >
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold">
-              M
-            </div>
-            <span className="font-bold text-lg text-slate-850 dark:text-white">Muni<span className="text-blue-600">Go</span></span>
+            <img src={logoSvg} alt="Muni-Go" className="h-7 w-auto object-contain dark:brightness-0 dark:invert" />
           </div>
           <button
             id="close-sidebar"

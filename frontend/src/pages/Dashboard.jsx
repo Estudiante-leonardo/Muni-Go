@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { HelpCircle } from 'lucide-react';
 import axios from 'axios';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
@@ -14,6 +15,7 @@ export default function Dashboard() {
   const [tramitesCount, setTramitesCount] = useState(0);
   const [dynamicCategories, setDynamicCategories] = useState([]);
 
+  const { onOpenFaq } = useOutletContext();
   const currentMuni = municipalidades.find(m => m.id === selectedMunicipalidadId);
   const muniName = currentMuni ? currentMuni.nombre.replace('Municipalidad de ', '') : '...';
 
@@ -73,12 +75,13 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
-              <Link
-                to="/tramites"
+              <button
+                onClick={onOpenFaq}
                 className="inline-flex items-center px-5 py-3 bg-transparent text-white font-bold rounded-xl text-sm border-2 border-white/30 hover:border-white/50 motion-reduce:transition-none transition-all focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-700 cursor-pointer backdrop-blur-sm motion-reduce:backdrop-blur-none"
               >
-                Explorar Categorías
-              </Link>
+                <HelpCircle className="w-4 h-4 mr-2" aria-hidden="true" />
+                Preguntas Frecuentes
+              </button>
             </div>
           </div>
 

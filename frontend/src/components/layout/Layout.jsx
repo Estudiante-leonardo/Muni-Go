@@ -36,7 +36,7 @@ export default function Layout() {
       <Navbar setIsMenuOpen={setIsMenuOpen} />
 
       <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
-        <Outlet />
+        <Outlet context={{ onOpenFaq: () => setIsFaqOpen(true) }} />
       </main>
 
       <div className={`${isDetail ? 'lg:hidden' : ''}`}>
