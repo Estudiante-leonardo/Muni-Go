@@ -125,49 +125,49 @@ export default function Dashboard() {
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-3 sm:space-x-4 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <div>
-            <span className="text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1">{tramitesCount}</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Servicios Listos</span>
+          <div className="min-w-0">
+            <span className="text-xl sm:text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1 break-words">{tramitesCount}</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium break-words leading-tight">Servicios Listos</span>
           </div>
         </div>
-        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-3 sm:space-x-4 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <div>
-            <span className="text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1">~5 días</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Respuesta Promedio</span>
+          <div className="min-w-0">
+            <span className="text-xl sm:text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1 break-words">~5 días</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium break-words leading-tight">Respuesta Promedio</span>
           </div>
         </div>
-        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-3 sm:space-x-4 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          <div>
-            <span className="text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1">96.8%</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Casos Resueltos</span>
+          <div className="min-w-0">
+            <span className="text-xl sm:text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1 break-words">96.8%</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium break-words leading-tight">Casos Resueltos</span>
           </div>
         </div>
-        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div className="bg-white dark:bg-[#1a1b22] border border-slate-250/60 dark:border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center space-x-3 sm:space-x-4 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
           </div>
-          <div>
-            <span className="text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1">1.2K+</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ciudadanos/Mes</span>
+          <div className="min-w-0">
+            <span className="text-xl sm:text-2xl font-black text-slate-850 dark:text-white block leading-none mb-1 break-words">1.2K+</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium break-words leading-tight">Ciudadanos/Mes</span>
           </div>
         </div>
       </div>
