@@ -1,6 +1,8 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Sun, Moon, Monitor } from "lucide-react";
 import { MunicipalidadContext } from "../../context/MunicipalidadContext";
+import { AccesibilidadContext } from "../../context/AccesibilidadContext";
 import logo from "../../assets/Logo-MuniGo.svg";
 
 export default function Navbar({ setIsMenuOpen }) {
@@ -17,6 +19,8 @@ export default function Navbar({ setIsMenuOpen }) {
   const isDashboard = location.pathname === "/";
   const isCatalog = location.pathname === "/tramites";
   const isDetail = location.pathname.startsWith("/tramites/") && params.id;
+
+  const { settings, updateSetting } = useContext(AccesibilidadContext);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -162,7 +166,18 @@ export default function Navbar({ setIsMenuOpen }) {
           )}
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <button
+            onClick={() => {
+              const modes = ['system', 'light', 'dark'];
+              const next = modes[(modes.indexOf(settings.darkMode) + 1) % modes.length];
+              updateSetting('darkMode', next);
+            }}
+            aria-label={`Modo oscuro: ${settings.darkMode === 'dark' ? 'oscuro' : settings.darkMode === 'light' ? 'claro' : 'automático'}. Haga clic para cambiar.`}
+            className="hidden md:flex p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer"
+          >
+            {settings.darkMode === 'dark' ? <Moon size={16} /> : settings.darkMode === 'light' ? <Sun size={16} /> : <Monitor size={16} />}
+          </button>
           {!isDetail && (
             <nav
               className="hidden md:flex items-center space-x-1.5 mr-2"
