@@ -1,24 +1,30 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../lib/constants';
 
 export const MunicipalidadContext = createContext();
 
 export const MunicipalidadProvider = ({ children }) => {
     const [municipalidades, setMunicipalidades] = useState([]);
     const [selectedMunicipalidadId, setSelectedMunicipalidadId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-        axios.get(`${API_BASE_URL}/municipalidades`)
+        setLoading(true);
+        axios.get(API_ENDPOINTS.MUNICIPALIDADES)
             .then(response => {
                 setMunicipalidades(response.data);
                 if (response.data.length > 0) {
-                    // Set default to first municipality
                     setSelectedMunicipalidadId(response.data[0].id);
                 }
+                setError(null);
             })
             .catch(error => {
-                console.error("Error fetching municipalidades:", error);
+                setError("No se pudieron cargar las municipalidades.");
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -26,7 +32,9 @@ export const MunicipalidadProvider = ({ children }) => {
         <MunicipalidadContext.Provider value={{
             municipalidades,
             selectedMunicipalidadId,
-            setSelectedMunicipalidadId
+            setSelectedMunicipalidadId,
+            loading,
+            error
         }}>
             {children}
         </MunicipalidadContext.Provider>
