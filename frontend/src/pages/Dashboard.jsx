@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
@@ -30,7 +31,9 @@ export default function Dashboard() {
 
   // --- Interfaz de Usuario ---
   return (
-    <div className="space-y-12 animate-fade-in text-left">
+    <>
+      <Helmet><title>MuniGo - Inicio | {muniName}</title></Helmet>
+      <div className="space-y-12 animate-fade-in text-left">
       {/* Portada Principal */}
       <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-3xl p-8 sm:p-10 shadow-lg text-white">
         <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-xl pointer-events-none" />
@@ -179,5 +182,6 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+    </>
   );
 }

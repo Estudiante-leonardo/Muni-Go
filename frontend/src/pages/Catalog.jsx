@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TramiteCard from '../components/TramiteCard';
@@ -92,7 +93,9 @@ export default function Catalog() {
 
   // --- Interfaz de Usuario ---
   return (
-    <div className="animate-fade-in text-left">
+    <>
+      <Helmet><title>MuniGo - Catálogo de Trámites</title></Helmet>
+      <div className="animate-fade-in text-left">
       {/* Encabezado */}
       <div className="text-left mb-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0">
@@ -233,5 +236,6 @@ export default function Catalog() {
         </div>
       </div>
     </div>
+    </>
   );
 }

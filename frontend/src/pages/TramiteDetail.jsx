@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { Volume2, Pause, Play } from 'lucide-react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getResumenIA } from '../utils/helpers';
 import PanelChatbot from '../components/PanelChatbot';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
+import useTTS from '../hooks/useTTS';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
 const API_URL = `${API_BASE_URL}/tramites`;
@@ -18,6 +21,8 @@ export default function TramiteDetail() {
   const [checkedRequisitos, setCheckedRequisitos] = useState({});
 
   const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
+
+  const tts = useTTS();
 
   // --- Lógica y Estado ---
   useEffect(() => {
@@ -98,7 +103,9 @@ export default function TramiteDetail() {
 
   // --- Interfaz de Usuario ---
   return (
-    <div className="flex flex-col">
+    <>
+      <Helmet><title>MuniGo - {selectedTramite.nombre}</title></Helmet>
+      <div className="flex flex-col">
 
       {/* Contenido Principal del Detalle */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative">
@@ -106,9 +113,30 @@ export default function TramiteDetail() {
         {/* Columna de Información */}
         <div className="lg:col-span-2 w-full bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 p-5 sm:p-8 rounded-3xl shadow-sm transition-colors duration-300 relative z-10">
 
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight mb-4">
-            {selectedTramite.nombre}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
+              {selectedTramite.nombre}
+            </h2>
+            <button
+              onClick={() => {
+                if (tts.isSpeaking) {
+                  tts.stop();
+                } else {
+                  const textToRead = `${selectedTramite.nombre}. ${getResumenIA(selectedTramite)}. Requisitos: ${selectedTramite.requisitos?.map(r => r.descripcion).join('. ') || 'Ninguno'}. Pasos: ${selectedTramite.pasos?.sort((a, b) => a.numero - b.numero).map(p => `${p.titulo}: ${p.descripcion}`).join('. ') || 'No hay pasos detallados'}.`;
+                  tts.speak(textToRead);
+                }
+              }}
+              aria-label={tts.isSpeaking ? 'Detener lectura' : 'Escuchar información del trámite'}
+              className={`p-2.5 rounded-xl flex items-center gap-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer motion-reduce:transition-none transition-colors ${
+                tts.isSpeaking
+                  ? 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400'
+                  : 'bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:bg-slate-800/40 dark:text-slate-400 dark:hover:text-blue-400'
+              }`}
+            >
+              {tts.isSpeaking ? <Pause size={14} /> : <Volume2 size={14} />}
+              {tts.isSpeaking ? 'Detener' : 'Escuchar'}
+            </button>
+          </div>
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400 font-bold mb-6">
             <div>
@@ -258,5 +286,6 @@ export default function TramiteDetail() {
 
       </div>
     </div>
+    </>
   );
 }
