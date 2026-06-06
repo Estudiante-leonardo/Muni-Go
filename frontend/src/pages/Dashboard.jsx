@@ -62,7 +62,7 @@ export default function Dashboard() {
                 <img
                   src={logoSvg}
                   alt="Muni-Go"
-                  className="banner-logo h-7 sm:h-9 md:h-11 w-auto brightness-0 invert"
+                  className="banner-logo h-14 sm:h-14 md:h-16 w-auto brightness-0 invert"
                 />
               </span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-white to-indigo-200">Tu Municipalidad Virtual</span>
