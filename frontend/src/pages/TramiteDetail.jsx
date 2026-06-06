@@ -7,9 +7,7 @@ import { getResumenIA } from '../utils/helpers';
 import PanelChatbot from '../components/PanelChatbot';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 import useTTS from '../hooks/useTTS';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-const API_URL = `${API_BASE_URL}/tramites`;
+import { API_ENDPOINTS } from '../lib/constants';
 
 export default function TramiteDetail() {
   const { id } = useParams();
@@ -19,15 +17,15 @@ export default function TramiteDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [checkedRequisitos, setCheckedRequisitos] = useState({});
+  const [alertMessage, setAlertMessage] = useState(null);
 
   const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
 
   const tts = useTTS();
 
-  // --- Lógica y Estado ---
   useEffect(() => {
     setLoading(true);
-    axios.get(API_URL)
+    axios.get(API_ENDPOINTS.TRAMITES)
       .then(res => {
         const tramite = res.data.find(t => t.id === parseInt(id));
         if (tramite) {
@@ -48,18 +46,17 @@ export default function TramiteDetail() {
     if (!selectedTramite || !selectedMunicipalidadId) return;
 
     if (selectedTramite.municipalidadId && selectedTramite.municipalidadId !== selectedMunicipalidadId) {
-      axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
+      axios.get(`${API_ENDPOINTS.TRAMITES}?municipalidadId=${selectedMunicipalidadId}`)
         .then(res => {
           const matchingTramite = res.data.find(t => t.nombre === selectedTramite.nombre);
           if (matchingTramite) {
             navigate(`/tramites/${matchingTramite.id}`);
           } else {
-            alert('Esta municipalidad no cuenta con este trámite específico.');
+            setAlertMessage('Esta municipalidad no cuenta con este trámite específico.');
             setSelectedMunicipalidadId(selectedTramite.municipalidadId);
           }
         })
-        .catch(err => {
-          console.error('Error verificando trámite en otra municipalidad', err);
+        .catch(() => {
           setSelectedMunicipalidadId(selectedTramite.municipalidadId);
         });
     }
@@ -105,6 +102,14 @@ export default function TramiteDetail() {
   return (
     <>
       <Helmet><title>MuniGo - {selectedTramite.nombre}</title></Helmet>
+
+      {alertMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-800 dark:text-red-300 px-6 py-3 rounded-xl shadow-lg text-sm font-semibold max-w-md text-center">
+          {alertMessage}
+          <button onClick={() => setAlertMessage(null)} className="ml-3 text-red-500 hover:text-red-700 font-bold" aria-label="Cerrar notificación">×</button>
+        </div>
+      )}
+
       <div className="flex flex-col">
 
       {/* Contenido Principal del Detalle */}
