@@ -103,14 +103,13 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
           >
             Preguntas Frecuentes
           </button>
-          <a
+          <button
             id="last-sidebar-link"
-            href="#"
-            onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); }}
-            className="block px-4 py-3 rounded-xl text-sm font-medium text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setIsMenuOpen(false)}
+            className="w-full text-left block px-4 py-3 rounded-xl text-sm font-medium text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
           >
             Contacto
-          </a>
+          </button>
         </nav>
       </aside>
     </>
