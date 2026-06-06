@@ -84,6 +84,10 @@
   border-color: var(--border) !important;
 }
 
+:root.high-contrast .banner-logo {
+  filter: none !important;
+}
+
 /* Colorblind Modes */
 :root.colorblind-deuteranopia {
   filter: url(#deuteranopia);

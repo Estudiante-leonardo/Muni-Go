@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { HelpCircle } from 'lucide-react';
 import axios from 'axios';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
+import logoSvg from '../assets/Logo-MuniGo.svg';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
 const API_URL = `${API_BASE_URL}/tramites`;
@@ -57,7 +58,13 @@ export default function Dashboard() {
             </span>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-[1.1]">
-              <span className="block">Muni-Go:</span>
+              <span className="block mb-1 sm:mb-2">
+                <img
+                  src={logoSvg}
+                  alt="Muni-Go"
+                  className="banner-logo h-7 sm:h-9 md:h-11 w-auto brightness-0 invert"
+                />
+              </span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-white to-indigo-200">Tu Municipalidad Virtual</span>
             </h1>
 
