@@ -1,5 +1,6 @@
 import React from 'react';
 import { Clock, Coins, ChevronRight, FileText, Receipt, Heart, FolderOpen, Volume2 } from 'lucide-react';
+import useTTS from '../hooks/useTTS';
 
 const CATEGORY_CONFIG = {
   'Licencias': { icon: FileText, colors: 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50' },
@@ -12,17 +13,15 @@ export default function TramiteCard({ tramite, onClick, id }) {
   const config = CATEGORY_CONFIG[tramite.categoria];
   const CatIcon = config?.icon || FolderOpen;
   const badgeColor = config?.colors || 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
+  const tts = useTTS();
 
   const handleSpeak = (e) => {
     e.stopPropagation();
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(
-        `${tramite.nombre}. Categoría: ${tramite.categoria}. Tiempo estimado: ${tramite.tiempoEstimado}. Costo: ${tramite.costo === 0 ? 'Gratuito' : 'S/ ' + tramite.costo}`
-      );
-      utterance.lang = 'es-PE';
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
+    const text = `${tramite.nombre}. Categoría: ${tramite.categoria}. Tiempo estimado: ${tramite.tiempoEstimado}. Costo: ${tramite.costo === 0 ? 'Gratuito' : 'S/ ' + tramite.costo}`;
+    if (tts.isSpeaking) {
+      tts.stop();
+    } else {
+      tts.speak(text);
     }
   };
 
