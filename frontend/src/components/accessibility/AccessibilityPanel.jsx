@@ -71,7 +71,7 @@ function SelectRow({ label, icon: Icon, value, options, onChange }) {
 
 export default function AccessibilityPanel() {
   const { settings, updateSetting } = useContext(AccesibilidadContext);
-  const [isOpen, setIsOpen] = useState(false);
+      const [isOpen, setIsOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const panelRef = useRef(null);
 
@@ -81,7 +81,7 @@ export default function AccessibilityPanel() {
       setTimeout(() => {
         setIsOpen(false);
         setClosing(false);
-      }, 300);
+      }, 200);
     } else {
       setIsOpen(true);
     }
@@ -125,14 +125,17 @@ export default function AccessibilityPanel() {
             : 'bg-blue-600 text-white hover:bg-blue-700'
         }`}
       >
-        {isOpen ? <X size={20} /> : <Accessibility size={20} />}
+        <span className="relative w-5 h-5">
+          <X size={20} className={`absolute inset-0 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
+          <Accessibility size={20} className={`absolute inset-0 transition-opacity duration-200 ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
+        </span>
       </button>
 
       {(isOpen || closing) && (
         <div
           ref={panelRef}
-          className={`fixed bottom-20 left-6 w-72 bg-white dark:bg-[#16171d] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-40 overflow-hidden transition-all duration-300 ${
-            isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          className={`fixed bottom-20 left-6 w-72 bg-white dark:bg-[#16171d] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-40 overflow-hidden transition-all duration-200 ${
+            isOpen ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
           }`}
         >
           <div className="bg-blue-600 px-4 py-3">
