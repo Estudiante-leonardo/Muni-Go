@@ -121,19 +121,62 @@ frontend/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │   ├── layout/               # Sidebar, Layout, Navbar
-│   │   └── accessibility/        # Panel de accesibilidad
+│   │   ├── accessibility/        # Panel y subcomponentes de accesibilidad
+│   │   │   ├── AccessibilityPanel.jsx
+│   │   │   └── SelectRow.jsx
+│   │   ├── catalog/              # Componentes de catálogo de trámites
+│   │   │   ├── CatalogEmptyState.jsx
+│   │   │   ├── CatalogErrorState.jsx
+│   │   │   ├── CategorySidebar.jsx
+│   │   │   └── SearchBar.jsx
+│   │   ├── chat/                 # Componentes del chatbot
+│   │   │   ├── ChatMessage.jsx
+│   │   │   └── TypingIndicator.jsx
+│   │   ├── dashboard/            # Componentes del dashboard
+│   │   │   ├── CategoryCard.jsx
+│   │   │   ├── DashboardHero.jsx
+│   │   │   ├── NewsCard.jsx
+│   │   │   └── StatCard.jsx
+│   │   ├── layout/               # Estructura de la aplicación
+│   │   │   ├── Layout.jsx
+│   │   │   ├── MunicipalidadDropdown.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   └── Sidebar.jsx
+│   │   ├── tramite/              # Componentes de detalle de trámite
+│   │   │   ├── FormatosDescargables.jsx
+│   │   │   ├── PasosStepper.jsx
+│   │   │   ├── RequisitoList.jsx
+│   │   │   ├── ResumenIA.jsx
+│   │   │   ├── TramiteDetailError.jsx
+│   │   │   ├── TramiteDetailHeader.jsx
+│   │   │   └── UbicacionCard.jsx
+│   │   ├── FaqModal.jsx
+│   │   ├── LoadingSpinner.jsx
+│   │   ├── PanelChatbot.jsx
+│   │   ├── PdfPreviewModal.jsx
+│   │   ├── ToggleSwitch.jsx
+│   │   └── TramiteCard.jsx
 │   ├── context/
-│   │   ├── MunicipalidadContext.jsx
-│   │   └── AccesibilidadContext.jsx  # Estado de accesibilidad global
+│   │   ├── AccesibilidadContext.jsx
+│   │   └── MunicipalidadContext.jsx
 │   ├── hooks/
-│   │   └── useTTS.js             # Text-to-Speech hook
+│   │   ├── useClickOutside.js    # Clic fuera de elemento
+│   │   ├── useEscapeKey.js       # Tecla Escape
+│   │   └── useTTS.js             # Text-to-Speech
 │   ├── lib/
-│   │   └── constants.js          # Constantes centralizadas (API_BASE_URL, endpoints)
+│   │   └── constants.js          # Constantes centralizadas (API, endpoints, opciones)
 │   ├── pages/
+│   │   ├── Catalog.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── NotFound.jsx
+│   │   └── TramiteDetail.jsx
 │   ├── routes/
+│   │   └── AppRouter.jsx
 │   ├── utils/
-│   └── App.jsx
+│   │   ├── chatbotResponses.js   # Lógica de respuestas del chatbot
+│   │   └── helpers.js            # Funciones auxiliares (getResumenIA)
+│   ├── App.jsx
+│   └── main.jsx
 ├── public/
 ├── package.json
 ├── vite.config.js
