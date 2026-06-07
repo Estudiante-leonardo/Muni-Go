@@ -214,22 +214,38 @@ export default function TramiteDetail() {
               <>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 font-medium">Imprime y llena estos documentos desde casa para evitar colas o buscar copias el mismo día.</p>
                 <div className="space-y-3">
-                  {selectedTramite.formatos.map(formato => (
-                    <div key={formato.id} className="flex items-center justify-between bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl shadow-sm">
-                      <div>
-                        <p className="font-bold text-sm text-slate-800 dark:text-slate-200">{formato.nombre}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{formato.descripcion}</p>
+                  {selectedTramite.formatos.map(formato => {
+                    const pdfUrl = formato.urlDescarga ? '/formatos/placeholder.pdf' : null;
+                    return (
+                      <div key={formato.id} className="flex items-center justify-between bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl shadow-sm">
+                        <div>
+                          <p className="font-bold text-sm text-slate-800 dark:text-slate-200">{formato.nombre}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{formato.descripcion}</p>
+                        </div>
+                        {pdfUrl && (
+                          <div className="flex items-center space-x-3">
+                            <a
+                              href={pdfUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Ver ${formato.nombre}`}
+                              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            </a>
+                            <a
+                              href={pdfUrl}
+                              download
+                              aria-label={`Descargar ${formato.nombre}`}
+                              className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            </a>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        </button>
-                        <a href={formato.urlDescarga} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        </a>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
