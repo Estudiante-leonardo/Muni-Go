@@ -8,6 +8,7 @@ import PanelChatbot from '../components/PanelChatbot';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 import useTTS from '../hooks/useTTS';
 import { API_ENDPOINTS } from '../lib/constants';
+import PdfPreviewModal from '../components/PdfPreviewModal';
 
 export default function TramiteDetail() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function TramiteDetail() {
   const [error, setError] = useState(null);
   const [checkedRequisitos, setCheckedRequisitos] = useState({});
   const [alertMessage, setAlertMessage] = useState(null);
+  const [previewPdf, setPreviewPdf] = useState(null);
 
   const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
 
@@ -224,15 +226,13 @@ export default function TramiteDetail() {
                         </div>
                         {pdfUrl && (
                           <div className="flex items-center space-x-3">
-                            <a
-                              href={pdfUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              onClick={() => setPreviewPdf(formato)}
                               aria-label={`Ver ${formato.nombre}`}
-                              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
                             >
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                            </a>
+                            </button>
                             <a
                               href={pdfUrl}
                               download
@@ -306,7 +306,15 @@ export default function TramiteDetail() {
         </div>
 
       </div>
-    </div>
+      </div>
+
+      {previewPdf && (
+        <PdfPreviewModal
+          pdfUrl="/formatos/placeholder.pdf"
+          formatoNombre={previewPdf.nombre}
+          onClose={() => setPreviewPdf(null)}
+        />
+      )}
     </>
   );
 }
