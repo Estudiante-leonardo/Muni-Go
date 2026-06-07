@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, Mic } from 'lucide-react';
+import { Bot, Send, Mic, X } from 'lucide-react';
+import useEscapeKey from '../hooks/useEscapeKey';
+import { findReply } from '../utils/chatbotResponses';
+import ChatMessage from './chat/ChatMessage';
+import TypingIndicator from './chat/TypingIndicator';
 
 export default function PanelChatbot({ tramite, onClose }) {
   const [input, setInput] = useState('');
@@ -8,15 +12,7 @@ export default function PanelChatbot({ tramite, onClose }) {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape' && onClose) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [onClose]);
+  useEscapeKey(() => onClose?.(), !!onClose);
 
   // Initialize chat history whenever the selected procedure changes
   useEffect(() => {
@@ -64,30 +60,7 @@ export default function PanelChatbot({ tramite, onClose }) {
     setIsTyping(true);
 
     setTimeout(() => {
-      let replyText = '';
-      const normalizedQuery = userMessageText.toLowerCase();
-
-      if (normalizedQuery.includes('croquis') || normalizedQuery.includes('dibujo')) {
-        replyText = 'El croquis de distribución puede ser dibujado a mano alzada, no necesitas un arquitecto para locales pequeños. Solo marca calles principales e ingresos.';
-      } else if (normalizedQuery.includes('fut') || normalizedQuery.includes('formulario')) {
-        replyText = `El Formulario Único de Trámite (FUT) es totalmente gratuito y se pide en mesa de partes para iniciar la solicitud.`;
-      } else if (normalizedQuery.includes('tiempo')) {
-        replyText = tramite
-          ? `Este trámite (${tramite.nombre}) demora aproximadamente ${tramite.tiempoEstimado} una vez entregados todos los requisitos oficiales.`
-          : 'El tiempo de atención varía según el trámite. Por ejemplo, la Licencia de Funcionamiento toma de 15 a 20 días hábiles, los Certificados toman 3 días y las Declaratorias de Fábrica toman hasta 30 días.';
-      } else if (normalizedQuery.includes('costo') || normalizedQuery.includes('precio') || normalizedQuery.includes('pagar')) {
-        replyText = tramite
-          ? `El costo de este trámite (${tramite.nombre}) es de S/ ${tramite.costo === 0 ? 'Gratuito' : tramite.costo}.`
-          : 'Los costos oficiales varían: la Licencia de Funcionamiento cuesta S/ 120, el Certificado de Jurisdicción S/ 25, la Declaratoria de Fábrica S/ 350, y las Licencias de Edificación S/ 220. El trámite de Impuesto Predial es gratuito para su presentación.';
-      } else if (normalizedQuery.includes('licencia') && normalizedQuery.includes('conducir')) {
-        replyText = 'Para la Licencia de Conducir de Vehículos Menores (Mototaxis), necesitas: Copia DNI, examen médico psicosomático aprobado, examen de reglas de tránsito, dos fotos tamaño carné fondo blanco y el derecho de trámite de S/ 85.';
-      } else if (normalizedQuery.includes('impuesto') || normalizedQuery.includes('arbitrios') || normalizedQuery.includes('predial')) {
-        replyText = 'Para presentar tu Declaración Jurada de Impuesto Predial y Arbitrios, debes traer la copia del DNI del propietario, la copia del testimonio de propiedad o compraventa, y el formulario de autoavalúo (PU y HR) del año vigente.';
-      } else {
-        replyText = tramite
-          ? `Para resolver dudas adicionales sobre el trámite de "${tramite.nombre}", te invitamos a acercarte a la ventanilla de atención al ciudadano en el palacio municipal.`
-          : 'Puedo darte detalles sobre Licencias de Funcionamiento, de Edificación, Licencia de Conducir Mototaxis, Certificados de Domicilio, Declaratorias de Fábrica e Impuestos Municipales. ¿Sobre cuál deseas consultar?';
-      }
+      const replyText = findReply(userMessageText, tramite);
 
       const iaMessage = {
         id: Date.now() + 1,
@@ -113,7 +86,7 @@ export default function PanelChatbot({ tramite, onClose }) {
         </div>
         {onClose && (
           <button onClick={onClose} aria-label="Cerrar asistente de IA" className="p-1 hover:bg-blue-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+            <X className="w-5 h-5" />
           </button>
         )}
       </div>
@@ -121,34 +94,10 @@ export default function PanelChatbot({ tramite, onClose }) {
       {/* Messages List Area */}
       <div ref={chatContainerRef} className="flex-grow bg-gray-50 overflow-y-auto p-4 flex flex-col space-y-3" aria-live="polite" aria-atomic="true">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex flex-col space-y-1 ${
-              msg.sender === 'user' ? 'items-end' : 'items-start'
-            }`}
-          >
-            <div
-              className={`text-sm px-4 py-2.5 rounded-2xl shadow-sm leading-relaxed max-w-[85%] ${
-                msg.sender === 'user'
-                  ? 'bg-blue-600 text-white rounded-tr-none'
-                  : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'
-              }`}
-            >
-              {msg.text}
-            </div>
-          </div>
+          <ChatMessage key={msg.id} message={msg} />
         ))}
 
-        {/* Typing indicator */}
-        {isTyping && (
-          <div className="flex flex-col items-start space-y-1">
-            <div className="bg-white border border-slate-200 text-slate-400 text-xs px-4 py-2.5 rounded-2xl rounded-tl-none flex items-center space-x-1 shadow-sm">
-              <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-              <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-              <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-            </div>
-          </div>
-        )}
+        {isTyping && <TypingIndicator />}
 
         <div ref={messagesEndRef} />
       </div>
