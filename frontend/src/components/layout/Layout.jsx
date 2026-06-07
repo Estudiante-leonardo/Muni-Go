@@ -11,6 +11,7 @@ import { AccesibilidadProvider } from '../../context/AccesibilidadContext';
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatClosing, setChatClosing] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
   
   const params = useParams();
@@ -25,6 +26,14 @@ export default function Layout() {
       hamburger.focus({ preventScroll: true });
     }
   }, [location.pathname]);
+
+  const handleCloseChat = () => {
+    setChatClosing(true);
+    setTimeout(() => {
+      setIsChatOpen(false);
+      setChatClosing(false);
+    }, 300);
+  };
 
   return (
     <MunicipalidadProvider>
@@ -43,18 +52,17 @@ export default function Layout() {
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
           aria-label={isChatOpen ? "Cerrar asistente de IA" : "Abrir asistente de IA"}
-          className={`fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-750 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer z-50 focus:outline-none focus:ring-4 focus:ring-blue-300 ${isChatOpen ? 'hidden' : ''}`}
+          className={`fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-750 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer z-50 focus:outline-none focus:ring-4 focus:ring-blue-300 ${isChatOpen || chatClosing ? 'hidden' : ''}`}
         >
           <svg className="w-6 h-6 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L1 17l1.338-3.123C1.582 12.868 1 11.5 1 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
           </svg>
         </button>
 
-        <div className={`fixed z-[60] bg-white dark:bg-[#16171d] flex flex-col transition-all duration-300 overflow-hidden
-          ${isChatOpen ? 'inset-0 w-full h-full lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[380px] lg:h-[520px] lg:rounded-2xl lg:shadow-2xl lg:border' : 'translate-y-[120%] opacity-0 pointer-events-none lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[380px] lg:h-[520px]'} 
-          border-slate-200 dark:border-slate-800
+        <div className={`fixed z-[60] bg-white dark:bg-[#16171d] flex flex-col transition-all duration-300 overflow-hidden inset-0 w-full h-full lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[380px] lg:h-[520px] lg:rounded-2xl lg:shadow-2xl lg:border border-slate-200 dark:border-slate-800
+          ${isChatOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-[120%] opacity-0 pointer-events-none'}
         `}>
-          {isChatOpen && <PanelChatbot onClose={() => setIsChatOpen(false)} />}
+          {(isChatOpen || chatClosing) && <PanelChatbot onClose={handleCloseChat} />}
         </div>
       </div>
 
