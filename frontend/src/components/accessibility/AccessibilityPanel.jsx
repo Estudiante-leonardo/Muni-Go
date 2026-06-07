@@ -72,12 +72,25 @@ function SelectRow({ label, icon: Icon, value, options, onChange }) {
 export default function AccessibilityPanel() {
   const { settings, updateSetting } = useContext(AccesibilidadContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const panelRef = useRef(null);
+
+  const handleToggle = () => {
+    if (isOpen) {
+      setClosing(true);
+      setTimeout(() => {
+        setIsOpen(false);
+        setClosing(false);
+      }, 300);
+    } else {
+      setIsOpen(true);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e) => {
-      if (e.key === 'Escape') setIsOpen(false);
+      if (e.key === 'Escape') handleToggle();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -104,8 +117,8 @@ export default function AccessibilityPanel() {
   return (
     <>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? 'Cerrar panel de accesibilidad' : 'Abrir panel de accesibilidad'}
+        onClick={handleToggle}
+        aria-label={isOpen || closing ? 'Cerrar panel de accesibilidad' : 'Abrir panel de accesibilidad'}
         className={`fixed bottom-6 left-6 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all z-40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer ${
           isOpen
             ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800'
@@ -115,10 +128,12 @@ export default function AccessibilityPanel() {
         {isOpen ? <X size={20} /> : <Accessibility size={20} />}
       </button>
 
-      {isOpen && (
+      {(isOpen || closing) && (
         <div
           ref={panelRef}
-          className="fixed bottom-20 left-6 w-72 bg-white dark:bg-[#16171d] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-40 overflow-hidden"
+          className={`fixed bottom-20 left-6 w-72 bg-white dark:bg-[#16171d] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-40 overflow-hidden transition-all duration-300 ${
+            isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          }`}
         >
           <div className="bg-blue-600 px-4 py-3">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
