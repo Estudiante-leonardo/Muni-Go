@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { AccesibilidadContext } from '../../context/AccesibilidadContext';
 import {
   Accessibility,
@@ -10,8 +10,11 @@ import {
   Monitor,
   Sparkles,
   X,
-  ChevronDown,
 } from 'lucide-react';
+import ToggleSwitch from '../ToggleSwitch';
+import SelectRow from './SelectRow';
+import useEscapeKey from '../../hooks/useEscapeKey';
+import { colorblindOptions, fontSizeOptions, darkModeOptions } from '../../lib/constants';
 
 function ToggleRow({ label, icon: Icon, children }) {
   return (
@@ -25,50 +28,6 @@ function ToggleRow({ label, icon: Icon, children }) {
   );
 }
 
-function SelectRow({ label, icon: Icon, value, options, onChange }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div className="flex items-center justify-between py-2.5 px-1" ref={ref}>
-      <span className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-        {Icon && <Icon size={14} />}
-        {label}
-      </span>
-      <div className="relative">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        >
-          {options.find(o => o.value === value)?.label || value}
-          <ChevronDown size={12} />
-        </button>
-        {open && (
-          <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 py-1">
-            {options.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => { onChange(opt.value); setOpen(false); }}
-                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-none cursor-pointer ${value === opt.value ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-600 dark:text-slate-400'}`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function AccessibilityPanel() {
   const { settings, updateSetting } = useContext(AccesibilidadContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -78,32 +37,7 @@ export default function AccessibilityPanel() {
     setIsOpen(prev => !prev);
   };
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [isOpen]);
-
-  const colorblindOptions = [
-    { value: 'none', label: 'Desactivado' },
-    { value: 'deuteranopia', label: 'Deuteranopia (verde)' },
-    { value: 'monochrome', label: 'Monocromático' },
-  ];
-
-  const fontSizeOptions = [
-    { value: 'normal', label: 'Normal' },
-    { value: 'large', label: 'Grande' },
-    { value: 'extra', label: 'Extra grande' },
-  ];
-
-  const darkModeOptions = [
-    { value: 'system', label: 'Sistema' },
-    { value: 'light', label: 'Claro' },
-    { value: 'dark', label: 'Oscuro' },
-  ];
+  useEscapeKey(() => setIsOpen(false), isOpen);
 
   return (
     <>
@@ -161,37 +95,11 @@ export default function AccessibilityPanel() {
             />
 
             <ToggleRow label="Alto contraste" icon={Contrast}>
-              <button
-                role="switch"
-                aria-checked={settings.highContrast}
-                onClick={() => updateSetting('highContrast', !settings.highContrast)}
-                className={`relative w-10 h-5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${
-                  settings.highContrast ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                    settings.highContrast ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch checked={settings.highContrast} onChange={() => updateSetting('highContrast', !settings.highContrast)} label="Alto contraste" />
             </ToggleRow>
 
             <ToggleRow label="Reducir animaciones" icon={Sparkles}>
-              <button
-                role="switch"
-                aria-checked={settings.reducedMotion}
-                onClick={() => updateSetting('reducedMotion', !settings.reducedMotion)}
-                className={`relative w-10 h-5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${
-                  settings.reducedMotion ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                    settings.reducedMotion ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch checked={settings.reducedMotion} onChange={() => updateSetting('reducedMotion', !settings.reducedMotion)} label="Reducir animaciones" />
             </ToggleRow>
           </div>
         </div>
