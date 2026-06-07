@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { Frown } from 'lucide-react';
 
 export default function NotFound() {
   return (
@@ -8,9 +9,7 @@ export default function NotFound() {
       <Helmet><title>MuniGo - Página no encontrada</title></Helmet>
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-fade-in gap-3">
       <div className="w-24 h-24 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-        <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <Frown className="w-20 h-20" />
       </div>
       <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
         404

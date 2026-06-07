@@ -1,20 +1,15 @@
 import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
+import useEscapeKey from '../hooks/useEscapeKey';
 
 export default function PdfPreviewModal({ pdfUrl, formatoNombre, onClose }) {
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
+  useEscapeKey(onClose, true);
 
+  useEffect(() => {
     setTimeout(() => {
       document.getElementById('close-preview')?.focus();
     }, 50);
-
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -39,9 +34,7 @@ export default function PdfPreviewModal({ pdfUrl, formatoNombre, onClose }) {
             aria-label="Cerrar vista previa"
             className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-5 h-5" />
           </button>
         </div>
 

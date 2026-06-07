@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { X } from 'lucide-react';
 import logoSvg from '../../assets/Logo-MuniGo.svg';
 
 export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
@@ -69,9 +70,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, onOpenFaq }) {
             aria-label="Cerrar menú lateral"
             className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-650 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-5 h-5" />
           </button>
         </div>
         <nav className="space-y-2">
