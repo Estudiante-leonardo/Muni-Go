@@ -47,7 +47,6 @@ Muni-Go/
 ├── 📂 frontend/             # Interfaz de usuario
 ├── 📂 database/             # Esquemas y configuración de BD
 ├── 📂 docs/                 # Documentación del proyecto
-├── 📂 .vscode/              # Configuración del editor
 └── 📄 README.md             # Este archivo
 ```
 
@@ -208,7 +207,7 @@ Esquemas, scripts de inicialización y configuración de la base de datos.
 **Estructura típica:**
 ```
 database/
-├── cripts/
+├── scripts/
 │   ├── init.sql         
 ```
 
@@ -227,17 +226,6 @@ Documentación completa del proyecto.
 - Guías de instalación y configuración
 - Reportes y análisis
 - **Informe APF (Análisis de Procesos y Funcionalidades)**
-
----
-
-#### **⚙️ `/.vscode`**
-Configuración del entorno de desarrollo en Visual Studio Code.
-
-**Contenidos:**
-- Extensiones recomendadas
-- Configuración de debugging
-- Formato de código
-- Snippets personalizados
 
 ---
 
