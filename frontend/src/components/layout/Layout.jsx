@@ -4,7 +4,9 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import PanelChatbot from '../PanelChatbot';
 import FaqModal from '../FaqModal';
+import AccessibilityPanel from '../accessibility/AccessibilityPanel';
 import { MunicipalidadProvider } from '../../context/MunicipalidadContext';
+import { AccesibilidadProvider } from '../../context/AccesibilidadContext';
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,14 +28,15 @@ export default function Layout() {
 
   return (
     <MunicipalidadProvider>
-      <div className="min-h-screen bg-slate-50 dark:bg-[#131419] transition-colors duration-300 flex flex-col font-sans text-left relative">
+      <AccesibilidadProvider>
+      <div className="min-h-screen bg-slate-50 dark:bg-[#131419] motion-reduce:transition-none transition-colors duration-300 flex flex-col font-sans text-left relative">
       
       <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} onOpenFaq={() => setIsFaqOpen(true)} />
       
       <Navbar setIsMenuOpen={setIsMenuOpen} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
-        <Outlet />
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+        <Outlet context={{ onOpenFaq: () => setIsFaqOpen(true) }} />
       </main>
 
       <div className={`${isDetail ? 'lg:hidden' : ''}`}>
@@ -47,9 +50,8 @@ export default function Layout() {
           </svg>
         </button>
 
-        <div className={`fixed z-[60] bg-white dark:bg-[#16171d] flex flex-col transition-all duration-300 overflow-hidden
-          ${isChatOpen ? 'inset-0 w-full h-full lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[380px] lg:h-[520px] lg:rounded-2xl lg:shadow-2xl lg:border' : 'translate-y-[120%] opacity-0 pointer-events-none lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[380px] lg:h-[520px]'} 
-          border-slate-200 dark:border-slate-800
+        <div className={`fixed z-[60] bg-white dark:bg-[#16171d] flex flex-col transition-all duration-150 overflow-hidden inset-0 w-full h-full lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[380px] lg:h-[520px] lg:rounded-2xl lg:shadow-2xl lg:border border-slate-200 dark:border-slate-800
+          ${isChatOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-[120%] opacity-0 pointer-events-none'}
         `}>
           {isChatOpen && <PanelChatbot onClose={() => setIsChatOpen(false)} />}
         </div>
@@ -61,9 +63,9 @@ export default function Layout() {
             <button onClick={() => setIsFaqOpen(true)} className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1">
               Preguntas Frecuentes
             </button>
-            <a href="#" className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1">
+            <button onClick={() => setIsFaqOpen(false)} className="text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 cursor-pointer">
               Contacto
-            </a>
+            </button>
           </div>
           <p className="text-xs text-slate-405 dark:text-slate-500 font-bold">
             &copy; 2026 Municipalidad Virtual - Plataforma Muni-Go. Todos los derechos reservados.
@@ -71,8 +73,10 @@ export default function Layout() {
         </div>
       </footer>
       
+      <AccessibilityPanel />
       <FaqModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} />
     </div>
+      </AccesibilidadProvider>
     </MunicipalidadProvider>
   );
 }

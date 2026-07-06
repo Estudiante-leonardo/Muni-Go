@@ -6,13 +6,17 @@ import com.tramites.backend.domain.model.Formato;
 import com.tramites.backend.domain.model.Paso;
 import com.tramites.backend.domain.model.Lugar;
 import com.tramites.backend.domain.ports.out.TramiteRepositoryPort;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional(readOnly = true)
 public class TramitePostgresAdapter implements TramiteRepositoryPort {
     private final TramiteJpaRepository tramiteJpaRepository;
 
@@ -21,6 +25,7 @@ public class TramitePostgresAdapter implements TramiteRepositoryPort {
     }
 
     @Override
+    @Cacheable(value = "tramites", unless = "#result.isEmpty()")
     public List<Tramite> findAll() {
         return tramiteJpaRepository.findAll().stream()
                 .map(this::toDomain)
@@ -28,6 +33,7 @@ public class TramitePostgresAdapter implements TramiteRepositoryPort {
     }
 
     @Override
+    @Cacheable(value = "tramites", key = "#municipalidadId", unless = "#result.isEmpty()")
     public List<Tramite> findByMunicipalidadId(Long municipalidadId) {
         return tramiteJpaRepository.findByMunicipalidadId(municipalidadId).stream()
                 .map(this::toDomain)
@@ -69,7 +75,7 @@ public class TramitePostgresAdapter implements TramiteRepositoryPort {
                 entity.getId(),
                 entity.getNombre(),
                 entity.getDescripcion(),
-                entity.getCosto() != null ? entity.getCosto().doubleValue() : 0.0,
+                entity.getCosto() != null ? entity.getCosto() : BigDecimal.ZERO,
                 entity.getTiempoEstimado(),
                 entity.getCategoria(),
                 entity.getMunicipalidadId(),

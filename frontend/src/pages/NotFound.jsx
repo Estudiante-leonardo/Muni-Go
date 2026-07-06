@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function NotFound() {
   return (
+    <>
+      <Helmet><title>MuniGo - Página no encontrada</title></Helmet>
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-fade-in gap-3">
       <div className="w-24 h-24 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
         <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -25,5 +28,6 @@ export default function NotFound() {
         Volver al Inicio
       </Link>
     </div>
+    </>
   );
 }

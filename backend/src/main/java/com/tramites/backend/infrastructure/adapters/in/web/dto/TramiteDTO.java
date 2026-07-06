@@ -1,12 +1,13 @@
 package com.tramites.backend.infrastructure.adapters.in.web.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class TramiteDTO {
     private Long id;
     private String nombre;
     private String descripcion;
-    private Double costo;
+    private BigDecimal costo;
     private String tiempoEstimado;
     private String categoria;
     private Long municipalidadId;
@@ -18,7 +19,7 @@ public class TramiteDTO {
     public TramiteDTO() {
     }
 
-    public TramiteDTO(Long id, String nombre, String descripcion, Double costo, String tiempoEstimado, String categoria, Long municipalidadId, List<RequisitoDTO> requisitos, List<FormatoDTO> formatos, List<PasoDTO> pasos, LugarDTO lugar) {
+    public TramiteDTO(Long id, String nombre, String descripcion, BigDecimal costo, String tiempoEstimado, String categoria, Long municipalidadId, List<RequisitoDTO> requisitos, List<FormatoDTO> formatos, List<PasoDTO> pasos, LugarDTO lugar) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -56,11 +57,11 @@ public class TramiteDTO {
         this.descripcion = descripcion;
     }
 
-    public Double getCosto() {
+    public BigDecimal getCosto() {
         return costo;
     }
 
-    public void setCosto(Double costo) {
+    public void setCosto(BigDecimal costo) {
         this.costo = costo;
     }
 

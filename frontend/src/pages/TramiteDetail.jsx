@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { Volume2, Pause, Play } from 'lucide-react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getResumenIA } from '../utils/helpers';
 import PanelChatbot from '../components/PanelChatbot';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-const API_URL = `${API_BASE_URL}/tramites`;
+import useTTS from '../hooks/useTTS';
+import { API_ENDPOINTS } from '../lib/constants';
+import PdfPreviewModal from '../components/PdfPreviewModal';
 
 export default function TramiteDetail() {
   const { id } = useParams();
@@ -16,13 +18,16 @@ export default function TramiteDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [checkedRequisitos, setCheckedRequisitos] = useState({});
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [previewPdf, setPreviewPdf] = useState(null);
 
   const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
 
-  // --- Lógica y Estado ---
+  const tts = useTTS();
+
   useEffect(() => {
     setLoading(true);
-    axios.get(API_URL)
+    axios.get(API_ENDPOINTS.TRAMITES)
       .then(res => {
         const tramite = res.data.find(t => t.id === parseInt(id));
         if (tramite) {
@@ -43,18 +48,17 @@ export default function TramiteDetail() {
     if (!selectedTramite || !selectedMunicipalidadId) return;
 
     if (selectedTramite.municipalidadId && selectedTramite.municipalidadId !== selectedMunicipalidadId) {
-      axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
+      axios.get(`${API_ENDPOINTS.TRAMITES}?municipalidadId=${selectedMunicipalidadId}`)
         .then(res => {
           const matchingTramite = res.data.find(t => t.nombre === selectedTramite.nombre);
           if (matchingTramite) {
             navigate(`/tramites/${matchingTramite.id}`);
           } else {
-            alert('Esta municipalidad no cuenta con este trámite específico.');
+            setAlertMessage('Esta municipalidad no cuenta con este trámite específico.');
             setSelectedMunicipalidadId(selectedTramite.municipalidadId);
           }
         })
-        .catch(err => {
-          console.error('Error verificando trámite en otra municipalidad', err);
+        .catch(() => {
           setSelectedMunicipalidadId(selectedTramite.municipalidadId);
         });
     }
@@ -98,7 +102,17 @@ export default function TramiteDetail() {
 
   // --- Interfaz de Usuario ---
   return (
-    <div className="flex flex-col">
+    <>
+      <Helmet><title>MuniGo - {selectedTramite.nombre}</title></Helmet>
+
+      {alertMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-800 dark:text-red-300 px-6 py-3 rounded-xl shadow-lg text-sm font-semibold max-w-md text-center">
+          {alertMessage}
+          <button onClick={() => setAlertMessage(null)} className="ml-3 text-red-500 hover:text-red-700 font-bold" aria-label="Cerrar notificación">×</button>
+        </div>
+      )}
+
+      <div className="flex flex-col">
 
       {/* Contenido Principal del Detalle */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative">
@@ -106,9 +120,30 @@ export default function TramiteDetail() {
         {/* Columna de Información */}
         <div className="lg:col-span-2 w-full bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-800/80 p-5 sm:p-8 rounded-3xl shadow-sm transition-colors duration-300 relative z-10">
 
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight mb-4">
-            {selectedTramite.nombre}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
+              {selectedTramite.nombre}
+            </h2>
+            <button
+              onClick={() => {
+                if (tts.isSpeaking) {
+                  tts.stop();
+                } else {
+                  const textToRead = `${selectedTramite.nombre}. ${getResumenIA(selectedTramite)}. Requisitos: ${selectedTramite.requisitos?.map(r => r.descripcion).join('. ') || 'Ninguno'}. Pasos: ${selectedTramite.pasos?.sort((a, b) => a.numero - b.numero).map(p => `${p.titulo}: ${p.descripcion}`).join('. ') || 'No hay pasos detallados'}.`;
+                  tts.speak(textToRead);
+                }
+              }}
+              aria-label={tts.isSpeaking ? 'Detener lectura' : 'Escuchar información del trámite'}
+              className={`p-2.5 rounded-xl flex items-center gap-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer motion-reduce:transition-none transition-colors ${
+                tts.isSpeaking
+                  ? 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400'
+                  : 'bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:bg-slate-800/40 dark:text-slate-400 dark:hover:text-blue-400'
+              }`}
+            >
+              {tts.isSpeaking ? <Pause size={14} /> : <Volume2 size={14} />}
+              {tts.isSpeaking ? 'Detener' : 'Escuchar'}
+            </button>
+          </div>
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400 font-bold mb-6">
             <div>
@@ -181,22 +216,36 @@ export default function TramiteDetail() {
               <>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 font-medium">Imprime y llena estos documentos desde casa para evitar colas o buscar copias el mismo día.</p>
                 <div className="space-y-3">
-                  {selectedTramite.formatos.map(formato => (
-                    <div key={formato.id} className="flex items-center justify-between bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl shadow-sm">
-                      <div>
-                        <p className="font-bold text-sm text-slate-800 dark:text-slate-200">{formato.nombre}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{formato.descripcion}</p>
+                  {selectedTramite.formatos.map(formato => {
+                    const pdfUrl = formato.urlDescarga ? '/formatos/placeholder.pdf' : null;
+                    return (
+                      <div key={formato.id} className="flex items-center justify-between bg-white dark:bg-[#1a1b22] border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl shadow-sm">
+                        <div>
+                          <p className="font-bold text-sm text-slate-800 dark:text-slate-200">{formato.nombre}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{formato.descripcion}</p>
+                        </div>
+                        {pdfUrl && (
+                          <div className="flex items-center space-x-3">
+                            <button
+                              onClick={() => setPreviewPdf(formato)}
+                              aria-label={`Ver ${formato.nombre}`}
+                              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            </button>
+                            <a
+                              href={pdfUrl}
+                              download
+                              aria-label={`Descargar ${formato.nombre}`}
+                              className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            </a>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        </button>
-                        <a href={formato.urlDescarga} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        </a>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -257,6 +306,15 @@ export default function TramiteDetail() {
         </div>
 
       </div>
-    </div>
+      </div>
+
+      {previewPdf && (
+        <PdfPreviewModal
+          pdfUrl="/formatos/placeholder.pdf"
+          formatoNombre={previewPdf.nombre}
+          onClose={() => setPreviewPdf(null)}
+        />
+      )}
+    </>
   );
 }

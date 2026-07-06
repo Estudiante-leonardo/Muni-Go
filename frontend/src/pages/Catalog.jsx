@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TramiteCard from '../components/TramiteCard';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-const API_URL = `${API_BASE_URL}/tramites`;
+import { API_ENDPOINTS } from '../lib/constants';
 
 export default function Catalog() {
   const [tramites, setTramites] = useState([]);
-  const [filteredTramites, setFilteredTramites] = useState([]);
   const [categories, setCategories] = useState(['Todas']);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -23,29 +21,26 @@ export default function Catalog() {
   
   const currentMuni = municipalidades.find(m => m.id === selectedMunicipalidadId);
 
-  // --- Lógica y Estado ---
   useEffect(() => {
     if (!selectedMunicipalidadId) return;
 
     setLoading(true);
-    axios.get(`${API_URL}?municipalidadId=${selectedMunicipalidadId}`)
+    axios.get(`${API_ENDPOINTS.TRAMITES}?municipalidadId=${selectedMunicipalidadId}`)
       .then(response => {
         setTramites(response.data);
-        setFilteredTramites(response.data);
         const uniqueCats = Array.from(new Set(response.data.map(t => t.categoria)));
         setCategories(['Todas', ...uniqueCats]);
         setError(null);
       })
-      .catch(err => {
-        console.error('Error fetching procedures:', err);
-        setError(`No se pudo conectar con el servidor backend. Asegúrate de que la aplicación Spring Boot esté ejecutándose en ${API_URL}.`);
+      .catch(() => {
+        setError('No se pudo conectar con el servidor backend.');
       })
       .finally(() => {
         setLoading(false);
       });
   }, [selectedMunicipalidadId]);
 
-  useEffect(() => {
+  const filteredTramites = useMemo(() => {
     let result = tramites;
 
     if (selectedCategory !== 'Todas') {
@@ -60,7 +55,7 @@ export default function Catalog() {
       );
     }
 
-    setFilteredTramites(result);
+    return result;
   }, [selectedCategory, searchQuery, tramites]);
 
   const handleCategoryChange = (category) => {
@@ -72,15 +67,14 @@ export default function Catalog() {
   };
 
   const handleCategoryKeyDown = (e, index, category) => {
-    if (e.key === 'Tab') {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
       e.preventDefault();
-      if (e.shiftKey) {
-        const prev = index > 0 ? index - 1 : categories.length - 1;
-        document.getElementById(`category-${prev}`)?.focus();
-      } else {
-        const next = index < categories.length - 1 ? index + 1 : 0;
-        document.getElementById(`category-${next}`)?.focus();
-      }
+      const next = index < categories.length - 1 ? index + 1 : 0;
+      document.getElementById(`category-${next}`)?.focus();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const prev = index > 0 ? index - 1 : categories.length - 1;
+      document.getElementById(`category-${prev}`)?.focus();
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handleCategoryChange(category);
@@ -92,7 +86,9 @@ export default function Catalog() {
 
   // --- Interfaz de Usuario ---
   return (
-    <div className="animate-fade-in text-left">
+    <>
+      <Helmet><title>MuniGo - Catálogo de Trámites</title></Helmet>
+      <div className="animate-fade-in text-left">
       {/* Encabezado */}
       <div className="text-left mb-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-0">
@@ -233,5 +229,6 @@ export default function Catalog() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -27,6 +27,7 @@ Sistema de gestión de trámites municipales multi-distrito. Un portal virtual p
 - 📑 **Catálogo Dinámico:** Categorías y trámites generados dinámicamente según la base de datos de cada distrito.
 - 🤖 **Asistente IA:** Resúmenes generados por inteligencia artificial para facilitar la comprensión de los requisitos.
 - 📱 **Interfaz Responsiva:** Diseño armónico e intuitivo adaptado a dispositivos móviles.
+- ♿ **Accesibilidad:** Panel de accesibilidad global con modo daltónico (deuteranopia y monocromático), control de tamaño de texto, alto contraste, modo oscuro manual y reducción de animaciones. Text-to-Speech integrado para lectura en voz alta de trámites.
 
 ---
 
@@ -46,7 +47,6 @@ Muni-Go/
 ├── 📂 frontend/             # Interfaz de usuario
 ├── 📂 database/             # Esquemas y configuración de BD
 ├── 📂 docs/                 # Documentación del proyecto
-├── 📂 .vscode/              # Configuración del editor
 └── 📄 README.md             # Este archivo
 ```
 
@@ -69,22 +69,28 @@ Contiene toda la lógica del servidor y la API REST del proyecto, implementada b
 **Estructura Hexagonal:**
 ```
 backend/
-├── src/
+├── src/main/java/com/tramites/backend/
 │   ├── domain/                    
-│   │   ├── model/              
-│   │   ├── ports/          
+│   │   ├── model/                 # Entidades del negocio (Tramite, Municipalidad, Requisito, etc.)
+│   │   └── ports/                 # Interfaces de entrada/salida (in/out)
 │   │
 │   ├── application/               
+│   │   └── usecases/              # Casos de uso (GetTramitesUseCaseImpl, etc.)
 │   │
 │   ├── infrastructure/            
-│   │   ├── adapters/                
-│   │   ├── config/              
+│   │   ├── adapters/
+│   │   │   ├── in/web/            # REST controllers
+│   │   │   │   ├── dto/           # DTOs de entrada/salida
+│   │   │   │   ├── health/        # HealthController
+│   │   │   │   ├── TramiteController.java
+│   │   │   │   └── MunicipalidadController.java
+│   │   │   └── out/db/jpa/        # Adaptadores JPA (TramitePostgresAdapter, etc.)
+│   │   └── config/                # Configuraciones (WebConfig, BeanConfiguration, GlobalExceptionHandler)
 │   │
-│   └── main/
-│       └── Application.java       
+│   └── BackendApplication.java       
 │
 ├── pom.xml                        
-└── application.properties         
+└── src/main/resources/application.properties         
 ```
 
 **Principios Hexagonales:**
@@ -106,24 +112,85 @@ Interfaz de usuario que los usuarios interactúan directamente.
 **Tecnologías:**
 - **Lenguajes:** JavaScript, HTML, CSS
 - **Framework:** React.jsx
+- **Estilos:** Tailwind CSS v4
 
-**Estructura típica:**
+**Estructura del frontend:**
 ```
 frontend/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │        └── layout/
-│   ├── contexts/
+│   │   ├── layout/               # Sidebar, Layout, Navbar
+│   │   └── accessibility/        # Panel de accesibilidad
+│   ├── context/
+│   │   ├── MunicipalidadContext.jsx
+│   │   └── AccesibilidadContext.jsx  # Estado de accesibilidad global
+│   ├── hooks/
+│   │   └── useTTS.js             # Text-to-Speech hook
+│   ├── lib/
+│   │   └── constants.js          # Constantes centralizadas (API_BASE_URL, endpoints)
 │   ├── pages/
 │   ├── routes/
-│   ├── services/
 │   ├── utils/
 │   └── App.jsx
 ├── public/
 ├── package.json
 ├── vite.config.js
 ```
+
+### Funcionalidades de Accesibilidad
+
+Muni-Go incluye un **panel de accesibilidad global** (FAB en esquina inferior izquierda) con las siguientes opciones:
+
+| Funcionalidad | Descripción |
+|---|---|
+| 🌈 **Modo daltónico** | Filtros CSS para Deuteranopia (verde) y Monocromático (escala de grises). Los badges de categorías incluyen iconos + color para no depender solo del color. |
+| 🔤 **Tamaño de texto** | 3 niveles: Normal (100%), Grande (120%), Extra Grande (140%) que escalan toda la interfaz. |
+| 🌗 **Modo oscuro** | Toggle manual con 3 estados: Sistema (sigue al SO), Claro y Oscuro. Accesible desde el navbar en desktop y el panel en todos los dispositivos. |
+| ♿ **Alto contraste** | Sobrescribe colores con máximo contraste (fondo negro/texto blanco o viceversa) eliminando sombras y decoraciones. |
+| 🌀 **Reducir animaciones** | Desactiva todas las transiciones, animaciones y movimientos de la interfaz. Compatible con `prefers-reduced-motion`. |
+| 📢 **Text-to-Speech** | Botón "Escuchar" en cada tarjeta de trámite y en la vista de detalle. Lee en voz alta (Web Speech API) el nombre, descripción, requisitos y pasos. |
+
+**Otras mejoras de accesibilidad:**
+- `lang="es"` en el HTML raíz
+- Skip-to-content link al primer tab del teclado
+- Títulos de página dinámicos con `react-helmet-async`
+- Todos los botones de icono tienen `aria-label`
+- Navegación por teclado con Arrow keys en radiogroup de categorías (WAI-ARIA)
+- Atributos `aria-expanded` y `aria-controls` en acordeón de FAQ
+- `aria-atomic="true"` en contenedor de chat para lectores de pantalla
+- Focus trapping en sidebar y modal de FAQ
+
+---
+
+## 🚀 Mejoras de Rendimiento (Backend)
+
+Se implementaron las siguientes optimizaciones para reducir los tiempos de respuesta del backend:
+
+| Optimización | Descripción | Impacto |
+|---|---|---|
+| **@BatchSize en colecciones LAZY** | Reemplaza carga EAGER por LAZY con `@BatchSize(20)`. Las colecciones (requisitos, formatos, pasos) se cargan en lotes de 20 en vez de 1x1, eliminando el problema N+1. | Alto |
+| **@Cacheable en consultas frecuentes** | Las listas de trámites y municipalidades se cachean en memoria. Las respuestas repetidas no tocan la BD. | Medio |
+| **Cierre de View temprano** | `spring.jpa.open-in-view=false` evita que Hibernate haga lazy loading durante la serialización JSON. | Alto |
+| **Pool HikariCP optimizado** | Conexiones mínimas (2), máximas (10), timeout (5s) y max lifetime (60s) configurados. | Medio |
+| **show-sql deshabilitado** | Elimina overhead de logging de cada query en producción. | Bajo |
+| **BigDecimal para valores monetarios** | `costo` cambiado de `Double` a `BigDecimal` para evitar pérdida de precisión en operaciones financieras. | Medio |
+| **GlobalExceptionHandler** | Manejo centralizado de errores HTTP con mensajes descriptivos en español y logging estructurado. | Medio |
+| **Health endpoint liviano** | `GET /api/health` sin conexión a BD para monitoreo rápido del servicio. | Bajo |
+| **CORS configurable** | Orígenes permitidos externalizados a variable de entorno `CORS_ALLOWED_ORIGINS`. | Bajo |
+
+### Mantener el Backend Activo en Render (Plan Gratis)
+
+Render duerme el servicio tras 15 minutos sin actividad. Para mantenerlo activo:
+
+```bash
+# Usar UptimeRobot (gratis, 5 monitores)
+# Configurar un monitor HTTP a:
+#   https://tu-app.onrender.com/api/health
+#   Intervalo: cada 10 minutos
+```
+
+Alternativas gratuitas: [cron-job.org](https://cron-job.org) (sin límite de monitores), [UptimeRobot](https://uptimerobot.com) (hasta 5 monitores).
 
 ---
 
@@ -140,7 +207,7 @@ Esquemas, scripts de inicialización y configuración de la base de datos.
 **Estructura típica:**
 ```
 database/
-├── cripts/
+├── scripts/
 │   ├── init.sql         
 ```
 
@@ -162,24 +229,13 @@ Documentación completa del proyecto.
 
 ---
 
-#### **⚙️ `/.vscode`**
-Configuración del entorno de desarrollo en Visual Studio Code.
-
-**Contenidos:**
-- Extensiones recomendadas
-- Configuración de debugging
-- Formato de código
-- Snippets personalizados
-
----
-
 ## 🛠️ Tecnologías Utilizadas
 
 | Componente | Tecnología |
 |-----------|-----------|
 | Frontend | JavaScript, React.jsx, Vite |
 | Backend | Java, Spring Boot |
-| Estilos | CSS, Tailwind CSS |
+| Estilos | CSS, Tailwind CSS v4 |
 | Estructura | HTML |
 | Base de Datos | PostgreSQL |
 | ORM | JPA / Hibernate |
@@ -187,22 +243,25 @@ Configuración del entorno de desarrollo en Visual Studio Code.
 ### Stack Completo:
 
 **Backend:**
-- Java 17
-- Spring Boot 3.x
+- Java 21
+- Spring Boot 4.0.6
 - Maven
 - PostgreSQL
 - REST API
-- JWT para autenticación
 - Arquitectura Hexagonal
+- Hibernate 7.2 + HikariCP (pool)
+- Spring Cache (SimpleCacheManager)
 
 **Frontend:**
-- React.js 18+
-- React Router Dom v6
+- React 19+
+- React Router Dom v7
 - Vite (bundler)
-- Axios/Fetch API
-- Leaflet o Google Maps
-- CSS/Tailwind CSS o Bootstrap
-- Node.js 16+ & npm 8+
+- Axios
+- Tailwind CSS v4
+- Lucide React (iconos)
+- react-helmet-async (títulos dinámicos)
+- Web Speech API (Text-to-Speech)
+- Node.js 18+ & npm 9+
 
 **Base de Datos:**
 - PostgreSQL (recomendado)
@@ -328,6 +387,18 @@ Con este comando tendrás ambos entornos corriendo al mismo tiempo en la misma t
 
 ## 💻 Uso
 
+### Variables de Entorno para Producción
+
+Al desplegar en Render, configurar las siguientes variables en el dashboard:
+
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `DB_URL` | URL de conexión PostgreSQL | `jdbc:postgresql://host:5432/muni_db` |
+| `DB_USERNAME` | Usuario de BD | `postgres` |
+| `DB_PASSWORD` | Contraseña de BD | *(sin default en producción)* |
+| `PORT` | Puerto del servidor | `8081` |
+| `CORS_ALLOWED_ORIGINS` | Orígenes CORS permitidos | `https://muni-go-frontend.onrender.com` |
+
 ### Acceso a la Aplicación
 
 1. Abrir navegador en `http://localhost:5173`
@@ -339,7 +410,9 @@ Con este comando tendrás ambos entornos corriendo al mismo tiempo en la misma t
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/api/tramites` | Obtener todas los tramites |
+| GET | `/api/tramites?municipalidadId={id}` | Obtener trámites por municipalidad |
+| GET | `/api/municipalidades` | Obtener todas las municipalidades |
+| GET | `/api/health` | Health check del servicio |
 
 ---
 
@@ -370,6 +443,6 @@ Este proyecto está disponible bajo licencia MIT.
 
 ---
 
-**Última actualización:** Mayo 2026  
-**Versión:** 1.0.0  
+**Última actualización:** Junio 2026  
+**Versión:** 1.1.0  
 **Estado:** En desarrollo
