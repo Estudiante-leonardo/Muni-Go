@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Simulado - Muni-Go</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8 text-gray-800">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-extrabold text-indigo-900 mb-2 text-center tracking-tight">Dashboard Analítico: Muni-Go</h1>
+        <p class="text-center text-gray-500 mb-10">Prototipo de visualización de datos (No implementado en React aún)</p>
+        
+        <h2 class="text-2xl font-bold text-gray-700 mb-6 border-b-2 border-indigo-100 pb-2">A. Análisis Descriptivo (Julio - Septiembre)</h2>
+        
+        <!-- Contenedor de Gráficos (Al lado del otro) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            
+            <!-- Gráfico 1: Barras -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <h3 class="text-lg font-semibold text-gray-800 text-center mb-4">Consultas: IA vs Tradicional</h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico 2: Líneas -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <h3 class="text-lg font-semibold text-gray-800 text-center mb-4">Crecimiento de Usuarios Activos</h3>
+                <div class="relative w-full flex flex-col lg:flex-row items-center">
+                    <div class="w-full lg:w-3/4 h-64">
+                        <canvas id="stepChart"></canvas>
+                    </div>
+                    <div class="w-full lg:w-1/4 mt-4 lg:mt-0 lg:pl-2 flex flex-col justify-center items-center lg:items-start">
+                        <h4 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Variables</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li class="flex items-center"><span class="w-3 h-3 bg-emerald-500 rounded-full mr-2"></span>Jul: 850</li>
+                            <li class="flex items-center"><span class="w-3 h-3 bg-emerald-500 rounded-full mr-2"></span>Ago: 1420</li>
+                            <li class="flex items-center"><span class="w-3 h-3 bg-emerald-500 rounded-full mr-2"></span>Sep: 2100</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico 3: Pastel (Variables al lado) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <h3 class="text-lg font-semibold text-gray-800 text-center mb-4">Uso de Accesibilidad (%)</h3>
+                <div class="relative h-64 w-full flex justify-center">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-700 mb-6 border-b-2 border-indigo-100 pb-2">B. Análisis Predictivo y Casos de Uso (Octubre - Diciembre)</h2>
+        
+        <!-- Contenedor de Predicciones (Al lado del otro, debajo de los gráficos correspondientes) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Caso de Uso 1 (Corresponde a Barras) -->
+            <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                <h4 class="font-bold text-blue-900 text-xl mb-3 flex items-center">
+                    <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex justify-center items-center mr-2 text-sm">1</span>
+                    Escalabilidad de la IA
+                </h4>
+                <p class="text-sm text-gray-600 mb-2"><strong>Tendencia (Jul-Sep):</strong> Las consultas informativas delegadas a la IA crecieron un 240%.</p>
+                <p class="text-sm text-gray-600 mb-2"><strong>Predicción (Oct-Dic):</strong> Se espera que en diciembre (mes de trámites fiscales de fin de año) la IA procese el 85% de las consultas totales.</p>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-blue-100 text-sm">
+                    <strong class="text-blue-800 block mb-1">💡 Caso de Uso Recomendado:</strong>
+                    Implementar un sistema de <em>auto-escalado</em> en los servidores del chatbot y añadir caché a las preguntas más frecuentes para reducir costos de API en diciembre.
+                </div>
+            </div>
+
+            <!-- Caso de Uso 2 (Corresponde a Escalera) -->
+            <div class="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                <h4 class="font-bold text-emerald-900 text-xl mb-3 flex items-center">
+                    <span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex justify-center items-center mr-2 text-sm">2</span>
+                    Retención de Usuarios
+                </h4>
+                <p class="text-sm text-gray-600 mb-2"><strong>Tendencia (Jul-Sep):</strong> El gráfico escalonado muestra saltos bruscos a fin de mes, impulsados por vencimientos de pagos.</p>
+                <p class="text-sm text-gray-600 mb-2"><strong>Predicción (Oct-Dic):</strong> El pico de usuarios activos se dará en noviembre por campañas de amnistía municipal.</p>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-emerald-100 text-sm">
+                    <strong class="text-emerald-800 block mb-1">💡 Caso de Uso Recomendado:</strong>
+                    Lanzar notificaciones Push/Email automatizadas a mitad de mes recordando los vencimientos, para distribuir la carga de usuarios y evitar que todos entren el último día.
+                </div>
+            </div>
+
+            <!-- Caso de Uso 3 (Corresponde a Pastel) -->
+            <div class="bg-purple-50/50 p-6 rounded-2xl border border-purple-100 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                <h4 class="font-bold text-purple-900 text-xl mb-3 flex items-center">
+                    <span class="bg-purple-100 text-purple-800 w-8 h-8 rounded-full flex justify-center items-center mr-2 text-sm">3</span>
+                    Mejora en Inclusión
+                </h4>
+                <p class="text-sm text-gray-600 mb-2"><strong>Tendencia (Jul-Sep):</strong> El 60% de los usuarios que habilitan la accesibilidad eligen el "Lector de Voz".</p>
+                <p class="text-sm text-gray-600 mb-2"><strong>Predicción (Oct-Dic):</strong> Con la llegada del invierno/verano (según hemisferio) y campañas para adultos mayores, el uso de voz se duplicará.</p>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-purple-100 text-sm">
+                    <strong class="text-purple-800 block mb-1">💡 Caso de Uso Recomendado:</strong>
+                    Mejorar el motor de <em>Text-to-Speech</em> (TTS) para soportar dialectos locales o lenguas indígenas, asegurando que los adultos mayores entiendan los trámites sin problemas.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Registrar plugin de etiquetas y desactivar en todos los gráficos por defecto
+        Chart.register(ChartDataLabels);
+        Chart.defaults.plugins.datalabels.display = false;
+
+        const meses = ['Julio', 'Agosto', 'Septiembre'];
+
+        // 1. Gráfico de Barras
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [
+                    { 
+                        label: 'Consultas resueltas por IA', 
+                        data: [1200, 2500, 4100], 
+                        backgroundColor: '#3b82f6', // Azul
+                        borderRadius: 4
+                    },
+                    { 
+                        label: 'Consultas tradicionales', 
+                        data: [3000, 2800, 2600], 
+                        backgroundColor: '#94a3b8', // Gris
+                        borderRadius: 4
+                    }
+                ]
+            },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { 
+                        x: { title: { display: true, text: 'x=Meses', font: { weight: 'bold' }, color: '#4b5563' } },
+                        y: { beginAtZero: true, title: { display: true, text: 'y=Consultas', font: { weight: 'bold' }, color: '#4b5563' } } 
+                    }
+                }
+        });
+
+        // 2. Gráfico de Líneas
+        new Chart(document.getElementById('stepChart'), {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Usuarios Activos Diarios (Promedio)',
+                    data: [850, 1420, 2100],
+                    borderColor: '#10b981', // Esmeralda
+                    backgroundColor: '#10b981',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0, // Línea recta entre puntos
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+                scales: { 
+                    x: { title: { display: true, text: 'x=Meses', font: { weight: 'bold' }, color: '#4b5563' } },
+                    y: { beginAtZero: true, title: { display: true, text: 'y=Usuarios', font: { weight: 'bold' }, color: '#4b5563' } } 
+                }
+            }
+        });
+
+        // 3. Gráfico de Pastel (Variables al lado)
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Lector de Voz', 'Alto Contraste', 'Texto Grande', 'Otros'],
+                datasets: [{
+                    data: [60, 20, 15, 5],
+                    backgroundColor: ['#8b5cf6', '#f59e0b', '#ef4444', '#cbd5e1'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { 
+                    datalabels: {
+                        display: true,
+                        color: '#fff',
+                        font: { weight: 'bold', size: 14 },
+                        formatter: function(value) {
+                            return value + '%';
+                        }
+                    },
+                    title: { display: true, text: 'x=Categorías, y=%', position: 'bottom', color: '#4b5563' },
+                    legend: { 
+                        position: 'right', // Esto coloca las variables AL LADO del gráfico
+                        labels: { boxWidth: 15 }
+                    } 
+                } 
+            }
+        });
+    </script>
+</body>
+</html>
