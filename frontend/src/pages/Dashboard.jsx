@@ -6,6 +6,7 @@ import axios from 'axios';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 import { API_ENDPOINTS } from '../lib/constants';
 import logoSvg from '../assets/Logo-MuniGo.svg';
+import DashboardAnalytics from '../components/DashboardAnalytics';
 
 const categoryCardStyles = {
   blue: {
@@ -269,6 +270,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Dashboard Analítico */}
+      <DashboardAnalytics />
     </div>
     </>
   );

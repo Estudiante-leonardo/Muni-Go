@@ -6,6 +6,9 @@ import com.tramites.backend.domain.ports.out.TramiteRepositoryPort;
 import com.tramites.backend.application.usecases.GetMunicipalidadesUseCaseImpl;
 import com.tramites.backend.domain.ports.in.GetMunicipalidadesUseCase;
 import com.tramites.backend.domain.ports.out.MunicipalidadRepositoryPort;
+import com.tramites.backend.application.usecases.GetEstadisticasUseCaseImpl;
+import com.tramites.backend.domain.ports.in.GetEstadisticasUseCase;
+import com.tramites.backend.domain.ports.out.EstadisticaRepositoryPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,5 +23,10 @@ public class BeanConfiguration {
     @Bean
     public GetMunicipalidadesUseCase getMunicipalidadesUseCase(MunicipalidadRepositoryPort municipalidadRepositoryPort) {
         return new GetMunicipalidadesUseCaseImpl(municipalidadRepositoryPort);
+    }
+
+    @Bean
+    public GetEstadisticasUseCase getEstadisticasUseCase(EstadisticaRepositoryPort estadisticaRepositoryPort) {
+        return new GetEstadisticasUseCaseImpl(estadisticaRepositoryPort);
     }
 }

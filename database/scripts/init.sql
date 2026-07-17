@@ -327,3 +327,67 @@ INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (48, 'Gerencia de Administración Tributaria Miraflores', 'Av. Larco 400', 'L-V de 8:00 AM a 5:00 PM'),
 (49, 'Subgerencia de Movilidad Urbana y Seguridad Vial', 'Jr. Diez Canseco 215', 'L-V de 8:00 AM a 4:00 PM'),
 (50, 'Oficina de Control de Estacionamiento Residencial', 'Jr. Diez Canseco 215', 'L-V de 8:00 AM a 4:30 PM');
+
+-- =========================================================================
+-- TABLAS DE ESTADÍSTICAS (Dashboard Analítico)
+-- =========================================================================
+DROP TABLE IF EXISTS estadisticas_consultas CASCADE;
+DROP TABLE IF EXISTS estadisticas_usuarios CASCADE;
+DROP TABLE IF EXISTS estadisticas_accesibilidad CASCADE;
+
+-- Tabla: Consultas IA vs Tradicionales por mes
+CREATE TABLE estadisticas_consultas (
+    id BIGSERIAL PRIMARY KEY,
+    municipalidad_id BIGINT NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+    anio INT NOT NULL,
+    tipo VARCHAR(20) NOT NULL, -- 'IA' o 'TRADICIONAL'
+    cantidad INT NOT NULL,
+    CONSTRAINT fk_estadistica_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
+);
+
+-- Tabla: Usuarios activos promedio por mes
+CREATE TABLE estadisticas_usuarios (
+    id BIGSERIAL PRIMARY KEY,
+    municipalidad_id BIGINT NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+    anio INT NOT NULL,
+    usuarios_activos_promedio INT NOT NULL,
+    CONSTRAINT fk_usuarios_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
+);
+
+-- Tabla: Uso de herramientas de accesibilidad (porcentaje)
+CREATE TABLE estadisticas_accesibilidad (
+    id BIGSERIAL PRIMARY KEY,
+    municipalidad_id BIGINT NOT NULL,
+    herramienta VARCHAR(50) NOT NULL,
+    porcentaje DECIMAL(5, 2) NOT NULL,
+    CONSTRAINT fk_accesibilidad_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
+);
+
+-- =========================================================================
+-- DATOS SEED: Estadísticas simuladas (Julio - Septiembre 2026)
+-- Municipalidad de Carabayllo (id=1)
+-- =========================================================================
+
+-- Consultas IA vs Tradicionales
+INSERT INTO estadisticas_consultas (municipalidad_id, mes, anio, tipo, cantidad) VALUES
+(1, 'Julio', 2026, 'IA', 340),
+(1, 'Julio', 2026, 'TRADICIONAL', 890),
+(1, 'Agosto', 2026, 'IA', 780),
+(1, 'Agosto', 2026, 'TRADICIONAL', 720),
+(1, 'Septiembre', 2026, 'IA', 1250),
+(1, 'Septiembre', 2026, 'TRADICIONAL', 580);
+
+-- Usuarios activos promedio
+INSERT INTO estadisticas_usuarios (municipalidad_id, mes, anio, usuarios_activos_promedio) VALUES
+(1, 'Julio', 2026, 850),
+(1, 'Agosto', 2026, 1420),
+(1, 'Septiembre', 2026, 2100);
+
+-- Uso de accesibilidad (porcentajes)
+INSERT INTO estadisticas_accesibilidad (municipalidad_id, herramienta, porcentaje) VALUES
+(1, 'Lector de Voz', 60.00),
+(1, 'Alto Contraste', 20.00),
+(1, 'Texto Grande', 15.00),
+(1, 'Otros', 5.00);
