@@ -8,4 +8,6 @@ public interface TramiteRepositoryPort {
     List<Tramite> findAll();
     List<Tramite> findByMunicipalidadId(Long municipalidadId);
     Optional<Tramite> findById(Long id);
+    Tramite save(Tramite tramite);
+    void deleteById(Long id);
 }

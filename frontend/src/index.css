@@ -33,6 +33,75 @@
   animation: scale-up 0.2s ease-out;
 }
 
+/* Admin panel animations */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-15px, 15px) scale(0.97); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-25px, 20px) scale(1.03); }
+}
+
+@keyframes float-fast {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(15px, -10px) scale(1.02); }
+  75% { transform: translate(-10px, 15px) scale(0.98); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@utility animate-float-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+@utility animate-float-medium {
+  animation: float-medium 15s ease-in-out infinite;
+}
+
+@utility animate-float-fast {
+  animation: float-fast 12s ease-in-out infinite;
+}
+
+@utility animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+@utility animate-slide-in-left {
+  animation: slide-in-left 0.3s ease-out;
+}
+
+/* Admin login animated background */
+.admin-login-bg {
+  background: linear-gradient(135deg,
+    rgba(59, 130, 246, 0.06) 0%,
+    rgba(99, 102, 241, 0.04) 25%,
+    rgba(139, 92, 246, 0.03) 50%,
+    rgba(59, 130, 246, 0.05) 75%,
+    rgba(99, 102, 241, 0.04) 100%
+  );
+}
+
+:root.dark .admin-login-bg {
+  background: linear-gradient(135deg,
+    rgba(59, 130, 246, 0.08) 0%,
+    rgba(99, 102, 241, 0.06) 25%,
+    rgba(139, 92, 246, 0.04) 50%,
+    rgba(59, 130, 246, 0.07) 75%,
+    rgba(99, 102, 241, 0.05) 100%
+  );
+}
+
 :root,
 :root.light {
   --text: #6b6375;
@@ -151,6 +220,13 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+}
+
+/* Override root constraints for admin pages */
+#root:has(.admin-login-bg),
+#root:has(aside) {
+  width: 100%;
+  border-inline: none;
 }
 
 h1,
