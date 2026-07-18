@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
   ESTADISTICAS_CONSULTAS: `${API_BASE_URL}/estadisticas/consultas`,
   ESTADISTICAS_USUARIOS: `${API_BASE_URL}/estadisticas/usuarios`,
   ESTADISTICAS_ACCESIBILIDAD: `${API_BASE_URL}/estadisticas/accesibilidad`,
+  CHAT: `${API_BASE_URL}/chat`,
 };

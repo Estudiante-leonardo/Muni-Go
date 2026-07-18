@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,6 +39,11 @@ public class TramitePostgresAdapter implements TramiteRepositoryPort {
         return tramiteJpaRepository.findByMunicipalidadId(municipalidadId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Tramite> findById(Long id) {
+        return tramiteJpaRepository.findById(id).map(this::toDomain);
     }
 
     private Tramite toDomain(TramiteJpaEntity entity) {

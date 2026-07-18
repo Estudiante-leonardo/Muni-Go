@@ -1,4 +1,3 @@
-CREATE DATABASE muni_db;
 -- Eliminar tablas si existen para reiniciar el estado
 DROP TABLE IF EXISTS requisitos CASCADE;
 DROP TABLE IF EXISTS formatos CASCADE;

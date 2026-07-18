@@ -9,6 +9,9 @@ import com.tramites.backend.domain.ports.out.MunicipalidadRepositoryPort;
 import com.tramites.backend.application.usecases.GetEstadisticasUseCaseImpl;
 import com.tramites.backend.domain.ports.in.GetEstadisticasUseCase;
 import com.tramites.backend.domain.ports.out.EstadisticaRepositoryPort;
+import com.tramites.backend.application.usecases.ChatWithAiUseCaseImpl;
+import com.tramites.backend.domain.ports.in.ChatWithAiUseCase;
+import com.tramites.backend.domain.ports.out.AiChatPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,5 +31,10 @@ public class BeanConfiguration {
     @Bean
     public GetEstadisticasUseCase getEstadisticasUseCase(EstadisticaRepositoryPort estadisticaRepositoryPort) {
         return new GetEstadisticasUseCaseImpl(estadisticaRepositoryPort);
+    }
+
+    @Bean
+    public ChatWithAiUseCase chatWithAiUseCase(AiChatPort aiChatPort, TramiteRepositoryPort tramiteRepositoryPort) {
+        return new ChatWithAiUseCaseImpl(aiChatPort, tramiteRepositoryPort);
     }
 }
