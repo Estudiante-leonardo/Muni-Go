@@ -49,7 +49,8 @@ public class GeminiAiAdapter implements AiChatPort {
         );
 
         try {
-            Map response = restClient.post()
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = restClient.post()
                     .uri(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(requestBody)
@@ -58,12 +59,17 @@ public class GeminiAiAdapter implements AiChatPort {
 
             // Extraer el texto de la respuesta de Gemini
             if (response != null && response.containsKey("candidates")) {
+                @SuppressWarnings("unchecked")
                 List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
-                if (!candidates.isEmpty()) {
+                if (candidates != null && !candidates.isEmpty()) {
+                    @SuppressWarnings("unchecked")
                     Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-                    List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-                    if (!parts.isEmpty()) {
-                        return (String) parts.get(0).get("text");
+                    if (content != null && content.containsKey("parts")) {
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+                        if (parts != null && !parts.isEmpty()) {
+                            return (String) parts.get(0).get("text");
+                        }
                     }
                 }
             }
