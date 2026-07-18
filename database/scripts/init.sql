@@ -1,4 +1,5 @@
 -- Eliminar tablas si existen para reiniciar el estado
+DROP TABLE IF EXISTS admin_users CASCADE;
 DROP TABLE IF EXISTS requisitos CASCADE;
 DROP TABLE IF EXISTS formatos CASCADE;
 DROP TABLE IF EXISTS pasos CASCADE;
@@ -390,3 +391,23 @@ INSERT INTO estadisticas_accesibilidad (municipalidad_id, herramienta, porcentaj
 (1, 'Alto Contraste', 20.00),
 (1, 'Texto Grande', 15.00),
 (1, 'Otros', 5.00);
+
+-- =========================================================================
+-- TABLA DE ADMINISTRADORES (Roles y Accesos)
+-- =========================================================================
+
+CREATE TABLE admin_users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    nombre_completo VARCHAR(255) NOT NULL,
+    rol VARCHAR(20) NOT NULL,
+    municipalidad_id BIGINT,
+    activo BOOLEAN DEFAULT TRUE,
+    CONSTRAINT fk_admin_muni FOREIGN KEY (municipalidad_id)
+        REFERENCES municipalidades(id) ON DELETE SET NULL
+);
+
+-- Los usuarios admin se crean automáticamente al iniciar la app (DataInitializer.java)
+-- superAdmin / password  → SUPER_ADMIN
+-- admin / password        → ADMIN_MUNICIPAL (Carabayllo, id=1)

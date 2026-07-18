@@ -234,7 +234,7 @@ export default function DashboardAnalytics() {
             <strong>Predicción (Oct-Dic):</strong> Se espera que en diciembre la IA procese el 85% de las consultas totales.
           </p>
           <div className="mt-3 p-2.5 bg-white dark:bg-slate-800 rounded-lg border border-blue-100 dark:border-blue-900/30 text-xs">
-            <strong className="text-blue-800 dark:text-blue-400 block mb-1">💡 Caso de Uso:</strong>
+            <strong className="text-blue-800 dark:text-blue-400 block mb-1">Caso de Uso:</strong>
             <span className="text-slate-600 dark:text-slate-400">Implementar auto-escalado en servidores del chatbot y caché a las preguntas frecuentes para reducir costos de API.</span>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function DashboardAnalytics() {
             <strong>Predicción (Oct-Dic):</strong> El pico se dará en noviembre por campañas de amnistía municipal.
           </p>
           <div className="mt-3 p-2.5 bg-white dark:bg-slate-800 rounded-lg border border-emerald-100 dark:border-emerald-900/30 text-xs">
-            <strong className="text-emerald-800 dark:text-emerald-400 block mb-1">💡 Caso de Uso:</strong>
+            <strong className="text-emerald-800 dark:text-emerald-400 block mb-1">Caso de Uso:</strong>
             <span className="text-slate-600 dark:text-slate-400">Lanzar notificaciones automatizadas a mitad de mes recordando vencimientos para distribuir la carga de usuarios.</span>
           </div>
         </div>
@@ -272,7 +272,7 @@ export default function DashboardAnalytics() {
             <strong>Predicción (Oct-Dic):</strong> Con campañas para adultos mayores, el uso de voz se duplicará.
           </p>
           <div className="mt-3 p-2.5 bg-white dark:bg-slate-800 rounded-lg border border-purple-100 dark:border-purple-900/30 text-xs">
-            <strong className="text-purple-800 dark:text-purple-400 block mb-1">💡 Caso de Uso:</strong>
+            <strong className="text-purple-800 dark:text-purple-400 block mb-1">Caso de Uso:</strong>
             <span className="text-slate-600 dark:text-slate-400">Mejorar el motor de Text-to-Speech para soportar dialectos locales, asegurando que adultos mayores entiendan los trámites.</span>
           </div>
         </div>
