@@ -25,4 +25,36 @@ public class MunicipalidadPostgresAdapter implements MunicipalidadRepositoryPort
                 .map(MunicipalidadJpaEntity::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "municipalidades", allEntries = true)
+    public Municipalidad save(Municipalidad municipalidad) {
+        MunicipalidadJpaEntity entity = new MunicipalidadJpaEntity();
+        entity.setNombre(municipalidad.getNombre());
+        MunicipalidadJpaEntity saved = municipalidadJpaRepository.save(entity);
+        return saved.toDomain();
+    }
+
+    @Override
+    @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "municipalidades", allEntries = true)
+    public Municipalidad update(Long id, Municipalidad municipalidad) {
+        MunicipalidadJpaEntity entity = municipalidadJpaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Municipalidad no encontrada"));
+        entity.setNombre(municipalidad.getNombre());
+        MunicipalidadJpaEntity updated = municipalidadJpaRepository.save(entity);
+        return updated.toDomain();
+    }
+
+    @Override
+    @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "municipalidades", allEntries = true)
+    public void delete(Long id) {
+        try {
+            municipalidadJpaRepository.deleteById(id);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("No se puede eliminar la municipalidad porque tiene trámites asignados.");
+        }
+    }
 }

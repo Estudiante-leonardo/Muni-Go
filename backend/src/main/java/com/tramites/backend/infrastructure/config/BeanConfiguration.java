@@ -44,4 +44,19 @@ public class BeanConfiguration {
     public RagChatUseCase ragChatUseCase(ChatModel chatModel, VectorStore vectorStore, TramiteRepositoryPort tramiteRepositoryPort, ChatMemory chatMemory) {
         return new RagChatUseCaseImpl(chatModel, vectorStore, tramiteRepositoryPort, chatMemory);
     }
+
+    @Bean
+    public com.tramites.backend.domain.ports.in.CreateMunicipalidadUseCase createMunicipalidadUseCase(MunicipalidadRepositoryPort municipalidadRepositoryPort) {
+        return new com.tramites.backend.application.usecases.CreateMunicipalidadUseCaseImpl(municipalidadRepositoryPort);
+    }
+
+    @Bean
+    public com.tramites.backend.domain.ports.in.UpdateMunicipalidadUseCase updateMunicipalidadUseCase(MunicipalidadRepositoryPort municipalidadRepositoryPort) {
+        return new com.tramites.backend.application.usecases.UpdateMunicipalidadUseCaseImpl(municipalidadRepositoryPort);
+    }
+
+    @Bean
+    public com.tramites.backend.domain.ports.in.DeleteMunicipalidadUseCase deleteMunicipalidadUseCase(MunicipalidadRepositoryPort municipalidadRepositoryPort) {
+        return new com.tramites.backend.application.usecases.DeleteMunicipalidadUseCaseImpl(municipalidadRepositoryPort);
+    }
 }

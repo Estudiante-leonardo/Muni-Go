@@ -112,7 +112,7 @@ export default function AdminUsers() {
     resetForm();
   };
 
-  const inputClass = "w-full px-4 py-3 bg-slate-50/80 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.08] rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400/50 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400/50 transition-all font-medium";
+  const inputClass = "w-full px-4 py-3 bg-slate-50/80 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.08] rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400/50 transition-all font-medium";
   const selectClass = `${inputClass} cursor-pointer appearance-none`;
 
   const isEditing = editingId !== null;
@@ -120,7 +120,7 @@ export default function AdminUsers() {
   return (
     <div className="space-y-5 sm:space-y-6 animate-fade-in">
       {/* Header Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-800 dark:via-blue-900 dark:to-indigo-950 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 dark:from-emerald-800 dark:via-emerald-900 dark:to-teal-950 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} aria-hidden="true" />
         <div className="absolute -top-16 -right-16 w-48 h-48 sm:w-64 sm:h-64 bg-white/[0.05] rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
@@ -132,7 +132,7 @@ export default function AdminUsers() {
             <h1 className="text-xl sm:text-2xl md:text-3xl font-black !text-white leading-tight">
               Administradores
             </h1>
-            <p className="text-sm text-blue-100/70 mt-1 font-medium">
+            <p className="text-sm text-emerald-100/70 mt-1 font-medium">
               Crea y gestiona las cuentas de administradores del sistema.
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function AdminUsers() {
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl text-sm shadow-lg shadow-black/10 transition-all cursor-pointer self-start sm:self-center"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white text-emerald-700 hover:bg-emerald-50 font-bold rounded-xl text-sm shadow-lg shadow-black/10 transition-all cursor-pointer self-start sm:self-center"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
               Nuevo Admin
@@ -161,7 +161,7 @@ export default function AdminUsers() {
       {showForm && (
         <div className="relative z-20 bg-white/70 dark:bg-white/[0.04] backdrop-blur-sm border border-slate-200/60 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm animate-fade-in">
           <div className="flex items-center gap-3 mb-5">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isEditing ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isEditing ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
               {isEditing ? (
                 <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -282,13 +282,25 @@ export default function AdminUsers() {
               </div>
             )}
 
-            <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 justify-end pt-3 border-t border-slate-200/50 dark:border-white/[0.04] mt-1">
-              <button type="button" onClick={handleCancel}
-                className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.04] rounded-xl transition-colors cursor-pointer order-2 sm:order-1">
+            {form.rol === 'SUPER_ADMIN' && (
+              <div className="sm:col-span-2 p-3.5 bg-emerald-50/50 dark:bg-emerald-500/5 rounded-xl border border-emerald-100 dark:border-emerald-500/10 flex items-center gap-3">
+                <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="text-[11px] sm:text-xs text-emerald-800 dark:text-emerald-300 font-medium">Los Super Admins tienen acceso total a todos los módulos y municipalidades.</p>
+              </div>
+            )}
+            
+            <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-200/60 dark:border-white/[0.06] mt-2">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.04] rounded-xl transition-all cursor-pointer"
+              >
                 Cancelar
               </button>
-              <button type="submit"
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer order-1 sm:order-2">
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              >
                 {isEditing ? 'Guardar Cambios' : 'Crear Administrador'}
               </button>
             </div>
@@ -312,7 +324,7 @@ export default function AdminUsers() {
         {loading ? (
           <div className="p-10 sm:p-16 text-center">
             <div className="inline-flex flex-col items-center gap-3">
-              <div className="w-10 h-10 border-[3px] border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin" />
+              <div className="w-10 h-10 border-[3px] border-emerald-200 dark:border-emerald-800 border-t-emerald-600 dark:border-t-emerald-400 rounded-full animate-spin" />
               <p className="text-sm text-slate-400 dark:text-slate-500 font-medium">Cargando administradores...</p>
             </div>
           </div>
@@ -336,7 +348,7 @@ export default function AdminUsers() {
                     <tr key={a.id} className={`hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors group ${a.activo === false ? 'opacity-60' : ''}`}>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-gradient-to-br from-purple-500 to-purple-600' : 'bg-gradient-to-br from-blue-500 to-indigo-600'} flex items-center justify-center text-white text-xs font-bold shadow-sm`}>
+                          <div className={`w-8 h-8 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-gradient-to-br from-purple-500 to-purple-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'} flex items-center justify-center text-white text-xs font-bold shadow-sm`}>
                             {a.nombreCompleto?.charAt(0) || a.username?.charAt(0) || '?'}
                           </div>
                           <span className="text-sm font-semibold text-slate-800 dark:text-white">{a.username}</span>
@@ -347,9 +359,9 @@ export default function AdminUsers() {
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg ${
                           a.rol === 'SUPER_ADMIN'
                             ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300'
-                            : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300'
+                            : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
                         }`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-purple-500' : 'bg-blue-500'}`} />
+                          <div className={`w-1.5 h-1.5 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-purple-500' : 'bg-emerald-500'}`} />
                           {a.rol === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin Municipal'}
                         </span>
                       </td>
@@ -372,7 +384,7 @@ export default function AdminUsers() {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => handleEdit(a)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-all cursor-pointer opacity-60 group-hover:opacity-100"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all cursor-pointer opacity-60 group-hover:opacity-100"
                             title="Editar administrador"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -399,7 +411,7 @@ export default function AdminUsers() {
               {admins.map(a => (
                 <div key={a.id} className={`p-4 hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors ${a.activo === false ? 'opacity-60' : ''}`}>
                   <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-gradient-to-br from-purple-500 to-purple-600' : 'bg-gradient-to-br from-blue-500 to-indigo-600'} flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0`}>
+                    <div className={`w-10 h-10 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-gradient-to-br from-purple-500 to-purple-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'} flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0`}>
                       {a.nombreCompleto?.charAt(0) || a.username?.charAt(0) || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -411,7 +423,7 @@ export default function AdminUsers() {
                         <div className="flex gap-1.5 flex-shrink-0">
                           <button
                             onClick={() => handleEdit(a)}
-                            className="p-1.5 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
                             title="Editar"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -429,9 +441,9 @@ export default function AdminUsers() {
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md ${
                           a.rol === 'SUPER_ADMIN'
                             ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300'
-                            : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300'
+                            : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
                         }`}>
-                          <div className={`w-1 h-1 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-purple-500' : 'bg-blue-500'}`} />
+                          <div className={`w-1 h-1 rounded-full ${a.rol === 'SUPER_ADMIN' ? 'bg-purple-500' : 'bg-emerald-500'}`} />
                           {a.rol === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin'}
                         </span>
                         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">

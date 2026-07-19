@@ -8,9 +8,11 @@ import NotFound from '../pages/NotFound';
 // Admin imports
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { AccesibilidadProvider } from '../context/AccesibilidadContext';
+import { MunicipalidadProvider } from '../context/MunicipalidadContext';
 import AdminLayout from '../components/admin/AdminLayout';
 import AdminLogin from '../pages/admin/AdminLogin';
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminMunicipalidades from '../pages/admin/AdminMunicipalidades';
 import AdminUsers from '../pages/admin/AdminUsers';
 
 function ProtectedRoute({ children }) {
@@ -22,8 +24,9 @@ function ProtectedRoute({ children }) {
 export default function AppRouter() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <MunicipalidadProvider>
+        <BrowserRouter>
+          <Routes>
           {/* ========== RUTAS PÚBLICAS ========== */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
@@ -35,13 +38,15 @@ export default function AppRouter() {
           <Route path="/admin/login" element={<AccesibilidadProvider><AdminLogin /></AccesibilidadProvider>} />
           <Route path="/admin" element={<ProtectedRoute><AccesibilidadProvider><AdminLayout /></AccesibilidadProvider></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
+            <Route path="municipalidades" element={<AdminMunicipalidades />} />
             <Route path="users" element={<AdminUsers />} />
           </Route>
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </MunicipalidadProvider>
     </AuthProvider>
   );
 }

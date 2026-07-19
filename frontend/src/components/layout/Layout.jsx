@@ -5,7 +5,6 @@ import Sidebar from './Sidebar';
 import PanelChatbot from '../PanelChatbot';
 import FaqModal from '../FaqModal';
 import AccessibilityPanel from '../accessibility/AccessibilityPanel';
-import { MunicipalidadProvider } from '../../context/MunicipalidadContext';
 import { AccesibilidadProvider } from '../../context/AccesibilidadContext';
 
 export default function Layout() {
@@ -27,7 +26,6 @@ export default function Layout() {
   }, [location.pathname]);
 
   return (
-    <MunicipalidadProvider>
       <AccesibilidadProvider>
       <div className="min-h-screen bg-slate-50 dark:bg-[#131419] motion-reduce:transition-none transition-colors duration-300 flex flex-col font-sans text-left relative">
       
@@ -77,6 +75,5 @@ export default function Layout() {
       <FaqModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} />
     </div>
       </AccesibilidadProvider>
-    </MunicipalidadProvider>
   );
 }

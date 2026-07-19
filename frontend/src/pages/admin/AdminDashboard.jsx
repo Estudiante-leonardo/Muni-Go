@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { MunicipalidadContext } from '../../context/MunicipalidadContext';
 import { API_ENDPOINTS } from '../../lib/constants';
 import ConfirmModal from '../../components/ConfirmModal';
 import CustomSelect from '../../components/ui/CustomSelect';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { fetchMunicipalidades: refreshGlobalMunicipalidades } = useContext(MunicipalidadContext);
   const [tramites, setTramites] = useState([]);
   const [municipalidades, setMunicipalidades] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,11 +44,15 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    fetchTramites();
+  const fetchMunicipalidades = () => {
     axios.get(API_ENDPOINTS.MUNICIPALIDADES)
       .then(res => setMunicipalidades(res.data))
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchTramites();
+    fetchMunicipalidades();
   }, []);
 
   const handleDelete = async (id, name) => {
@@ -253,15 +259,18 @@ export default function AdminDashboard() {
             </p>
           </div>
           
-          {!showForm && (
-            <button
-              onClick={handleOpenNewForm}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl text-sm shadow-lg shadow-black/10 transition-all cursor-pointer self-start sm:self-center"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
-              Nuevo Trámite
-            </button>
-          )}
+          
+          <div className="flex gap-3">
+            {!showForm && (
+              <button
+                onClick={handleOpenNewForm}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl text-sm shadow-lg shadow-black/10 transition-all cursor-pointer self-start sm:self-center"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                Nuevo Trámite
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

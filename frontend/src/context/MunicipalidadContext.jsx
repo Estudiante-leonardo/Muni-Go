@@ -22,23 +22,22 @@ export const MunicipalidadProvider = ({ children }) => {
         }
     };
 
-    useEffect(() => {
+    const fetchMunicipalidades = () => {
         setLoading(true);
         axios.get(API_ENDPOINTS.MUNICIPALIDADES)
             .then(response => {
                 setMunicipalidades(response.data);
-                // Solo establecer la primera por defecto si no hay ninguna en localStorage
                 if (response.data.length > 0 && !localStorage.getItem('selectedMunicipalidadId')) {
                     setSelectedMunicipalidadId(response.data[0].id);
                 }
                 setError(null);
             })
-            .catch(error => {
-                setError("No se pudieron cargar las municipalidades.");
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+            .catch(error => setError("No se pudieron cargar las municipalidades."))
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchMunicipalidades();
     }, []);
 
     return (
@@ -46,6 +45,7 @@ export const MunicipalidadProvider = ({ children }) => {
             municipalidades,
             selectedMunicipalidadId,
             setSelectedMunicipalidadId,
+            fetchMunicipalidades,
             loading,
             error
         }}>
