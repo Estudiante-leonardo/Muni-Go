@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Dashboard from '../pages/Dashboard';
@@ -8,6 +7,7 @@ import NotFound from '../pages/NotFound';
 
 // Admin imports
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import { AccesibilidadProvider } from '../context/AccesibilidadContext';
 import AdminLayout from '../components/admin/AdminLayout';
 import AdminLogin from '../pages/admin/AdminLogin';
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -24,16 +24,16 @@ export default function AppRouter() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* ========== RUTAS PÚBLICAS (sin cambios) ========== */}
+          {/* ========== RUTAS PÚBLICAS ========== */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="tramites" element={<Catalog />} />
             <Route path="tramites/:id" element={<TramiteDetail />} />
           </Route>
 
-          {/* ========== RUTAS ADMIN (layout separado) ========== */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+          {/* ========== RUTAS ADMIN ========== */}
+          <Route path="/admin/login" element={<AccesibilidadProvider><AdminLogin /></AccesibilidadProvider>} />
+          <Route path="/admin" element={<ProtectedRoute><AccesibilidadProvider><AdminLayout /></AccesibilidadProvider></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
           </Route>

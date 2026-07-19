@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { API_ENDPOINTS } from '../../lib/constants';
@@ -59,26 +59,32 @@ export default function AdminUsers() {
 
   return (
     <div className="space-y-5 sm:space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20 flex-shrink-0">
-              <svg className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-              </svg>
-            </div>
-            Administradores
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1 ml-[52px] sm:ml-[52px]">Gestión de usuarios del sistema</p>
+      {/* Header Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-800 dark:via-blue-900 dark:to-indigo-950 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} aria-hidden="true" />
+        <div className="absolute -top-16 -right-16 w-48 h-48 sm:w-64 sm:h-64 bg-white/[0.05] rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="text-left">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-white/15 text-white/90 border border-white/20 uppercase tracking-wider mb-2">
+              Gestión de Usuarios
+            </span>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black !text-white leading-tight">
+              Administradores
+            </h1>
+            <p className="text-sm text-blue-100/70 mt-1 font-medium">
+              Crea y gestiona las cuentas de administradores del sistema.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl text-sm shadow-lg shadow-black/10 transition-all cursor-pointer self-start sm:self-center"
+          >
+            <svg className={`w-4 h-4 transition-transform ${showForm ? 'rotate-45' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+            {showForm ? 'Cancelar' : 'Nuevo Admin'}
+          </button>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-xl transition-all cursor-pointer group"
-        >
-          <svg className={`w-4 h-4 transition-transform ${showForm ? 'rotate-45' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
-          {showForm ? 'Cancelar' : 'Nuevo Admin'}
-        </button>
       </div>
 
       {/* Create Form */}
@@ -248,7 +254,7 @@ export default function AdminUsers() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <div>
+          <div className="text-left">
                           <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{a.nombreCompleto}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">@{a.username}</p>
                         </div>

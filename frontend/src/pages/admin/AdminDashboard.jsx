@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { API_ENDPOINTS } from '../../lib/constants';
@@ -231,11 +231,11 @@ export default function AdminDashboard() {
         <div className="absolute -top-16 -right-16 w-48 h-48 sm:w-64 sm:h-64 bg-white/[0.05] rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
         
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
+          <div className="text-left">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-white/15 text-white/90 border border-white/20 uppercase tracking-wider mb-2">
               Gestión del Catálogo
             </span>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black !text-white leading-tight">
               Trámites Municipales
             </h1>
             <p className="text-sm text-blue-100/70 mt-1 font-medium">
@@ -433,23 +433,23 @@ export default function AdminDashboard() {
                 <div className="space-y-2.5">
                   {form.requisitos.map((req, index) => (
                     <div key={index} className="flex gap-2 items-center">
-                      <span className="text-xs font-bold text-slate-400 dark:text-slate-650 w-5 text-right">{index + 1}.</span>
-                      <input
-                        type="text"
-                        required
-                        value={req.descripcion}
-                        onChange={e => handleRequisitoChange(index, e.target.value)}
-                        className={inputClass}
-                        placeholder="Escriba el requisito formal..."
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeRequisito(index)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer"
-                        title="Eliminar requisito"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                      </button>
+                        <span className="text-xs font-bold text-slate-400 dark:text-slate-650 w-5 text-right flex-shrink-0">{index + 1}.</span>
+                        <input
+                          type="text"
+                          required
+                          value={req.descripcion}
+                          onChange={e => handleRequisitoChange(index, e.target.value)}
+                          className={`${inputClass} flex-1 min-w-0`}
+                          placeholder="Escriba el requisito formal..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeRequisito(index)}
+                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer flex-shrink-0"
+                          title="Eliminar requisito"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
                     </div>
                   ))}
                 </div>
@@ -492,8 +492,8 @@ export default function AdminDashboard() {
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                       </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                      <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-3">
                         <div className="sm:col-span-1">
                           <label className={labelClass}>Título del Paso</label>
                           <input
@@ -558,7 +558,7 @@ export default function AdminDashboard() {
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-3">
                         <div>
                           <label className={labelClass}>Nombre del Formato</label>
                           <input

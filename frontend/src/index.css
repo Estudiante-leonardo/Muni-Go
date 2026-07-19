@@ -223,7 +223,7 @@ body {
 }
 
 /* Override root constraints for admin pages */
-#root:has(.admin-login-bg),
+#root:has(.admin-login-page),
 #root:has(aside) {
   width: 100%;
   border-inline: none;
