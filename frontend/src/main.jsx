@@ -41,7 +41,9 @@ axios.interceptors.response.use(
       } catch {
         failedQueue.forEach(({ reject }) => reject(error))
         failedQueue = []
-        window.location.href = '/admin/login'
+        if (!window.location.pathname.includes('/admin/login')) {
+          window.location.href = '/admin/login'
+        }
         return Promise.reject(error)
       } finally {
         isRefreshing = false
