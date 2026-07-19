@@ -14,8 +14,8 @@ export default function AdminLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [municipalidades, setMunicipalidades] = useState([]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 
@@ -117,7 +117,7 @@ export default function AdminLayout() {
                 {user?.nombreCompleto?.charAt(0) || 'A'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{user?.nombreCompleto}</p>
+                <p className="text-sm font-bold text-slate-800 dark:text-white truncate text-left">{user?.nombreCompleto}</p>
                 <div className="flex flex-col gap-0.5">
                   <div className="flex items-center gap-1.5">
                     <div className={`w-1.5 h-1.5 rounded-full ${user?.rol === 'SUPER_ADMIN' ? 'bg-purple-500' : 'bg-blue-500'} animate-pulse`} />

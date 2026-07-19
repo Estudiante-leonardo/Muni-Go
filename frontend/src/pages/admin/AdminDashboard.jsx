@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { API_ENDPOINTS } from '../../lib/constants';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminDashboard() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [tramites, setTramites] = useState([]);
   const [municipalidades, setMunicipalidades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState({ id: null, name: '' });
 
   // Form State
   const [showForm, setShowForm] = useState(false);
@@ -30,11 +33,9 @@ export default function AdminDashboard() {
     lugar: { nombre: '', direccion: '', horario: '' }
   });
 
-  const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
-
   const fetchTramites = () => {
     setLoading(true);
-    axios.get(API_ENDPOINTS.ADMIN_TRAMITES, authHeaders)
+    axios.get(API_ENDPOINTS.ADMIN_TRAMITES)
       .then(res => setTramites(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -45,17 +46,25 @@ export default function AdminDashboard() {
     axios.get(API_ENDPOINTS.MUNICIPALIDADES)
       .then(res => setMunicipalidades(res.data))
       .catch(() => {});
-  }, [token]);
+  }, []);
 
   const handleDelete = async (id, name) => {
-    if (!confirm(`¿Estás seguro de eliminar el trámite "${name}"? Esta acción no se puede deshacer.`)) return;
+    setDeleteTarget({ id, name });
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await axios.delete(`${API_ENDPOINTS.ADMIN_TRAMITES}/${id}`, authHeaders);
+      await axios.delete(`${API_ENDPOINTS.ADMIN_TRAMITES}/${deleteTarget.id}`);
       fetchTramites();
       setFormSuccess('Trámite eliminado con éxito.');
       setTimeout(() => setFormSuccess(''), 3000);
     } catch (err) {
-      alert('Error al eliminar el trámite.');
+      setFormError('Error al eliminar el trámite.');
+      setTimeout(() => setFormError(''), 3000);
+    } finally {
+      setDeleteModalOpen(false);
+      setDeleteTarget({ id: null, name: '' });
     }
   };
 
@@ -115,10 +124,10 @@ export default function AdminDashboard() {
       };
 
       if (editingId) {
-        await axios.put(`${API_ENDPOINTS.ADMIN_TRAMITES}/${editingId}`, payload, authHeaders);
+        await axios.put(`${API_ENDPOINTS.ADMIN_TRAMITES}/${editingId}`, payload);
         setFormSuccess('Trámite actualizado con éxito.');
       } else {
-        await axios.post(API_ENDPOINTS.ADMIN_TRAMITES, payload, authHeaders);
+        await axios.post(API_ENDPOINTS.ADMIN_TRAMITES, payload);
         setFormSuccess('Trámite creado con éxito.');
       }
       
@@ -778,6 +787,14 @@ export default function AdminDashboard() {
           )}
         </div>
       )}
+
+      <ConfirmModal
+        open={deleteModalOpen}
+        title="Eliminar trámite"
+        message={`¿Estás seguro de eliminar el trámite "${deleteTarget.name}"? Esta acción no se puede deshacer.`}
+        onConfirm={confirmDelete}
+        onCancel={() => { setDeleteModalOpen(false); setDeleteTarget({ id: null, name: '' }); }}
+      />
     </div>
   );
 }
