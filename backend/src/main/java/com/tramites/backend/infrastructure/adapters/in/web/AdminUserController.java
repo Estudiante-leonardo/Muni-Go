@@ -68,6 +68,55 @@ public class AdminUserController {
         ));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAdmin(@PathVariable Long id, @RequestBody Map<String, Object> request) {
+        var opt = adminUserRepository.findById(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        AdminUser existing = opt.get();
+
+        if (request.containsKey("activo") && Boolean.FALSE.equals(request.get("activo"))
+                && "superAdmin".equals(existing.getUsername())) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "El usuario superAdmin no puede ser deshabilitado"));
+        }
+
+        String nombreCompleto = (String) request.get("nombreCompleto");
+        if (nombreCompleto != null) {
+            existing.setNombreCompleto(nombreCompleto);
+        }
+
+        String rol = (String) request.get("rol");
+        if (rol != null) {
+            existing.setRol(rol);
+        }
+
+        if (request.containsKey("municipalidadId") && request.get("municipalidadId") != null) {
+            existing.setMunicipalidadId(((Number) request.get("municipalidadId")).longValue());
+        } else if (request.containsKey("municipalidadId")) {
+            existing.setMunicipalidadId(null);
+        }
+
+        String password = (String) request.get("password");
+        if (password != null && !password.isEmpty()) {
+            existing.setPasswordHash(passwordEncoder.encode(password));
+        }
+
+        if (request.containsKey("activo")) {
+            existing.setActivo((Boolean) request.get("activo"));
+        }
+
+        adminUserRepository.save(existing);
+
+        return ResponseEntity.ok(Map.of(
+                "id", existing.getId(),
+                "username", existing.getUsername(),
+                "message", "Admin actualizado exitosamente"
+        ));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAdmin(@PathVariable Long id) {
         adminUserRepository.deleteById(id);

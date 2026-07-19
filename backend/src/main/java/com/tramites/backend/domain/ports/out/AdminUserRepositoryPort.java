@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AdminUserRepositoryPort {
+    Optional<AdminUser> findById(Long id);
     Optional<AdminUser> findByUsername(String username);
     List<AdminUser> findAll();
     AdminUser save(AdminUser adminUser);

@@ -18,6 +18,11 @@ public class AdminUserPostgresAdapter implements AdminUserRepositoryPort {
     }
 
     @Override
+    public Optional<AdminUser> findById(Long id) {
+        return repository.findById(id).map(this::toDomain);
+    }
+
+    @Override
     public Optional<AdminUser> findByUsername(String username) {
         return repository.findByUsername(username).map(this::toDomain);
     }
