@@ -1,11 +1,38 @@
--- Eliminar tablas si existen para reiniciar el estado
+-- =========================================================================
+-- HABILITAR EXTENSIONES PARA VECTOR STORE (pgvector)
+-- =========================================================================
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS hstore;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- =========================================================================
+-- TABLA PARA VECTOR STORE (Spring AI pgvector)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS vector_store (
+    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    content text,
+    metadata json,
+    embedding vector(768)
+);
+
+CREATE INDEX IF NOT EXISTS idx_vector_store_embedding
+    ON vector_store USING HNSW (embedding vector_cosine_ops);
+
+-- =========================================================================
+-- ELIMINAR TABLAS EXISTENTES PARA REINICIAR EL ESTADO
+-- =========================================================================
+DROP TABLE IF EXISTS refresh_tokens CASCADE;
 DROP TABLE IF EXISTS admin_users CASCADE;
+DROP TABLE IF EXISTS estadisticas_accesibilidad CASCADE;
+DROP TABLE IF EXISTS estadisticas_usuarios CASCADE;
+DROP TABLE IF EXISTS estadisticas_consultas CASCADE;
 DROP TABLE IF EXISTS requisitos CASCADE;
 DROP TABLE IF EXISTS formatos CASCADE;
 DROP TABLE IF EXISTS pasos CASCADE;
 DROP TABLE IF EXISTS lugares CASCADE;
 DROP TABLE IF EXISTS tramites CASCADE;
 DROP TABLE IF EXISTS municipalidades CASCADE;
+DROP TABLE IF EXISTS vector_store CASCADE;
 
 -- Crear tabla de municipalidades
 CREATE TABLE municipalidades (
