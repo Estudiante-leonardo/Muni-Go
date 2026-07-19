@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { API_ENDPOINTS } from '../../lib/constants';
 import ConfirmModal from '../../components/ConfirmModal';
+import CustomSelect from '../../components/ui/CustomSelect';
 
 export default function AdminUsers() {
   const { user: currentUser } = useAuth();
@@ -158,7 +159,7 @@ export default function AdminUsers() {
 
       {/* Create / Edit Form */}
       {showForm && (
-        <div className="bg-white/70 dark:bg-white/[0.04] backdrop-blur-sm border border-slate-200/60 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm animate-fade-in">
+        <div className="relative z-20 bg-white/70 dark:bg-white/[0.04] backdrop-blur-sm border border-slate-200/60 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm animate-fade-in">
           <div className="flex items-center gap-3 mb-5">
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isEditing ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
               {isEditing ? (
@@ -226,24 +227,28 @@ export default function AdminUsers() {
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Rol</label>
-              <select value={form.rol} onChange={e => setForm({ ...form, rol: e.target.value })}
+              <CustomSelect 
+                value={form.rol} 
+                onChange={value => setForm({ ...form, rol: value })}
+                options={[
+                  { value: 'ADMIN_MUNICIPAL', label: 'Admin Municipal' },
+                  { value: 'SUPER_ADMIN', label: 'Super Admin' }
+                ]}
                 className={selectClass}
-              >
-                <option value="ADMIN_MUNICIPAL">Admin Municipal</option>
-                <option value="SUPER_ADMIN">Super Admin</option>
-              </select>
+                required
+              />
             </div>
             {form.rol === 'ADMIN_MUNICIPAL' && (
               <div>
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Municipalidad</label>
-                <select required value={form.municipalidadId} onChange={e => setForm({ ...form, municipalidadId: e.target.value })}
+                <CustomSelect 
+                  required 
+                  value={form.municipalidadId} 
+                  onChange={value => setForm({ ...form, municipalidadId: value })}
+                  options={municipalidades.map(m => ({ value: m.id, label: m.nombre }))}
+                  placeholder="Seleccionar municipalidad..."
                   className={selectClass}
-                >
-                  <option value="">Seleccionar municipalidad...</option>
-                  {municipalidades.map(m => (
-                    <option key={m.id} value={m.id}>{m.nombre}</option>
-                  ))}
-                </select>
+                />
               </div>
             )}
             {isEditing && form.rol === 'SUPER_ADMIN' && (
