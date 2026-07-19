@@ -8,6 +8,9 @@ export const API_ENDPOINTS = {
   ESTADISTICAS_ACCESIBILIDAD: `${API_BASE_URL}/estadisticas/accesibilidad`,
   CHAT: `${API_BASE_URL}/chat`,
   ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
+  ADMIN_REFRESH: `${API_BASE_URL}/admin/auth/refresh`,
+  ADMIN_LOGOUT: `${API_BASE_URL}/admin/auth/logout`,
+  ADMIN_ME: `${API_BASE_URL}/admin/auth/me`,
   ADMIN_TRAMITES: `${API_BASE_URL}/admin/tramites`,
   ADMIN_USERS: `${API_BASE_URL}/admin/users`,
 };
