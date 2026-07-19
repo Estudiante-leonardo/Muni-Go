@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { API_ENDPOINTS } from '../../lib/constants';
 import ConfirmModal from '../../components/ConfirmModal';
+import CustomSelect from '../../components/ui/CustomSelect';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -273,7 +274,7 @@ export default function AdminDashboard() {
 
       {/* CRUD Form */}
       {showForm && (
-        <div className="bg-white/80 dark:bg-white/[0.04] backdrop-blur-md border border-slate-200 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-lg space-y-6">
+        <div className="relative z-20 bg-white/80 dark:bg-white/[0.04] backdrop-blur-md border border-slate-200 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-lg space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/[0.06] pb-4">
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -353,17 +354,14 @@ export default function AdminDashboard() {
               {user?.rol === 'SUPER_ADMIN' && (
                 <div>
                   <label className={labelClass}>Municipalidad Asignada</label>
-                  <select
+                  <CustomSelect
                     required
                     value={form.municipalidadId}
-                    onChange={e => setForm({ ...form, municipalidadId: e.target.value })}
-                    className={`${inputClass} cursor-pointer`}
-                  >
-                    <option value="">Seleccione municipalidad...</option>
-                    {municipalidades.map(m => (
-                      <option key={m.id} value={m.id}>{m.nombre}</option>
-                    ))}
-                  </select>
+                    onChange={value => setForm({ ...form, municipalidadId: value })}
+                    options={municipalidades.map(m => ({ value: m.id, label: m.nombre }))}
+                    placeholder="Seleccione municipalidad..."
+                    className={inputClass}
+                  />
                 </div>
               )}
 
@@ -630,7 +628,7 @@ export default function AdminDashboard() {
 
       {/* Search and Filters */}
       {!showForm && (
-        <div className="flex flex-col sm:flex-row gap-4 items-center bg-white/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.06] p-4 rounded-2xl">
+        <div className="relative z-20 flex flex-col sm:flex-row gap-4 items-center bg-white/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.06] p-4 rounded-2xl">
           <div className="relative flex-1 w-full">
             <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
               <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -645,16 +643,13 @@ export default function AdminDashboard() {
           </div>
 
           <div className="w-full sm:w-[220px]">
-            <select
+            <CustomSelect
               value={categoryFilter}
-              onChange={e => setCategoryFilter(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50/50 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer appearance-none"
-            >
-              <option value="">Todas las Categorías</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+              onChange={value => setCategoryFilter(value)}
+              options={categories.map(cat => ({ value: cat, label: cat }))}
+              placeholder="Todas las Categorías"
+              className="w-full px-4 py-2.5 bg-slate-50/50 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            />
           </div>
         </div>
       )}
