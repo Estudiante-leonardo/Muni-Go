@@ -10,6 +10,8 @@ import useTTS from '../hooks/useTTS';
 import { API_ENDPOINTS } from '../lib/constants';
 import PdfPreviewModal from '../components/PdfPreviewModal';
 
+const RESUMEN_FALLBACK = 'Este trámite consolida la información requerida por la municipalidad para tu registro formal. Asegúrate de presentar todos los requisitos para agilizar la evaluación.';
+
 export default function TramiteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ export default function TramiteDetail() {
   const [checkedRequisitos, setCheckedRequisitos] = useState({});
   const [alertMessage, setAlertMessage] = useState(null);
   const [previewPdf, setPreviewPdf] = useState(null);
+  const [resumenIA, setResumenIA] = useState('');
 
   const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
 
@@ -27,11 +30,13 @@ export default function TramiteDetail() {
 
   useEffect(() => {
     setLoading(true);
+    setResumenIA('');
     axios.get(API_ENDPOINTS.TRAMITES)
       .then(res => {
         const tramite = res.data.find(t => t.id === parseInt(id));
         if (tramite) {
           setSelectedTramite(tramite);
+          getResumenIA(tramite).then(setResumenIA);
         } else {
           setError('Trámite no encontrado');
         }
@@ -129,7 +134,7 @@ export default function TramiteDetail() {
                 if (tts.isSpeaking) {
                   tts.stop();
                 } else {
-                  const textToRead = `${selectedTramite.nombre}. ${getResumenIA(selectedTramite)}. Requisitos: ${selectedTramite.requisitos?.map(r => r.descripcion).join('. ') || 'Ninguno'}. Pasos: ${selectedTramite.pasos?.sort((a, b) => a.numero - b.numero).map(p => `${p.titulo}: ${p.descripcion}`).join('. ') || 'No hay pasos detallados'}.`;
+                  const textToRead = `${selectedTramite.nombre}. ${resumenIA || RESUMEN_FALLBACK}. Requisitos: ${selectedTramite.requisitos?.map(r => r.descripcion).join('. ') || 'Ninguno'}. Pasos: ${selectedTramite.pasos?.sort((a, b) => a.numero - b.numero).map(p => `${p.titulo}: ${p.descripcion}`).join('. ') || 'No hay pasos detallados'}.`;
                   tts.speak(textToRead);
                 }
               }}
@@ -166,7 +171,7 @@ export default function TramiteDetail() {
             <div>
               <span className="font-extrabold text-slate-850 dark:text-white text-sm block mb-1">Resumen Inteligente IA (Manuelito)</span>
               <p className="text-sm text-slate-600 dark:text-slate-350 leading-relaxed font-medium">
-                {getResumenIA(selectedTramite)}
+                {resumenIA || RESUMEN_FALLBACK}
               </p>
             </div>
           </div>

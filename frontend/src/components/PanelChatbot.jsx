@@ -9,6 +9,7 @@ export default function PanelChatbot({ tramite, onClose }) {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const [sessionId] = useState(() => 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11));
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -67,7 +68,8 @@ export default function PanelChatbot({ tramite, onClose }) {
 
     axios.post(API_ENDPOINTS.CHAT, {
       mensaje: userMessageText,
-      tramiteId: tramite?.id || null
+      tramiteId: tramite?.id || null,
+      sessionId: sessionId
     })
       .then((res) => {
         const iaMessage = {
