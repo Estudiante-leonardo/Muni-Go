@@ -176,7 +176,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("admin_token", token)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/api/admin")
                 .maxAge(jwtUtil.getExpirationMs() / 1000)
                 .build();
@@ -187,7 +187,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("refresh_token", token)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/api/admin/auth")
                 .maxAge(refreshExpirationMs / 1000)
                 .build();
@@ -198,7 +198,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from(name, "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/api/admin")
                 .maxAge(0)
                 .build();
@@ -207,7 +207,7 @@ public class AuthController {
         ResponseCookie altCookie = ResponseCookie.from(name, "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/api/admin/auth")
                 .maxAge(0)
                 .build();
