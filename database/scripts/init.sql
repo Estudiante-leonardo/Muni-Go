@@ -1,25 +1,12 @@
 -- =========================================================================
--- HABILITAR EXTENSIONES PARA VECTOR STORE (pgvector)
+-- 1. HABILITAR EXTENSIONES PARA VECTOR STORE (pgvector)
 -- =========================================================================
-CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions; -- Supabase suele usar el esquema extensions
 CREATE EXTENSION IF NOT EXISTS hstore;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- =========================================================================
--- TABLA PARA VECTOR STORE (Spring AI pgvector)
--- =========================================================================
-CREATE TABLE IF NOT EXISTS vector_store (
-    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    content text,
-    metadata json,
-    embedding vector(768)
-);
-
-CREATE INDEX IF NOT EXISTS idx_vector_store_embedding
-    ON vector_store USING HNSW (embedding vector_cosine_ops);
-
--- =========================================================================
--- ELIMINAR TABLAS EXISTENTES PARA REINICIAR EL ESTADO
+-- 2. ELIMINAR TABLAS EXISTENTES PARA REINICIAR EL ESTADO (Orden correcto)
 -- =========================================================================
 DROP TABLE IF EXISTS refresh_tokens CASCADE;
 DROP TABLE IF EXISTS admin_users CASCADE;
@@ -33,6 +20,21 @@ DROP TABLE IF EXISTS lugares CASCADE;
 DROP TABLE IF EXISTS tramites CASCADE;
 DROP TABLE IF EXISTS municipalidades CASCADE;
 DROP TABLE IF EXISTS vector_store CASCADE;
+
+-- =========================================================================
+-- 3. CREACIÓN DE TABLAS
+-- =========================================================================
+
+-- Tabla para Vector Store
+CREATE TABLE vector_store (
+    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    content text,
+    metadata json,
+    embedding vector(768)
+);
+
+CREATE INDEX idx_vector_store_embedding 
+    ON vector_store USING HNSW (embedding vector_cosine_ops);
 
 -- Crear tabla de municipalidades
 CREATE TABLE municipalidades (
@@ -90,8 +92,57 @@ CREATE TABLE lugares (
     CONSTRAINT fk_tramite_lugares FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
 );
 
+-- Tablas de estadísticas
+CREATE TABLE estadisticas_consultas (
+    id BIGSERIAL PRIMARY KEY,
+    municipalidad_id BIGINT NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+    anio INT NOT NULL,
+    tipo VARCHAR(20) NOT NULL,
+    cantidad INT NOT NULL,
+    CONSTRAINT fk_estadistica_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
+);
+
+CREATE TABLE estadisticas_usuarios (
+    id BIGSERIAL PRIMARY KEY,
+    municipalidad_id BIGINT NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+    anio INT NOT NULL,
+    usuarios_activos_promedio INT NOT NULL,
+    CONSTRAINT fk_usuarios_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
+);
+
+CREATE TABLE estadisticas_accesibilidad (
+    id BIGSERIAL PRIMARY KEY,
+    municipalidad_id BIGINT NOT NULL,
+    herramienta VARCHAR(50) NOT NULL,
+    porcentaje DECIMAL(5, 2) NOT NULL,
+    CONSTRAINT fk_accesibilidad_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
+);
+
+-- Tablas de administración
+CREATE TABLE admin_users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    nombre_completo VARCHAR(255) NOT NULL,
+    rol VARCHAR(20) NOT NULL,
+    municipalidad_id BIGINT,
+    activo BOOLEAN DEFAULT TRUE,
+    CONSTRAINT fk_admin_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE SET NULL
+);
+
+CREATE TABLE refresh_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    token VARCHAR(500) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    revoked BOOLEAN DEFAULT FALSE
+);
+
 -- =========================================================================
--- INSERCIÓN DE MUNICIPALIDADES (5 en total)
+-- 4. INSERCIÓN DE DATOS
 -- =========================================================================
 INSERT INTO municipalidades (id, nombre) VALUES
 (1, 'Municipalidad de Carabayllo'),
@@ -102,11 +153,7 @@ INSERT INTO municipalidades (id, nombre) VALUES
 
 SELECT setval('municipalidades_id_seq', 5);
 
--- =========================================================================
--- INSERCIÓN DE TRÁMITES (10 por municipalidad = 50 en total)
--- =========================================================================
-
--- MUNICIPALIDAD DE CARABAYLLO (IDs: 1 - 10)
+-- (MUNICIPALIDAD DE CARABAYLLO)
 INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_estimado, categoria) VALUES
 (1, 1, 'Licencia de Funcionamiento - Riesgo Bajo', 'Autorización para apertura de comercios menores como bodegas o librerías.', 145.50, '7 días hábiles', 'Licencias'),
 (2, 1, 'Inspección Técnica de Seguridad en Edificaciones (ITSE)', 'Evaluación de las condiciones de seguridad y Defensa Civil del local comercial.', 190.00, '10 días hábiles', 'Defensa Civil'),
@@ -117,10 +164,8 @@ INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_e
 (7, 1, 'Copia Certificada de Partida de Nacimiento', 'Obtención de una copia oficial de la partida registrada en el distrito.', 15.00, '1 día hábil', 'Registro Civil'),
 (8, 1, 'Inscripción de Declaración Jurada de Autoavalúo', 'Registro del predio por transferencia de propiedad o modificación de la construcción.', 0.00, '1 día hábil', 'Rentas'),
 (9, 1, 'Licencia de Conducir de Vehículos Menores (Clase B2c)', 'Emisión de licencia para la conducción de mototaxis y trimóviles de carga.', 95.00, '12 días hábiles', 'Transportes'),
-(10, 1, 'Autorización de Anuncios y Publicidad Exterior', 'Permiso para la colocación de letreros, paneles o carteles luminosos comerciales.', 160.00, '10 días hábiles', 'Licencias');
-
--- MUNICIPALIDAD DE COMAS (IDs: 11 - 20)
-INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_estimado, categoria) VALUES
+(10, 1, 'Autorización de Anuncios y Publicidad Exterior', 'Permiso para la colocación de letreros, paneles o carteles luminosos comerciales.', 160.00, '10 días hábiles', 'Licencias'),
+-- (MUNICIPALIDAD DE COMAS)
 (11, 2, 'Licencia de Funcionamiento - Riesgo Medio', 'Licencia para locales de mediana envergadura como restaurantes o talleres mecánicos.', 210.00, '9 días hábiles', 'Licencias'),
 (12, 2, 'Certificado de Inspección de Seguridad (ITSE)', 'Certificación obligatoria de Defensa Civil para establecimientos comerciales medianos.', 240.00, '12 días hábiles', 'Defensa Civil'),
 (13, 2, 'Licencia de Edificación - Modalidad B', 'Aprobación de proyecto de construcción de viviendas multifamiliares de hasta 5 pisos con firma de revisores.', 480.00, '25 días hábiles', 'Obras Privadas'),
@@ -130,10 +175,8 @@ INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_e
 (17, 2, 'Copia Certificada de Partida de Matrimonio', 'Emisión de duplicado oficial del acta de matrimonio inscrita en el distrito.', 18.00, '1 día hábil', 'Registro Civil'),
 (18, 2, 'Actualización de Datos del Contribuyente', 'Modificación de datos del titular, estado civil o domicilio fiscal en el sistema tributario.', 0.00, '1 día hábil', 'Rentas'),
 (19, 2, 'Permiso de Operación para Transporte de Pasajeros', 'Autorización anual para empresas de mototaxis dentro de las rutas autorizadas del distrito.', 350.00, '15 días hábiles', 'Transportes'),
-(20, 2, 'Visación de Planos para Habilitación Urbana', 'Visación técnica preliminar de planos de distribución y localización periférica.', 180.00, '15 días hábiles', 'Urbanismo');
-
--- MUNICIPALIDAD DE LOS OLIVOS (IDs: 21 - 30)
-INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_estimado, categoria) VALUES
+(20, 2, 'Visación de Planos para Habilitación Urbana', 'Visación técnica preliminar de planos de distribución y localización periférica.', 180.00, '15 días hábiles', 'Urbanismo'),
+-- (MUNICIPALIDAD DE LOS OLIVOS)
 (21, 3, 'Licencia de Funcionamiento - Mercados y Galerías', 'Licencia corporativa para puestos individuales ubicados dentro de mercados reconocidos.', 125.00, '5 días hábiles', 'Licencias'),
 (22, 3, 'Certificado ITSE Posterior al Inicio de Actividades', 'Inspección de seguridad ejecutada de oficio para giros comerciales de muy bajo riesgo.', 150.00, '5 días hábiles', 'Defensa Civil'),
 (23, 3, 'Licencia de Demolición de Inmuebles', 'Autorización para derribar parcial o totalmente edificaciones antiguas o en riesgo.', 390.00, '15 días hábiles', 'Obras Privadas'),
@@ -143,10 +186,8 @@ INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_e
 (27, 3, 'Copia Certificada de Partida de Defunción', 'Emisión de copia oficial del acta de fallecimiento registrada en Los Olivos.', 15.00, '1 día hábil', 'Registro Civil'),
 (28, 3, 'Constancia de No Adeudo Tributario', 'Certificado que acredita que el contribuyente se encuentra al día en el pago de arbitrios e impuesto predial.', 35.00, '2 días hábiles', 'Rentas'),
 (29, 3, 'Renovación de Carné de Sanidad Comercial', 'Expedición de documento médico indispensable para manipuladores de alimentos.', 25.00, '1 día hábil', 'Salud'),
-(30, 3, 'Autorización para Espectáculos Públicos No Deportivos', 'Licencia temporal para eventos masivos, conciertos, ferias o circos locales.', 620.00, '10 días hábiles', 'Licencias');
-
--- MUNICIPALIDAD DE SAN MARTÍN DE PORRES (IDs: 31 - 40)
-INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_estimado, categoria) VALUES
+(30, 3, 'Autorización para Espectáculos Públicos No Deportivos', 'Licencia temporal para eventos masivos, conciertos, ferias o circos locales.', 620.00, '10 días hábiles', 'Licencias'),
+-- (MUNICIPALIDAD DE SAN MARTÍN DE PORRES)
 (31, 4, 'Licencia de Funcionamiento Indeterminada', 'Otorgamiento de licencia comercial de vigencia indefinida sujeta a fiscalización posterior.', 165.00, '10 días hábiles', 'Licencias'),
 (32, 4, 'Evaluación de Condiciones de Seguridad en Espectáculos (ECSE)', 'Inspección técnica especializada previa para garantizar la seguridad en recintos de eventos.', 310.00, '7 días hábiles', 'Defensa Civil'),
 (33, 4, 'Licencia de Edificación - Regularización', 'Procedimiento para declarar y legalizar obras civiles construidas sin licencia previa.', 520.00, '30 días hábiles', 'Obras Privadas'),
@@ -156,10 +197,8 @@ INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_e
 (37, 4, 'Rectificación Administrativa de Partidas', 'Corrección de errores materiales u ortográficos evidentes en actas registrales antiguas.', 45.00, '15 días hábiles', 'Registro Civil'),
 (38, 4, 'Emisión de Estado de Cuenta Corriente Predial', 'Reporte detallado de deudas, fraccionamientos e historial de pagos de tributos.', 10.00, '1 día hábil', 'Rentas'),
 (39, 4, 'Duplicado de Licencia de Conducir Vehículos Menores', 'Reposición de la credencial de manejo física por motivos de pérdida, robo o deterioro.', 40.00, '3 días hábiles', 'Transportes'),
-(40, 4, 'Permiso para Ocupación de la Vía Pública', 'Autorización temporal para uso de veredas o calzadas por obras, mudanzas o andamios.', 140.00, '5 días hábiles', 'Urbanismo');
-
--- MUNICIPALIDAD DE MIRAFLORES (IDs: 41 - 50)
-INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_estimado, categoria) VALUES
+(40, 4, 'Permiso para Ocupación de la Vía Pública', 'Autorización temporal para uso de veredas o calzadas por obras, mudanzas o andamios.', 140.00, '5 días hábiles', 'Urbanismo'),
+-- (MUNICIPALIDAD DE MIRAFLORES)
 (41, 5, 'Licencia de Funcionamiento Digital Automática', 'Licencia emitida de manera electrónica en menos de 24 horas para giros de riesgo muy bajo.', 180.00, '1 día hábil', 'Licencias'),
 (42, 5, 'Certificado ITSE Ex Ante (Riesgo Alto)', 'Evaluación de seguridad rigurosa previa a la apertura para bancos, hoteles o discotecas.', 450.00, '15 días hábiles', 'Defensa Civil'),
 (43, 5, 'Conformidad de Obra y Declaratoria de Edificación', 'Revisión final de la edificación terminada para certificar que cumple con el proyecto aprobado.', 610.00, '20 días hábiles', 'Obras Privadas'),
@@ -171,51 +210,35 @@ INSERT INTO tramites (id, municipalidad_id, nombre, descripcion, costo, tiempo_e
 (49, 5, 'Autorización de Mudanzas Fuera del Horario Habitual', 'Permiso especial para operaciones de carga y transporte residencial en zonas rígidas.', 70.00, '2 días hábiles', 'Urbanismo'),
 (50, 5, 'Tarjeta de Estacionamiento Residencial', 'Permiso anual gratuito o de tarifa preferencial para residentes en zonas con parquímetros.', 50.00, '7 días hábiles', 'Transportes');
 
--- Ajustar la secuencia de serial de la tabla tramites
 SELECT setval('tramites_id_seq', 50);
 
-
--- =========================================================================
--- INSERCIÓN DE REQUISITOS (Asociados a los trámites del 1 al 50)
--- =========================================================================
 INSERT INTO requisitos (tramite_id, descripcion) VALUES
--- Requisitos Trámite 1
 (1, 'Formulario Único de Trámite (FUT) debidamente llenado.'),
 (1, 'Declaración Jurada firmada por el representante legal o persona natural.'),
 (1, 'Copia de DNI o RUC vigente.'),
--- Requisitos Trámite 2
 (2, 'Croquis de distribución interna de arquitectura con cálculo de aforo.'),
 (2, 'Certificado de operatividad de extintores vigentes.'),
 (2, 'Plan de Seguridad ante contingencias y emergencias.'),
--- Requisitos Trámite 3
 (3, 'Formulario Único de Edificación (FUE) por duplicado.'),
 (3, 'Copia literal de dominio emitida por la SUNARP.'),
 (3, 'Planos de ubicación, arquitectura y estructuras a escala.'),
--- Requisitos Trámite 4
 (4, 'Plano visado de lote y plano de ubicación geográfica.'),
 (4, 'Acta de asamblea o documento de adjudicación emitido por la directiva.'),
 (4, 'Declaración jurada de no tener litigios pendientes sobre el lote.'),
--- Requisitos Trámite 5
 (5, 'Copia de DNI del solicitante.'),
 (5, 'Recibo de pago por derechos de trámite urbanístico.'),
--- Requisitos Trámite 6
 (6, 'Partidas de nacimiento certificadas de ambos contrayentes con antigüedad menor a 3 meses.'),
 (6, 'Certificado médico prenupcial expedido por centro de salud autorizado.'),
 (6, 'Copia de DNI de los contrayentes y de dos testigos mayores de edad.'),
--- Requisitos Trámite 7
 (7, 'Indicar fecha exacta del nacimiento y nombres completos del registrado.'),
 (7, 'Recibo de pago en caja por duplicado de acta.'),
--- Requisitos Trámite 8
 (8, 'Formularios prediales PU (Predio Urbano) y HR (Hoja de Resumen).'),
 (8, 'Copia del testimonio de compraventa o minuta con firmas legalizadas.'),
--- Requisitos Trámite 9
 (9, 'Certificado de aptitud psicosomática del MTC.'),
 (9, 'Aprobación del examen de reglamento de tránsito y de manejo práctico.'),
 (9, 'Dos fotografías tamaño carnet recientes fondo blanco.'),
--- Requisitos Trámite 10
 (10, 'Arte final impreso a color indicando las dimensiones del panel o anuncio.'),
 (10, 'Carta de autorización del propietario del inmueble si es alquilado.'),
--- Requisitos Trámite 11 al 50 (Inyecciones estándar requeridas para cumplir la consistencia)
 (11, 'Declaración jurada de observancia de condiciones de seguridad.'),
 (11, 'Vigencia de poder en caso de personas jurídicas.'),
 (12, 'Planos eléctricos firmados por ingeniero electricista habilitado.'),
@@ -258,10 +281,6 @@ INSERT INTO requisitos (tramite_id, descripcion) VALUES
 (49, 'FUT indicando placa de camión transportista, fecha y hora del traslado.'),
 (50, 'Acreditación de residencia mediante recibo de servicios y DNI actualizado.');
 
-
--- =========================================================================
--- INSERCIÓN DE FORMATOS (Asociados a trámites clave)
--- =========================================================================
 INSERT INTO formatos (tramite_id, nombre, descripcion, url_descarga) VALUES
 (1, 'Formato Único de Trámite (FUT)', 'Formulario base PDF - 150 KB', '/formatos/carabayllo_fut.pdf'),
 (1, 'Anexo 01 - Declaración Jurada de Licencias', 'Formato complementario PDF - 95 KB', '/formatos/carabayllo_anexo1.pdf'),
@@ -274,20 +293,13 @@ INSERT INTO formatos (tramite_id, nombre, descripcion, url_descarga) VALUES
 (33, 'Formulario de Regularización de Edificación', 'Anexo especial de regularizaciones - 310 KB', '/formatos/smp_regularizacion.pdf'),
 (41, 'Solicitud Virtual de Licencia Automática', 'Formulario interactivo en línea', '/formatos/miraflores_licencia_digital.pdf');
 
-
--- =========================================================================
--- INSERCIÓN DE PASOS DE TRÁMITES
--- =========================================================================
 INSERT INTO pasos (tramite_id, numero, titulo, descripcion) VALUES
--- Pasos Trámite 1
 (1, 1, 'Presentación del expediente', 'Ingresa los formatos y requisitos obligatorios en la ventanilla física o mesa de partes virtual.'),
 (1, 2, 'Pago de derechos', 'Cancela la tasa correspondiente en las cajas autorizadas del palacio municipal.'),
 (1, 3, 'Evaluación y entrega', 'El área de licencias evalúa la zonificación y emite la resolución de licencia en el plazo indicado.'),
--- Pasos Trámite 2
 (2, 1, 'Ingreso del croquis y planos', 'Presenta el expediente de seguridad con los planos de evacuación en mesa de partes.'),
 (2, 2, 'Programación de inspección', 'Coordina con los inspectores municipales la fecha y hora de la visita técnica al establecimiento.'),
 (2, 3, 'Emisión del Certificado ITSE', 'Si el local aprueba las condiciones de seguridad, se expide el certificado físico.'),
--- Pasos generales de ejemplo estructurado para trámites críticos (Ahorro de volumen, manteniendo integridad)
 (11, 1, 'Llenado de declaración jurada', 'Completa los formatos de riesgo medio detallando el aforo de tu local.'),
 (11, 2, 'Revisión técnica', 'Personal de la subgerencia de comercialización revisará la documentación.'),
 (26, 1, 'Audiencia Única', 'Ambas partes se presentan ante la gerencia de asuntos jurídicos para ratificar el divorcio.'),
@@ -295,10 +307,6 @@ INSERT INTO pasos (tramite_id, numero, titulo, descripcion) VALUES
 (41, 1, 'Acceso al Portal Ciudadano', 'Autentícate con tu DNI electrónico o RUC en la sede electrónica de Miraflores.'),
 (41, 2, 'Aprobación Automática', 'El sistema valida las bases de datos y emite tu licencia firmada digitalmente de inmediato.');
 
-
--- =========================================================================
--- INSERCIÓN DE LUGARES DE ATENCIÓN (1 por Trámite - Relación 1:1 estricta)
--- =========================================================================
 INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (1, 'Palacio Municipal de Carabayllo - Mesa de Partes', 'Av. Tupac Amaru Km. 18.5', 'L-V de 8:00 AM a 4:30 PM'),
 (2, 'Subgerencia de Gestión del Riesgo de Desastres', 'Av. El Progreso Nro. 110', 'L-V de 8:00 AM a 4:00 PM'),
@@ -310,7 +318,6 @@ INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (8, 'Gerencia de Administración Tributaria (Carabayllo)', 'Av. Tupac Amaru Km. 18.5', 'L-V de 8:00 AM a 5:00 PM - Sábados de 9:00 AM a 1:00 PM'),
 (9, 'Subgerencia de Transportes de Carabayllo', 'Av. El Progreso Nro. 110', 'L-V de 8:00 AM a 4:00 PM'),
 (10, 'Subgerencia de Comercialización Carabayllo', 'Av. Tupac Amaru Km. 18.5', 'L-V de 8:00 AM a 4:30 PM'),
-
 (11, 'Palacio Municipal de Comas', 'Plaza de Armas de Comas s/n - Km. 11 Túpac Amaru', 'L-V de 8:00 AM a 4:30 PM'),
 (12, 'Sede de Defensa Civil Comas', 'Av. 22 de Agosto Cdra. 8', 'L-V de 8:00 AM a 4:00 PM'),
 (13, 'Gerencia de Desarrollo Urbano Comas', 'Plaza de Armas de Comas s/n', 'L-V de 8:00 AM a 2:00 PM'),
@@ -321,7 +328,6 @@ INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (18, 'Gerencia de Rentas Comas', 'Av. 22 de Agosto Cdra. 8', 'L-V de 8:00 AM a 5:00 PM'),
 (19, 'Subgerencia de Tránsito y Transportes Comas', 'Av. 22 de Agosto Cdra. 8', 'L-V de 8:00 AM a 4:00 PM'),
 (20, 'Oficina de Obras Públicas Comas', 'Plaza de Armas de Comas s/n', 'L-V de 8:00 AM a 4:30 PM'),
-
 (21, 'Palacio Municipal de Los Olivos', 'Av. Carlos Izaguirre 815', 'L-V de 8:00 AM a 5:00 PM'),
 (22, 'Centro de Inspecciones Los Olivos', 'Av. Carlos Izaguirre 815 - Piso 3', 'L-V de 8:00 AM a 4:00 PM'),
 (23, 'Ventanilla de Obras Privadas Los Olivos', 'Av. Carlos Izaguirre 815', 'L-V de 8:00 AM a 1:00 PM'),
@@ -332,7 +338,6 @@ INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (28, 'Gerencia de Gestión Tributaria Los Olivos', 'Av. Carlos Izaguirre 815', 'L-V de 8:00 AM a 5:30 PM - Sábados de 9:00 AM a 1:00 PM'),
 (29, 'Dirección de Sanidad y Salud Los Olivos', 'Jr. Amalia Puga Cdra. 4', 'L-V de 7:30 AM a 1:00 PM'),
 (30, 'Ventanilla Única de Trámites Los Olivos', 'Av. Carlos Izaguirre 815', 'L-V de 8:00 AM a 5:00 PM'),
-
 (31, 'Palacio Municipal de San Martín de Porres', 'Av. Alfredo Mendiola 169', 'L-V de 8:00 AM a 4:30 PM'),
 (32, 'Gerencia de Defensa Civil SMP', 'Av. Alfredo Mendiola 169', 'L-V de 8:00 AM a 4:00 PM'),
 (33, 'Gerencia de Desarrollo Urbano SMP', 'Jr. San Martín Cdra. 3', 'L-V de 8:00 AM a 2:00 PM'),
@@ -343,7 +348,6 @@ INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (38, 'Gerencia de Administración Tributaria SMP', 'Av. Alfredo Mendiola 179', 'L-V de 8:00 AM a 5:00 PM'),
 (39, 'Subgerencia de Transportes SMP', 'Av. Peru Cdra. 35', 'L-V de 8:30 AM a 4:30 PM'),
 (40, 'Mesa de Partes de Desarrollo Urbano SMP', 'Jr. San Martín Cdra. 3', 'L-V de 8:00 AM a 4:30 PM'),
-
 (41, 'Plataforma Virtual Miraflores (Sede Digital)', 'miraflores.gob.pe / Oficina Central', '24 horas online / Presencial L-V de 8:00 AM a 4:00 PM'),
 (42, 'Palacio Municipal de Miraflores - Gestión de Riesgos', 'Av. Larco 400', 'L-V de 8:00 AM a 4:00 PM'),
 (43, 'Gerencia de Desarrollo Urbano y Obras Privadas Miraflores', 'Av. Larco 400', 'L-V de 8:00 AM a 1:00 PM'),
@@ -355,49 +359,6 @@ INSERT INTO lugares (tramite_id, nombre, direccion, horario) VALUES
 (49, 'Subgerencia de Movilidad Urbana y Seguridad Vial', 'Jr. Diez Canseco 215', 'L-V de 8:00 AM a 4:00 PM'),
 (50, 'Oficina de Control de Estacionamiento Residencial', 'Jr. Diez Canseco 215', 'L-V de 8:00 AM a 4:30 PM');
 
--- =========================================================================
--- TABLAS DE ESTADÍSTICAS (Dashboard Analítico)
--- =========================================================================
-DROP TABLE IF EXISTS estadisticas_consultas CASCADE;
-DROP TABLE IF EXISTS estadisticas_usuarios CASCADE;
-DROP TABLE IF EXISTS estadisticas_accesibilidad CASCADE;
-
--- Tabla: Consultas IA vs Tradicionales por mes
-CREATE TABLE estadisticas_consultas (
-    id BIGSERIAL PRIMARY KEY,
-    municipalidad_id BIGINT NOT NULL,
-    mes VARCHAR(20) NOT NULL,
-    anio INT NOT NULL,
-    tipo VARCHAR(20) NOT NULL, -- 'IA' o 'TRADICIONAL'
-    cantidad INT NOT NULL,
-    CONSTRAINT fk_estadistica_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
-);
-
--- Tabla: Usuarios activos promedio por mes
-CREATE TABLE estadisticas_usuarios (
-    id BIGSERIAL PRIMARY KEY,
-    municipalidad_id BIGINT NOT NULL,
-    mes VARCHAR(20) NOT NULL,
-    anio INT NOT NULL,
-    usuarios_activos_promedio INT NOT NULL,
-    CONSTRAINT fk_usuarios_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
-);
-
--- Tabla: Uso de herramientas de accesibilidad (porcentaje)
-CREATE TABLE estadisticas_accesibilidad (
-    id BIGSERIAL PRIMARY KEY,
-    municipalidad_id BIGINT NOT NULL,
-    herramienta VARCHAR(50) NOT NULL,
-    porcentaje DECIMAL(5, 2) NOT NULL,
-    CONSTRAINT fk_accesibilidad_muni FOREIGN KEY (municipalidad_id) REFERENCES municipalidades(id) ON DELETE CASCADE
-);
-
--- =========================================================================
--- DATOS SEED: Estadísticas simuladas (Julio - Septiembre 2026)
--- Municipalidad de Carabayllo (id=1)
--- =========================================================================
-
--- Consultas IA vs Tradicionales
 INSERT INTO estadisticas_consultas (municipalidad_id, mes, anio, tipo, cantidad) VALUES
 (1, 'Julio', 2026, 'IA', 340),
 (1, 'Julio', 2026, 'TRADICIONAL', 890),
@@ -406,48 +367,13 @@ INSERT INTO estadisticas_consultas (municipalidad_id, mes, anio, tipo, cantidad)
 (1, 'Septiembre', 2026, 'IA', 1250),
 (1, 'Septiembre', 2026, 'TRADICIONAL', 580);
 
--- Usuarios activos promedio
 INSERT INTO estadisticas_usuarios (municipalidad_id, mes, anio, usuarios_activos_promedio) VALUES
 (1, 'Julio', 2026, 850),
 (1, 'Agosto', 2026, 1420),
 (1, 'Septiembre', 2026, 2100);
 
--- Uso de accesibilidad (porcentajes)
 INSERT INTO estadisticas_accesibilidad (municipalidad_id, herramienta, porcentaje) VALUES
 (1, 'Lector de Voz', 60.00),
 (1, 'Alto Contraste', 20.00),
 (1, 'Texto Grande', 15.00),
 (1, 'Otros', 5.00);
-
--- =========================================================================
--- TABLA DE ADMINISTRADORES (Roles y Accesos)
--- =========================================================================
-
-CREATE TABLE admin_users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    nombre_completo VARCHAR(255) NOT NULL,
-    rol VARCHAR(20) NOT NULL,
-    municipalidad_id BIGINT,
-    activo BOOLEAN DEFAULT TRUE,
-    CONSTRAINT fk_admin_muni FOREIGN KEY (municipalidad_id)
-        REFERENCES municipalidades(id) ON DELETE SET NULL
-);
-
--- Los usuarios admin se crean automáticamente al iniciar la app (DataInitializer.java)
--- superAdmin / password  → SUPER_ADMIN
--- admin / password        → ADMIN_MUNICIPAL (Carabayllo, id=1)
-
--- =========================================================================
--- TABLA DE REFRESH TOKENS (Sesiones administradores)
--- =========================================================================
-
-CREATE TABLE refresh_tokens (
-    id BIGSERIAL PRIMARY KEY,
-    token VARCHAR(500) NOT NULL UNIQUE,
-    username VARCHAR(100) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    revoked BOOLEAN DEFAULT FALSE
-);
