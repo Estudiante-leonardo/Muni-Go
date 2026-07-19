@@ -18,8 +18,7 @@ axios.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (originalRequest.url?.includes('/admin/auth/refresh') ||
           originalRequest.url?.includes('/admin/auth/login') ||
-          originalRequest.url?.includes('/admin/auth/logout') ||
-          originalRequest.url?.includes('/admin/auth/me')) {
+          originalRequest.url?.includes('/admin/auth/logout')) {
         return Promise.reject(error)
       }
 
