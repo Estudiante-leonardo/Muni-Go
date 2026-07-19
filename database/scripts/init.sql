@@ -377,3 +377,33 @@ INSERT INTO estadisticas_accesibilidad (municipalidad_id, herramienta, porcentaj
 (1, 'Alto Contraste', 20.00),
 (1, 'Texto Grande', 15.00),
 (1, 'Otros', 5.00);
+
+-- ESTADÍSTICAS PARA OTRAS MUNICIPALIDADES (ID 2 a 5)
+INSERT INTO estadisticas_consultas (municipalidad_id, mes, anio, tipo, cantidad) VALUES
+(2, 'Julio', 2026, 'IA', 410), (2, 'Julio', 2026, 'TRADICIONAL', 820),
+(2, 'Agosto', 2026, 'IA', 850), (2, 'Agosto', 2026, 'TRADICIONAL', 690),
+(2, 'Septiembre', 2026, 'IA', 1400), (2, 'Septiembre', 2026, 'TRADICIONAL', 520),
+
+(3, 'Julio', 2026, 'IA', 290), (3, 'Julio', 2026, 'TRADICIONAL', 950),
+(3, 'Agosto', 2026, 'IA', 600), (3, 'Agosto', 2026, 'TRADICIONAL', 810),
+(3, 'Septiembre', 2026, 'IA', 1100), (3, 'Septiembre', 2026, 'TRADICIONAL', 630),
+
+(4, 'Julio', 2026, 'IA', 520), (4, 'Julio', 2026, 'TRADICIONAL', 750),
+(4, 'Agosto', 2026, 'IA', 980), (4, 'Agosto', 2026, 'TRADICIONAL', 610),
+(4, 'Septiembre', 2026, 'IA', 1650), (4, 'Septiembre', 2026, 'TRADICIONAL', 480),
+
+(5, 'Julio', 2026, 'IA', 600), (5, 'Julio', 2026, 'TRADICIONAL', 600),
+(5, 'Agosto', 2026, 'IA', 1100), (5, 'Agosto', 2026, 'TRADICIONAL', 550),
+(5, 'Septiembre', 2026, 'IA', 1800), (5, 'Septiembre', 2026, 'TRADICIONAL', 420);
+
+INSERT INTO estadisticas_usuarios (municipalidad_id, mes, anio, usuarios_activos_promedio) VALUES
+(2, 'Julio', 2026, 920), (2, 'Agosto', 2026, 1550), (2, 'Septiembre', 2026, 2300),
+(3, 'Julio', 2026, 780), (3, 'Agosto', 2026, 1200), (3, 'Septiembre', 2026, 1850),
+(4, 'Julio', 2026, 1100), (4, 'Agosto', 2026, 1780), (4, 'Septiembre', 2026, 2600),
+(5, 'Julio', 2026, 1250), (5, 'Agosto', 2026, 1950), (5, 'Septiembre', 2026, 2900);
+
+INSERT INTO estadisticas_accesibilidad (municipalidad_id, herramienta, porcentaje) VALUES
+(2, 'Lector de Voz', 55.00), (2, 'Alto Contraste', 25.00), (2, 'Texto Grande', 15.00), (2, 'Otros', 5.00),
+(3, 'Lector de Voz', 50.00), (3, 'Alto Contraste', 30.00), (3, 'Texto Grande', 15.00), (3, 'Otros', 5.00),
+(4, 'Lector de Voz', 65.00), (4, 'Alto Contraste', 15.00), (4, 'Texto Grande', 15.00), (4, 'Otros', 5.00),
+(5, 'Lector de Voz', 45.00), (5, 'Alto Contraste', 35.00), (5, 'Texto Grande', 15.00), (5, 'Otros', 5.00);

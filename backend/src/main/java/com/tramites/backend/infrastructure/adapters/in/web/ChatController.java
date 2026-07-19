@@ -1,5 +1,6 @@
 package com.tramites.backend.infrastructure.adapters.in.web;
 
+import com.tramites.backend.domain.model.ChatResponseDto;
 import com.tramites.backend.domain.ports.in.RagChatUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class ChatController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> chat(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<Map<String, Object>> chat(@RequestBody Map<String, Object> request) {
         String mensaje = (String) request.get("mensaje");
         Long tramiteId = null;
         String sessionId = (String) request.get("sessionId");
@@ -37,7 +38,18 @@ public class ChatController {
                     .body(Map.of("respuesta", "Por favor, escribe un mensaje."));
         }
 
-        String respuesta = ragChatUseCase.chat(mensaje, tramiteId, sessionId, municipalidadNombre, municipalidadId);
-        return ResponseEntity.ok(Map.of("respuesta", respuesta));
+        ChatResponseDto dto = ragChatUseCase.chat(mensaje, tramiteId, sessionId, municipalidadNombre, municipalidadId);
+        
+        if (dto.getTramiteSugeridoId() != null) {
+            return ResponseEntity.ok(Map.of(
+                    "respuesta", dto.getRespuesta(),
+                    "tramiteSugerido", Map.of(
+                            "id", dto.getTramiteSugeridoId(),
+                            "nombre", dto.getTramiteSugeridoNombre() != null ? dto.getTramiteSugeridoNombre() : "Ver trámite sugerido"
+                    )
+            ));
+        }
+        
+        return ResponseEntity.ok(Map.of("respuesta", dto.getRespuesta()));
     }
 }

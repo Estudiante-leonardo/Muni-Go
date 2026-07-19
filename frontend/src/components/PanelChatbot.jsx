@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Bot, Send, Mic } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bot, Send, Mic, FileText, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../lib/constants';
 import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
 export default function PanelChatbot({ tramite, onClose }) {
+  const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState(() => {
     const saved = sessionStorage.getItem('chatMessages');
@@ -114,7 +116,8 @@ export default function PanelChatbot({ tramite, onClose }) {
         const iaMessage = {
           id: Date.now() + 1,
           sender: 'ia',
-          text: res.data.respuesta
+          text: res.data.respuesta,
+          tramiteSugerido: res.data.tramiteSugerido
         };
         setMessages((prev) => [...prev, iaMessage]);
       })
@@ -167,6 +170,28 @@ export default function PanelChatbot({ tramite, onClose }) {
             >
               {msg.text}
             </div>
+
+            {msg.tramiteSugerido && (
+              <div className="mt-1.5 p-3 bg-blue-50 border border-blue-100 rounded-xl shadow-sm max-w-[85%] self-start rounded-tl-none">
+                <div className="flex items-center space-x-2 text-blue-800 font-semibold text-xs mb-1">
+                  <FileText className="w-4 h-4" />
+                  <span>Trámite Sugerido</span>
+                </div>
+                <p className="text-xs text-slate-700 mb-2 leading-relaxed">
+                  {msg.tramiteSugerido.nombre}
+                </p>
+                <button
+                  onClick={() => {
+                    navigate(`/tramites/${msg.tramiteSugerido.id}`);
+                    if (onClose) onClose();
+                  }}
+                  className="flex items-center space-x-1 px-2.5 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-[11px] font-semibold rounded-lg transition-colors w-full justify-center"
+                >
+                  <span>Ver detalles del trámite</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            )}
           </div>
         ))}
 

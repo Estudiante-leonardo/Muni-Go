@@ -1,5 +1,6 @@
 package com.tramites.backend.application.usecases;
 
+import com.tramites.backend.domain.model.ChatResponseDto;
 import com.tramites.backend.domain.ports.in.RagChatUseCase;
 import com.tramites.backend.domain.ports.out.TramiteRepositoryPort;
 import org.springframework.ai.chat.client.ChatClient;
@@ -24,9 +25,9 @@ public class RagChatUseCaseImpl implements RagChatUseCase {
             "2. Si preguntan algo fuera de tema (deportes, política, tareas, etc.), responde: " +
             "\"Lo siento, solo puedo ayudarte con trámites y consultas de la Municipalidad. ¿Tienes alguna duda sobre un trámite?\"\n" +
             "3. Responde de forma breve, clara y amigable. Máximo 3-4 oraciones.\n" +
-            "4. Siempre menciona costos en Soles (S/).\n" +
             "5. No inventes información. Si no sabes algo, sugiere acercarse a mesa de partes.\n" +
-            "6. Si ya saludaste o te presentaste en mensajes anteriores de esta conversación, ve directo a la respuesta sin presentarte de nuevo.\n";
+            "6. Si ya saludaste o te presentaste en mensajes anteriores de esta conversación, ve directo a la respuesta sin presentarte de nuevo.\n" +
+            "7. Si tu respuesta incluye información extraída de la INFORMACIÓN DE LA BASE DE DATOS proporcionada, DEBES incluir OBLIGATORIAMENTE al final de tu respuesta la etiqueta secreta: [REF]. Si es solo un saludo o no usas la base de datos, NO incluyas esa etiqueta.\n";
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
@@ -41,7 +42,7 @@ public class RagChatUseCaseImpl implements RagChatUseCase {
     }
 
     @Override
-    public String chat(String mensaje, Long tramiteId, String sessionId, String municipalidadNombre, Long municipalidadId) {
+    public ChatResponseDto chat(String mensaje, Long tramiteId, String sessionId, String municipalidadNombre, Long municipalidadId) {
         String muniName = (municipalidadNombre != null && !municipalidadNombre.isBlank()) 
                 ? municipalidadNombre 
                 : "Municipalidad";
@@ -87,26 +88,59 @@ public class RagChatUseCaseImpl implements RagChatUseCase {
                         .build()
         );
 
+        Long suggestedTramiteId = null;
+        String suggestedTramiteNombre = null;
+
         if (documents != null && !documents.isEmpty()) {
             String documentContext = documents.stream()
                     .map(Document::getText)
                     .collect(Collectors.joining("\n\n"));
             systemPrompt += "\n\nINFORMACIÓN DE LA BASE DE DATOS (Usa esta información para responder a la consulta del usuario):\n" + documentContext + "\n";
+            
+            // Extraer el tramiteId sugerido del documento más relevante
+            Document topDoc = documents.get(0);
+            if (topDoc.getMetadata().containsKey("tramiteId")) {
+                Object metaTramiteId = topDoc.getMetadata().get("tramiteId");
+                if (metaTramiteId instanceof Number) {
+                    suggestedTramiteId = ((Number) metaTramiteId).longValue();
+                } else if (metaTramiteId instanceof String) {
+                    try {
+                        suggestedTramiteId = Long.parseLong((String) metaTramiteId);
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+            if (topDoc.getMetadata().containsKey("nombre")) {
+                suggestedTramiteNombre = (String) topDoc.getMetadata().get("nombre");
+            }
         }
 
         var memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
 
+        String respuestaLlm;
         try {
-            return chatClient.prompt()
+            respuestaLlm = chatClient.prompt()
                     .system(systemPrompt)
                     .user(mensaje)
                     .advisors(memoryAdvisor)
                     .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, sessionId))
                     .call()
                     .content();
+                    
+            if (respuestaLlm != null && respuestaLlm.contains("[REF]")) {
+                respuestaLlm = respuestaLlm.replace("[REF]", "").trim();
+            } else {
+                // El LLM no usó la base de datos (fue un saludo, fuera de tema, etc.)
+                suggestedTramiteId = null;
+                suggestedTramiteNombre = null;
+            }
+            
         } catch (Exception e) {
-            return "Lo siento, estoy teniendo dificultades técnicas en este momento. " +
+            respuestaLlm = "Lo siento, estoy teniendo dificultades técnicas en este momento. " +
                    "Por favor, intenta de nuevo en unos segundos o acércate a mesa de partes para ayuda presencial.";
+            suggestedTramiteId = null;
+            suggestedTramiteNombre = null;
         }
+        
+        return new ChatResponseDto(respuestaLlm, suggestedTramiteId, suggestedTramiteNombre);
     }
 }
