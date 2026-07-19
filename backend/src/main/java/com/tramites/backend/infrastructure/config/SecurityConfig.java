@@ -1,5 +1,6 @@
 package com.tramites.backend.infrastructure.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +46,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/estadisticas/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
 
-                // ========== LOGIN admin — público ==========
+                // ========== LOGIN / REFRESH / LOGOUT admin — públicos ==========
                 .requestMatchers("/api/admin/auth/login").permitAll()
+                .requestMatchers("/api/admin/auth/refresh").permitAll()
+                .requestMatchers("/api/admin/auth/logout").permitAll()
 
                 // ========== RUTAS ADMIN — solo SUPER_ADMIN ==========
                 .requestMatchers("/api/admin/users/**").hasRole("SUPER_ADMIN")
@@ -56,6 +59,11 @@ public class SecurityConfig {
 
                 // ========== Todo lo demás — permitido (assets, etc.) ==========
                 .anyRequest().permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autenticado");
+                })
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
