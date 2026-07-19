@@ -28,8 +28,8 @@ export default function AdminLogin() {
 
     try {
       const res = await axios.post(API_ENDPOINTS.ADMIN_LOGIN, { username, password });
-      const { token, rol, nombreCompleto, municipalidadId } = res.data;
-      login(token, { username: res.data.username, rol, nombreCompleto, municipalidadId });
+      const { rol, nombreCompleto, municipalidadId } = res.data;
+      login({ username: res.data.username, rol, nombreCompleto, municipalidadId });
       navigate('/admin');
     } catch (err) {
       setError(err.response?.data?.error || 'Error de conexión. Intenta de nuevo.');
