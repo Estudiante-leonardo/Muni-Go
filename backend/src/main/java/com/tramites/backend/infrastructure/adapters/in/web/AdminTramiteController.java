@@ -1,10 +1,13 @@
 package com.tramites.backend.infrastructure.adapters.in.web;
 
 import com.tramites.backend.domain.model.Tramite;
+import com.tramites.backend.domain.model.AdminUser;
 import com.tramites.backend.domain.ports.out.TramiteRepositoryPort;
-import com.tramites.backend.infrastructure.config.JwtUtil;
+import com.tramites.backend.domain.ports.out.AdminUserRepositoryPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,18 +19,18 @@ import java.util.Optional;
 public class AdminTramiteController {
 
     private final TramiteRepositoryPort tramiteRepository;
-    private final JwtUtil jwtUtil;
+    private final AdminUserRepositoryPort adminUserRepository;
 
-    public AdminTramiteController(TramiteRepositoryPort tramiteRepository, JwtUtil jwtUtil) {
+    public AdminTramiteController(TramiteRepositoryPort tramiteRepository,
+                                  AdminUserRepositoryPort adminUserRepository) {
         this.tramiteRepository = tramiteRepository;
-        this.jwtUtil = jwtUtil;
+        this.adminUserRepository = adminUserRepository;
     }
 
     @GetMapping
-    public ResponseEntity<?> getTramites(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String role = jwtUtil.extractRole(token);
-        Long muniId = jwtUtil.extractMunicipalidadId(token);
+    public ResponseEntity<?> getTramites() {
+        String role = getCurrentRole();
+        Long muniId = getCurrentMunicipalidadId();
 
         List<Tramite> tramites;
 
@@ -45,10 +48,9 @@ public class AdminTramiteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTramiteById(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String role = jwtUtil.extractRole(token);
-        Long muniId = jwtUtil.extractMunicipalidadId(token);
+    public ResponseEntity<?> getTramiteById(@PathVariable Long id) {
+        String role = getCurrentRole();
+        Long muniId = getCurrentMunicipalidadId();
 
         Optional<Tramite> op = tramiteRepository.findById(id);
         if (op.isEmpty()) {
@@ -65,10 +67,9 @@ public class AdminTramiteController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTramite(@RequestBody Tramite request, @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String role = jwtUtil.extractRole(token);
-        Long muniId = jwtUtil.extractMunicipalidadId(token);
+    public ResponseEntity<?> createTramite(@RequestBody Tramite request) {
+        String role = getCurrentRole();
+        Long muniId = getCurrentMunicipalidadId();
 
         if (!"SUPER_ADMIN".equals(role)) {
             request.setMunicipalidadId(muniId);
@@ -76,7 +77,6 @@ public class AdminTramiteController {
             return ResponseEntity.badRequest().body(Map.of("error", "Debe especificar la municipalidad"));
         }
 
-        // Set parent relationship references correctly
         if (request.getRequisitos() != null) {
             request.getRequisitos().forEach(r -> r.setId(null));
         }
@@ -95,10 +95,9 @@ public class AdminTramiteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTramite(@PathVariable Long id, @RequestBody Tramite request, @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String role = jwtUtil.extractRole(token);
-        Long muniId = jwtUtil.extractMunicipalidadId(token);
+    public ResponseEntity<?> updateTramite(@PathVariable Long id, @RequestBody Tramite request) {
+        String role = getCurrentRole();
+        Long muniId = getCurrentMunicipalidadId();
 
         Optional<Tramite> op = tramiteRepository.findById(id);
         if (op.isEmpty()) {
@@ -123,10 +122,9 @@ public class AdminTramiteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTramite(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String role = jwtUtil.extractRole(token);
-        Long muniId = jwtUtil.extractMunicipalidadId(token);
+    public ResponseEntity<?> deleteTramite(@PathVariable Long id) {
+        String role = getCurrentRole();
+        Long muniId = getCurrentMunicipalidadId();
 
         Optional<Tramite> op = tramiteRepository.findById(id);
         if (op.isEmpty()) {
@@ -141,5 +139,26 @@ public class AdminTramiteController {
 
         tramiteRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "Trámite eliminado correctamente"));
+    }
+
+    private String getCurrentRole() {
+        Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        if (auth == null) return null;
+        return auth.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .map(r -> r.replace("ROLE_", ""))
+                .orElse(null);
+    }
+
+    private Long getCurrentMunicipalidadId() {
+        Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) return null;
+        String username = auth.getPrincipal().toString();
+        return adminUserRepository.findByUsername(username)
+                .map(AdminUser::getMunicipalidadId)
+                .orElse(null);
     }
 }
