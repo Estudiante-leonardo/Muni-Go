@@ -26,12 +26,14 @@ public class ChatController {
             tramiteId = ((Number) request.get("tramiteId")).longValue();
         }
 
+        String municipalidadNombre = (String) request.get("municipalidadNombre");
+
         if (mensaje == null || mensaje.isBlank()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("respuesta", "Por favor, escribe un mensaje."));
         }
 
-        String respuesta = ragChatUseCase.chat(mensaje, tramiteId, sessionId);
+        String respuesta = ragChatUseCase.chat(mensaje, tramiteId, sessionId, municipalidadNombre);
         return ResponseEntity.ok(Map.of("respuesta", respuesta));
     }
 }
