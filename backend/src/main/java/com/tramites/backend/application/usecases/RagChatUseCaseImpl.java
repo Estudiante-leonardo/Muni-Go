@@ -41,7 +41,7 @@ public class RagChatUseCaseImpl implements RagChatUseCase {
     }
 
     @Override
-    public String chat(String mensaje, Long tramiteId, String sessionId, String municipalidadNombre) {
+    public String chat(String mensaje, Long tramiteId, String sessionId, String municipalidadNombre, Long municipalidadId) {
         String muniName = (municipalidadNombre != null && !municipalidadNombre.isBlank()) 
                 ? municipalidadNombre 
                 : "Municipalidad";
@@ -55,7 +55,12 @@ public class RagChatUseCaseImpl implements RagChatUseCase {
             }
         }
 
-        String filterExpr = tramiteId != null ? "tramiteId == " + tramiteId : null;
+        String filterExpr = null;
+        if (tramiteId != null) {
+            filterExpr = "tramiteId == " + tramiteId;
+        } else if (municipalidadId != null) {
+            filterExpr = "municipalidadId == " + municipalidadId;
+        }
 
         // Construir la consulta de búsqueda combinando los últimos mensajes del usuario con el actual
         List<Message> history = chatMemory.get(sessionId); // Traemos algo de historia para contexto

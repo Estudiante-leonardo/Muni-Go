@@ -107,7 +107,8 @@ export default function PanelChatbot({ tramite, onClose }) {
       mensaje: userMessageText,
       tramiteId: tramite?.id || null,
       sessionId: sessionId,
-      municipalidadNombre: municipalidadNombre
+      municipalidadNombre: municipalidadNombre,
+      municipalidadId: selectedMunicipalidadId
     })
       .then((res) => {
         const iaMessage = {

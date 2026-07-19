@@ -27,13 +27,17 @@ public class ChatController {
         }
 
         String municipalidadNombre = (String) request.get("municipalidadNombre");
+        Long municipalidadId = null;
+        if (request.containsKey("municipalidadId") && request.get("municipalidadId") != null) {
+            municipalidadId = ((Number) request.get("municipalidadId")).longValue();
+        }
 
         if (mensaje == null || mensaje.isBlank()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("respuesta", "Por favor, escribe un mensaje."));
         }
 
-        String respuesta = ragChatUseCase.chat(mensaje, tramiteId, sessionId, municipalidadNombre);
+        String respuesta = ragChatUseCase.chat(mensaje, tramiteId, sessionId, municipalidadNombre, municipalidadId);
         return ResponseEntity.ok(Map.of("respuesta", respuesta));
     }
 }
