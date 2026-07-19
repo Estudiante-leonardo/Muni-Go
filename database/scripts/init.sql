@@ -411,3 +411,16 @@ CREATE TABLE admin_users (
 -- Los usuarios admin se crean automáticamente al iniciar la app (DataInitializer.java)
 -- superAdmin / password  → SUPER_ADMIN
 -- admin / password        → ADMIN_MUNICIPAL (Carabayllo, id=1)
+
+-- =========================================================================
+-- TABLA DE REFRESH TOKENS (Sesiones administradores)
+-- =========================================================================
+
+CREATE TABLE refresh_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    token VARCHAR(500) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    revoked BOOLEAN DEFAULT FALSE
+);
