@@ -1,15 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Bot, Send, Mic } from 'lucide-react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../lib/constants';
+import { MunicipalidadContext } from '../context/MunicipalidadContext';
 
 export default function PanelChatbot({ tramite, onClose }) {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = sessionStorage.getItem('chatMessages');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
-  const [sessionId] = useState(() => 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11));
+  const [sessionId, setSessionId] = useState(() => {
+    const saved = sessionStorage.getItem('chatSessionId');
+    if (saved) return saved;
+    const newSession = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+    sessionStorage.setItem('chatSessionId', newSession);
+    return newSession;
+  });
+  const { selectedMunicipalidadId, municipalidades } = useContext(MunicipalidadContext);
+  
+  const currentMuni = municipalidades?.find(m => m.id === selectedMunicipalidadId);
+  const municipalidadNombre = currentMuni ? currentMuni.nombre : 'Muni-Go';
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -21,8 +35,30 @@ export default function PanelChatbot({ tramite, onClose }) {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  // Initialize chat history whenever the selected procedure changes
+  // Resetear el chat SOLO si cambia la municipalidad
   useEffect(() => {
+    if (!selectedMunicipalidadId) return;
+    const currentMuniContext = `muni_${selectedMunicipalidadId}`;
+    const savedMuniContext = sessionStorage.getItem('chatMuniContext');
+    
+    if (savedMuniContext && savedMuniContext !== currentMuniContext) {
+      const newSession = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+      sessionStorage.setItem('chatSessionId', newSession);
+      setSessionId(newSession);
+      setMessages([]); // Esto disparará el efecto de inicialización abajo
+    }
+    sessionStorage.setItem('chatMuniContext', currentMuniContext);
+  }, [selectedMunicipalidadId]);
+
+  // Guardar mensajes en sessionStorage cada vez que cambien
+  useEffect(() => {
+    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  // Initialize chat history solo si no hay mensajes previos en la sesión
+  useEffect(() => {
+    if (messages.length > 0) return; // Ya hay historial en la sesión
+
     if (tramite) {
       setMessages([
         {
@@ -32,15 +68,16 @@ export default function PanelChatbot({ tramite, onClose }) {
         }
       ]);
     } else {
+      const shortName = municipalidadNombre.replace('Municipalidad de ', '');
       setMessages([
         {
           id: 1,
           sender: 'ia',
-          text: '¡Hola! Soy Manuelito, tu Asistente Municipal IA de Carabayllo. ¿En qué trámite o consulta municipal te puedo guiar hoy?'
+          text: `¡Hola! Soy Manuelito, tu Asistente Municipal IA de ${shortName}. ¿En qué trámite o consulta municipal te puedo guiar hoy?`
         }
       ]);
     }
-  }, [tramite]);
+  }, [tramite, municipalidadNombre, messages.length]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -69,7 +106,8 @@ export default function PanelChatbot({ tramite, onClose }) {
     axios.post(API_ENDPOINTS.CHAT, {
       mensaje: userMessageText,
       tramiteId: tramite?.id || null,
-      sessionId: sessionId
+      sessionId: sessionId,
+      municipalidadNombre: municipalidadNombre
     })
       .then((res) => {
         const iaMessage = {
