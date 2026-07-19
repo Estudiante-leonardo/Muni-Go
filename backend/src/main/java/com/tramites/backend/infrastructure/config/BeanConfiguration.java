@@ -11,6 +11,7 @@ import com.tramites.backend.domain.ports.in.GetEstadisticasUseCase;
 import com.tramites.backend.domain.ports.out.EstadisticaRepositoryPort;
 import com.tramites.backend.application.usecases.RagChatUseCaseImpl;
 import com.tramites.backend.domain.ports.in.RagChatUseCase;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +36,12 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public RagChatUseCase ragChatUseCase(ChatModel chatModel, VectorStore vectorStore, TramiteRepositoryPort tramiteRepositoryPort) {
-        return new RagChatUseCaseImpl(chatModel, vectorStore, tramiteRepositoryPort);
+    public ChatMemory chatMemory() {
+        return new LocalInMemoryChatMemory();
+    }
+
+    @Bean
+    public RagChatUseCase ragChatUseCase(ChatModel chatModel, VectorStore vectorStore, TramiteRepositoryPort tramiteRepositoryPort, ChatMemory chatMemory) {
+        return new RagChatUseCaseImpl(chatModel, vectorStore, tramiteRepositoryPort, chatMemory);
     }
 }
