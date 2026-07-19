@@ -224,7 +224,8 @@ body {
 
 /* Override root constraints for admin pages */
 #root:has(.admin-login-page),
-#root:has(aside) {
+#root:has(aside),
+#root:has(.not-found-page) {
   width: 100%;
   border-inline: none;
 }
@@ -234,6 +235,11 @@ h2 {
   font-family: var(--heading);
   font-weight: 500;
   color: var(--text-h);
+}
+
+.not-found-page h1,
+.not-found-page h2 {
+  color: white;
 }
 
 h1 {
