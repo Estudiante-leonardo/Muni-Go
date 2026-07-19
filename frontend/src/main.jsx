@@ -41,7 +41,7 @@ axios.interceptors.response.use(
       } catch {
         failedQueue.forEach(({ reject }) => reject(error))
         failedQueue = []
-        if (!window.location.pathname.includes('/admin/login')) {
+        if (window.location.pathname.startsWith('/admin') && !window.location.pathname.includes('/admin/login')) {
           window.location.href = '/admin/login'
         }
         return Promise.reject(error)
