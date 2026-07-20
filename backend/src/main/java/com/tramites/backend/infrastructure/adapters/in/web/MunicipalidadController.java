@@ -15,15 +15,18 @@ public class MunicipalidadController {
     private final com.tramites.backend.domain.ports.in.CreateMunicipalidadUseCase createMunicipalidadUseCase;
     private final com.tramites.backend.domain.ports.in.UpdateMunicipalidadUseCase updateMunicipalidadUseCase;
     private final com.tramites.backend.domain.ports.in.DeleteMunicipalidadUseCase deleteMunicipalidadUseCase;
+    private final com.tramites.backend.domain.ports.out.AdminUserRepositoryPort adminUserRepository;
 
     public MunicipalidadController(GetMunicipalidadesUseCase getMunicipalidadesUseCase,
                                    com.tramites.backend.domain.ports.in.CreateMunicipalidadUseCase createMunicipalidadUseCase,
                                    com.tramites.backend.domain.ports.in.UpdateMunicipalidadUseCase updateMunicipalidadUseCase,
-                                   com.tramites.backend.domain.ports.in.DeleteMunicipalidadUseCase deleteMunicipalidadUseCase) {
+                                   com.tramites.backend.domain.ports.in.DeleteMunicipalidadUseCase deleteMunicipalidadUseCase,
+                                   com.tramites.backend.domain.ports.out.AdminUserRepositoryPort adminUserRepository) {
         this.getMunicipalidadesUseCase = getMunicipalidadesUseCase;
         this.createMunicipalidadUseCase = createMunicipalidadUseCase;
         this.updateMunicipalidadUseCase = updateMunicipalidadUseCase;
         this.deleteMunicipalidadUseCase = deleteMunicipalidadUseCase;
+        this.adminUserRepository = adminUserRepository;
     }
 
     @GetMapping
@@ -32,7 +35,7 @@ public class MunicipalidadController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('SUPER_ADMIN')")
     public org.springframework.http.ResponseEntity<?> createMunicipalidad(
             @org.springframework.web.bind.annotation.RequestBody com.tramites.backend.infrastructure.adapters.in.web.dto.MunicipalidadRequestDto dto) {
         try {
@@ -44,10 +47,25 @@ public class MunicipalidadController {
     }
 
     @org.springframework.web.bind.annotation.PutMapping("/{id}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_MUNICIPAL')")
     public org.springframework.http.ResponseEntity<?> updateMunicipalidad(
             @org.springframework.web.bind.annotation.PathVariable Long id,
             @org.springframework.web.bind.annotation.RequestBody com.tramites.backend.infrastructure.adapters.in.web.dto.MunicipalidadRequestDto dto) {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        boolean isSuperAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+        
+        if (!isSuperAdmin) {
+            String username = auth.getName();
+            Long userMuniId = adminUserRepository.findByUsername(username)
+                    .map(com.tramites.backend.domain.model.AdminUser::getMunicipalidadId)
+                    .orElse(null);
+            
+            if (userMuniId == null || !userMuniId.equals(id)) {
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                        .body(java.util.Map.of("message", "No tiene permisos para modificar esta municipalidad"));
+            }
+        }
+
         try {
             Municipalidad updated = updateMunicipalidadUseCase.execute(id, dto.getNombre());
             return org.springframework.http.ResponseEntity.ok(updated);
@@ -57,7 +75,7 @@ public class MunicipalidadController {
     }
 
     @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('SUPER_ADMIN')")
     public org.springframework.http.ResponseEntity<?> deleteMunicipalidad(@org.springframework.web.bind.annotation.PathVariable Long id) {
         try {
             deleteMunicipalidadUseCase.execute(id);

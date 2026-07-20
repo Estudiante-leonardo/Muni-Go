@@ -36,10 +36,17 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", "Método no permitido"));
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "No tiene permisos suficientes para realizar esta acción"));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleUncaught(Exception ex) {
         log.error("Unhandled exception", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Ocurrió un error interno. Intente nuevamente más tarde."));
+                .body(Map.of("error", "Error interno: " + ex.getMessage()));
     }
 }

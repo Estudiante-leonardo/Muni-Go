@@ -160,7 +160,7 @@ public class AuthController {
 
         String username = jwtUtil.extractUsername(token);
         String nombreCompleto = adminUserRepository.findByUsername(username)
-                .map(AdminUser::getNombreCompleto)
+                .map(admin -> admin.getNombreCompleto())
                 .orElse("");
 
         return ResponseEntity.ok(Map.of(
@@ -177,7 +177,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .path("/api/admin")
+                .path("/")
                 .maxAge(jwtUtil.getExpirationMs() / 1000)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -188,7 +188,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .path("/api/admin/auth")
+                .path("/")
                 .maxAge(refreshExpirationMs / 1000)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -199,19 +199,10 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .path("/api/admin")
+                .path("/")
                 .maxAge(0)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-        ResponseCookie altCookie = ResponseCookie.from(name, "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/api/admin/auth")
-                .maxAge(0)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, altCookie.toString());
     }
 
     private void saveRefreshToken(String tokenValue, String username) {
