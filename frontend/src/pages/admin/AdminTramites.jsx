@@ -39,7 +39,10 @@ export default function AdminTramites() {
   const fetchTramites = () => {
     setLoading(true);
     axios.get(API_ENDPOINTS.ADMIN_TRAMITES)
-      .then(res => setTramites(res.data))
+      .then(res => {
+        const sorted = res.data.sort((a, b) => a.id - b.id);
+        setTramites(sorted);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   };

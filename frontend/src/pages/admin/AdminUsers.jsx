@@ -20,7 +20,10 @@ export default function AdminUsers() {
 
   const fetchAdmins = () => {
     axios.get(API_ENDPOINTS.ADMIN_USERS)
-      .then(res => setAdmins(res.data))
+      .then(res => {
+        const sorted = res.data.sort((a, b) => a.id - b.id);
+        setAdmins(sorted);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   };
