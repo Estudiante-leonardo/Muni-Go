@@ -93,7 +93,7 @@ public class RagChatUseCaseImpl implements RagChatUseCase {
 
         if (documents != null && !documents.isEmpty()) {
             String documentContext = documents.stream()
-                    .map(Document::getText)
+                    .map(doc -> doc.getText())
                     .collect(Collectors.joining("\n\n"));
             systemPrompt += "\n\nINFORMACIÓN DE LA BASE DE DATOS (Usa esta información para responder a la consulta del usuario):\n" + documentContext + "\n";
             

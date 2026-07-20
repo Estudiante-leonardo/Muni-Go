@@ -22,7 +22,7 @@ public class MunicipalidadPostgresAdapter implements MunicipalidadRepositoryPort
     @Cacheable("municipalidades")
     public List<Municipalidad> findAll() {
         return municipalidadJpaRepository.findAll().stream()
-                .map(MunicipalidadJpaEntity::toDomain)
+                .map(e -> e.toDomain())
                 .collect(Collectors.toList());
     }
 

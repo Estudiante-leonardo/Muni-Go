@@ -1,13 +1,11 @@
 package com.tramites.backend.infrastructure.adapters.in.web;
 
 import com.tramites.backend.domain.model.Tramite;
-import com.tramites.backend.domain.model.AdminUser;
 import com.tramites.backend.domain.ports.out.TramiteRepositoryPort;
 import com.tramites.backend.domain.ports.out.AdminUserRepositoryPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -147,7 +145,7 @@ public class AdminTramiteController {
         if (auth == null) return null;
         return auth.getAuthorities().stream()
                 .findFirst()
-                .map(GrantedAuthority::getAuthority)
+                .map(a -> a.getAuthority())
                 .map(r -> r.replace("ROLE_", ""))
                 .orElse(null);
     }
@@ -158,7 +156,7 @@ public class AdminTramiteController {
         if (auth == null || auth.getPrincipal() == null) return null;
         String username = auth.getPrincipal().toString();
         return adminUserRepository.findByUsername(username)
-                .map(AdminUser::getMunicipalidadId)
+                .map(u -> u.getMunicipalidadId())
                 .orElse(null);
     }
 }

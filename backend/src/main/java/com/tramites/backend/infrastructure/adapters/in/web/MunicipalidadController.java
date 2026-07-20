@@ -69,7 +69,7 @@ public class MunicipalidadController {
 
             String username = auth.getName();
             Long userMuniId = adminUserRepository.findByUsername(username)
-                    .map(com.tramites.backend.domain.model.AdminUser::getMunicipalidadId)
+                    .map(u -> u.getMunicipalidadId())
                     .orElse(null);
             
             if (userMuniId == null || !userMuniId.equals(id)) {
