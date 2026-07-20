@@ -24,11 +24,17 @@ export const MunicipalidadProvider = ({ children }) => {
 
     const fetchMunicipalidades = () => {
         setLoading(true);
-        axios.get(API_ENDPOINTS.MUNICIPALIDADES)
+        axios.get(`${API_ENDPOINTS.MUNICIPALIDADES}?soloActivos=true`)
             .then(response => {
                 setMunicipalidades(response.data);
                 if (response.data.length > 0 && !localStorage.getItem('selectedMunicipalidadId')) {
                     setSelectedMunicipalidadId(response.data[0].id);
+                } else if (response.data.length > 0) {
+                    // Verificar si la municipalidad seleccionada sigue existiendo (activa)
+                    const currentId = parseInt(localStorage.getItem('selectedMunicipalidadId'));
+                    if (!response.data.find(m => m.id === currentId)) {
+                        setSelectedMunicipalidadId(response.data[0].id);
+                    }
                 }
                 setError(null);
             })

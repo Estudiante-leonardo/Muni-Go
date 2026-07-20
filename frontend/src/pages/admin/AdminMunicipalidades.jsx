@@ -20,13 +20,17 @@ export default function AdminMunicipalidades() {
   // Form State
   const [editingId, setEditingId] = useState(null);
   const [formName, setFormName] = useState('');
+  const [formActivo, setFormActivo] = useState(true);
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
 
   const fetchMunicipalidadesLocal = () => {
     setLoading(true);
     axios.get(API_ENDPOINTS.MUNICIPALIDADES)
-      .then(res => setMunicipalidades(res.data))
+      .then(res => {
+        const sorted = res.data.sort((a, b) => a.id - b.id);
+        setMunicipalidades(sorted);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   };
@@ -38,6 +42,7 @@ export default function AdminMunicipalidades() {
   const handleOpenCreate = () => {
     setEditingId(null);
     setFormName('');
+    setFormActivo(true);
     setFormError('');
     setShowFormModal(true);
   };
@@ -45,6 +50,7 @@ export default function AdminMunicipalidades() {
   const handleOpenEdit = (muni) => {
     setEditingId(muni.id);
     setFormName(muni.nombre);
+    setFormActivo(muni.activo !== false);
     setFormError('');
     setShowFormModal(true);
   };
@@ -60,7 +66,7 @@ export default function AdminMunicipalidades() {
     setFormError('');
     try {
       if (editingId) {
-        await axios.put(`${API_ENDPOINTS.MUNICIPALIDADES}/${editingId}`, { nombre: formName });
+        await axios.put(`${API_ENDPOINTS.MUNICIPALIDADES}/${editingId}`, { nombre: formName, activo: formActivo });
         setFormSuccess('Municipalidad actualizada con éxito.');
       } else {
         await axios.post(API_ENDPOINTS.MUNICIPALIDADES, { nombre: formName });
@@ -164,15 +170,26 @@ export default function AdminMunicipalidades() {
                 <tr className="bg-slate-550/5 dark:bg-white/[0.02]">
                   <th className="px-5 py-3.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">ID</th>
                   <th className="px-5 py-3.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nombre de la Municipalidad</th>
+                  <th className="px-5 py-3.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Estado</th>
                   <th className="px-5 py-3.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100/80 dark:divide-white/[0.04]">
                 {municipalidades.map((muni) => (
-                  <tr key={muni.id} className="hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors group">
+                  <tr key={muni.id} className={`hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors group ${muni.activo === false ? 'opacity-60' : ''}`}>
                     <td className="px-5 py-4 text-xs font-bold text-slate-400 dark:text-slate-500">#{muni.id}</td>
                     <td className="px-5 py-4">
                       <div className="text-sm font-semibold text-slate-800 dark:text-white leading-snug">{muni.nombre}</div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg ${
+                        muni.activo !== false
+                          ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                          : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300'
+                      }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${muni.activo !== false ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        {muni.activo !== false ? 'Activa' : 'Inactiva'}
+                      </span>
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex justify-end gap-2">
@@ -239,6 +256,27 @@ export default function AdminMunicipalidades() {
                   placeholder="Ej. Municipalidad de Lima"
                 />
               </div>
+
+              {editingId && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Estado</label>
+                  <div className="flex items-center gap-3">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formActivo}
+                        onChange={e => setFormActivo(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${formActivo ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-white/[0.08]'}`} />
+                    </label>
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      {formActivo ? 'Activa' : 'Inactiva'}
+                    </span>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
