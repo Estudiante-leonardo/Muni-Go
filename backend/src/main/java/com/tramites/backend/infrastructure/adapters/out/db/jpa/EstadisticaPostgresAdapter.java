@@ -27,8 +27,11 @@ public class EstadisticaPostgresAdapter implements EstadisticaRepositoryPort {
 
     @Override
     public List<EstadisticaConsulta> findConsultasByMunicipalidadId(Long municipalidadId) {
-        return consultaRepository.findByMunicipalidadIdOrderByAnioAscMesAsc(municipalidadId)
-                .stream()
+        List<EstadisticaConsultaJpaEntity> entities = municipalidadId == 0 
+            ? consultaRepository.findAll()
+            : consultaRepository.findByMunicipalidadIdOrderByAnioAscMesAsc(municipalidadId);
+            
+        return entities.stream()
                 .map(entity -> new EstadisticaConsulta(
                         entity.getId(),
                         entity.getMunicipalidadId(),
@@ -42,8 +45,11 @@ public class EstadisticaPostgresAdapter implements EstadisticaRepositoryPort {
 
     @Override
     public List<EstadisticaUsuario> findUsuariosByMunicipalidadId(Long municipalidadId) {
-        return usuarioRepository.findByMunicipalidadIdOrderByAnioAscMesAsc(municipalidadId)
-                .stream()
+        List<EstadisticaUsuarioJpaEntity> entities = municipalidadId == 0
+            ? usuarioRepository.findAll()
+            : usuarioRepository.findByMunicipalidadIdOrderByAnioAscMesAsc(municipalidadId);
+
+        return entities.stream()
                 .map(entity -> new EstadisticaUsuario(
                         entity.getId(),
                         entity.getMunicipalidadId(),
@@ -56,8 +62,11 @@ public class EstadisticaPostgresAdapter implements EstadisticaRepositoryPort {
 
     @Override
     public List<EstadisticaAccesibilidad> findAccesibilidadByMunicipalidadId(Long municipalidadId) {
-        return accesibilidadRepository.findByMunicipalidadId(municipalidadId)
-                .stream()
+        List<EstadisticaAccesibilidadJpaEntity> entities = municipalidadId == 0
+            ? accesibilidadRepository.findAll()
+            : accesibilidadRepository.findByMunicipalidadId(municipalidadId);
+
+        return entities.stream()
                 .map(entity -> new EstadisticaAccesibilidad(
                         entity.getId(),
                         entity.getMunicipalidadId(),
