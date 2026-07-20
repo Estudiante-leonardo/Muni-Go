@@ -25,6 +25,15 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+function SuperAdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Cargando...</div>;
+  if (!user || user.rol !== 'SUPER_ADMIN') {
+    return <Navigate to="/admin" replace />;
+  }
+  return children;
+}
+
 function PublicAdminRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div>Cargando...</div>;
@@ -52,8 +61,8 @@ export default function AppRouter() {
           <Route path="/admin" element={<ProtectedRoute><AccesibilidadProvider><AdminLayout /></AccesibilidadProvider></ProtectedRoute>}>
             <Route index element={<AdminStats />} />
             <Route path="tramites" element={<AdminTramites />} />
-            <Route path="municipalidades" element={<AdminMunicipalidades />} />
-            <Route path="users" element={<AdminUsers />} />
+            <Route path="municipalidades" element={<SuperAdminRoute><AdminMunicipalidades /></SuperAdminRoute>} />
+            <Route path="users" element={<SuperAdminRoute><AdminUsers /></SuperAdminRoute>} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
