@@ -11,42 +11,55 @@ import { AccesibilidadProvider } from '../context/AccesibilidadContext';
 import { MunicipalidadProvider } from '../context/MunicipalidadContext';
 import AdminLayout from '../components/admin/AdminLayout';
 import AdminLogin from '../pages/admin/AdminLogin';
-import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminStats from '../pages/admin/AdminStats';
+import AdminTramites from '../pages/admin/AdminTramites';
 import AdminMunicipalidades from '../pages/admin/AdminMunicipalidades';
 import AdminUsers from '../pages/admin/AdminUsers';
 
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
-  if (loading) return null;
-  return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
+  const { user, loading } = useAuth();
+  if (loading) return <div>Cargando...</div>;
+  if (!user || (user.rol !== 'ADMIN_MUNICIPAL' && user.rol !== 'SUPER_ADMIN')) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  return children;
+}
+
+function PublicAdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Cargando...</div>;
+  if (user && (user.rol === 'ADMIN_MUNICIPAL' || user.rol === 'SUPER_ADMIN')) {
+    return <Navigate to="/admin" replace />;
+  }
+  return children;
 }
 
 export default function AppRouter() {
   return (
     <AuthProvider>
-      <MunicipalidadProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <MunicipalidadProvider>
           <Routes>
-          {/* ========== RUTAS PÚBLICAS ========== */}
-          <Route path="/" element={<Layout />}>
+          {/* ========== RUTAS CIUDADANO ========== */}
+          <Route path="/" element={<AccesibilidadProvider><Layout /></AccesibilidadProvider>}>
             <Route index element={<Dashboard />} />
             <Route path="tramites" element={<Catalog />} />
-            <Route path="tramites/:id" element={<TramiteDetail />} />
+            <Route path="tramite/:id" element={<TramiteDetail />} />
           </Route>
 
           {/* ========== RUTAS ADMIN ========== */}
-          <Route path="/admin/login" element={<AccesibilidadProvider><AdminLogin /></AccesibilidadProvider>} />
+          <Route path="/admin/login" element={<PublicAdminRoute><AccesibilidadProvider><AdminLogin /></AccesibilidadProvider></PublicAdminRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AccesibilidadProvider><AdminLayout /></AccesibilidadProvider></ProtectedRoute>}>
-            <Route index element={<AdminDashboard />} />
+            <Route index element={<AdminStats />} />
+            <Route path="tramites" element={<AdminTramites />} />
             <Route path="municipalidades" element={<AdminMunicipalidades />} />
             <Route path="users" element={<AdminUsers />} />
           </Route>
 
-          {/* 404 */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-        </BrowserRouter>
-      </MunicipalidadProvider>
+          </Routes>
+        </MunicipalidadProvider>
+      </BrowserRouter>
     </AuthProvider>
   );
 }

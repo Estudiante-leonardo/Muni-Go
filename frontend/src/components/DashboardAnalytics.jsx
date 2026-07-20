@@ -25,14 +25,22 @@ ChartJS.register(
 
 const PIE_COLORS = ['#8b5cf6', '#f59e0b', '#ef4444', '#cbd5e1'];
 
-export default function DashboardAnalytics() {
+export default function DashboardAnalytics({ adminData }) {
   const { selectedMunicipalidadId } = useContext(MunicipalidadContext);
   const [consultas, setConsultas] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [accesibilidad, setAccesibilidad] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!adminData);
 
   useEffect(() => {
+    if (adminData) {
+      setConsultas(adminData.consultas || []);
+      setUsuarios(adminData.usuarios || []);
+      setAccesibilidad(adminData.accesibilidad || []);
+      setLoading(false);
+      return;
+    }
+    
     if (!selectedMunicipalidadId) return;
     setLoading(true);
 
@@ -48,7 +56,7 @@ export default function DashboardAnalytics() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [selectedMunicipalidadId]);
+  }, [selectedMunicipalidadId, adminData]);
 
   // Extraer meses únicos de consultas (en orden)
   const mesesOrden = ['Julio', 'Agosto', 'Septiembre'];
@@ -155,13 +163,15 @@ export default function DashboardAnalytics() {
     );
   }
 
+  if (!consultas.length && !usuarios.length && !accesibilidad.length) return null;
+
   return (
-    <div className="space-y-6">
-      {/* Título de sección */}
-      <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-        A. Análisis Descriptivo
-        <span className="text-sm font-medium text-slate-500 dark:text-slate-400 ml-2">(Julio - Septiembre 2026)</span>
-      </h2>
+    <div className="w-full">
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+          A. Análisis Descriptivo <span className="text-sm font-normal text-slate-500 dark:text-slate-400">(Julio - Septiembre 2026)</span>
+        </h2>
+      </div>
 
       {/* 3 Gráficos al lado del otro */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

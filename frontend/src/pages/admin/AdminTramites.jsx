@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '../../lib/constants';
 import ConfirmModal from '../../components/ConfirmModal';
 import CustomSelect from '../../components/ui/CustomSelect';
 
-export default function AdminDashboard() {
+export default function AdminTramites() {
   const { user } = useAuth();
   const { fetchMunicipalidades: refreshGlobalMunicipalidades } = useContext(MunicipalidadContext);
   const [tramites, setTramites] = useState([]);
