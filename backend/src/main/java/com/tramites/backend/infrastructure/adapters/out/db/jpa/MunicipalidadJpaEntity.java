@@ -26,10 +26,15 @@ public class MunicipalidadJpaEntity {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean activo = true;
+
     public Municipalidad toDomain() {
         return Municipalidad.builder()
                 .id(this.id)
                 .nombre(this.nombre)
+                .activo(this.activo)
                 .build();
     }
 }

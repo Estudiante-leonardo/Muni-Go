@@ -39,7 +39,8 @@ CREATE INDEX idx_vector_store_embedding
 -- Crear tabla de municipalidades
 CREATE TABLE municipalidades (
     id BIGSERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL
+    nombre VARCHAR(255) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
 );
 
 -- Crear tabla de trámites

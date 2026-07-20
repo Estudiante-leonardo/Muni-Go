@@ -30,8 +30,15 @@ public class MunicipalidadController {
     }
 
     @GetMapping
-    public List<Municipalidad> getMunicipalidades() {
-        return getMunicipalidadesUseCase.execute();
+    public List<Municipalidad> getMunicipalidades(
+            @org.springframework.web.bind.annotation.RequestParam(required = false, defaultValue = "false") boolean soloActivos) {
+        List<Municipalidad> todas = getMunicipalidadesUseCase.execute();
+        if (soloActivos) {
+            return todas.stream()
+                    .filter(m -> m.getActivo() != null && m.getActivo())
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        return todas;
     }
 
     @org.springframework.web.bind.annotation.PostMapping
@@ -55,6 +62,11 @@ public class MunicipalidadController {
         boolean isSuperAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"));
         
         if (!isSuperAdmin) {
+            if (dto.getActivo() != null) {
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                        .body(java.util.Map.of("message", "Solo los super administradores pueden habilitar o deshabilitar una municipalidad"));
+            }
+
             String username = auth.getName();
             Long userMuniId = adminUserRepository.findByUsername(username)
                     .map(com.tramites.backend.domain.model.AdminUser::getMunicipalidadId)
@@ -67,7 +79,7 @@ public class MunicipalidadController {
         }
 
         try {
-            Municipalidad updated = updateMunicipalidadUseCase.execute(id, dto.getNombre());
+            Municipalidad updated = updateMunicipalidadUseCase.execute(id, dto.getNombre(), dto.getActivo());
             return org.springframework.http.ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return org.springframework.http.ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));

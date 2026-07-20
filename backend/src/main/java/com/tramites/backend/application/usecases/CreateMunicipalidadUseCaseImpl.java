@@ -18,7 +18,10 @@ public class CreateMunicipalidadUseCaseImpl implements CreateMunicipalidadUseCas
             throw new IllegalArgumentException("El nombre de la municipalidad no puede estar vacío");
         }
         
-        Municipalidad municipalidad = new Municipalidad(null, nombre);
+        Municipalidad municipalidad = new Municipalidad();
+        municipalidad.setNombre(nombre);
+        municipalidad.setActivo(true);
+        
         return municipalidadRepositoryPort.save(municipalidad);
     }
 }

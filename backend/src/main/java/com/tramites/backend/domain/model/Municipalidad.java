@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class Municipalidad {
     private Long id;
     private String nombre;
+    private Boolean activo;
 }

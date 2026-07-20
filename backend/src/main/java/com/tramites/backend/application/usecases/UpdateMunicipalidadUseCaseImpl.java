@@ -13,12 +13,21 @@ public class UpdateMunicipalidadUseCaseImpl implements UpdateMunicipalidadUseCas
     }
 
     @Override
-    public Municipalidad execute(Long id, String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre de la municipalidad no puede estar vacío");
+    public Municipalidad execute(Long id, String nombre, Boolean activo) {
+        Municipalidad municipalidad = new Municipalidad();
+        municipalidad.setId(id);
+        
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            municipalidad.setNombre(nombre);
+        } else if (activo == null) {
+            // si ambos son nulos/vacíos
+            throw new IllegalArgumentException("No hay datos para actualizar");
         }
         
-        Municipalidad municipalidad = new Municipalidad(id, nombre);
+        if (activo != null) {
+            municipalidad.setActivo(activo);
+        }
+        
         return municipalidadRepositoryPort.update(id, municipalidad);
     }
 }

@@ -32,6 +32,11 @@ public class MunicipalidadPostgresAdapter implements MunicipalidadRepositoryPort
     public Municipalidad save(Municipalidad municipalidad) {
         MunicipalidadJpaEntity entity = new MunicipalidadJpaEntity();
         entity.setNombre(municipalidad.getNombre());
+        if (municipalidad.getActivo() != null) {
+            entity.setActivo(municipalidad.getActivo());
+        } else {
+            entity.setActivo(true);
+        }
         MunicipalidadJpaEntity saved = municipalidadJpaRepository.save(entity);
         return saved.toDomain();
     }
@@ -42,7 +47,12 @@ public class MunicipalidadPostgresAdapter implements MunicipalidadRepositoryPort
     public Municipalidad update(Long id, Municipalidad municipalidad) {
         MunicipalidadJpaEntity entity = municipalidadJpaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Municipalidad no encontrada"));
-        entity.setNombre(municipalidad.getNombre());
+        if (municipalidad.getNombre() != null) {
+            entity.setNombre(municipalidad.getNombre());
+        }
+        if (municipalidad.getActivo() != null) {
+            entity.setActivo(municipalidad.getActivo());
+        }
         MunicipalidadJpaEntity updated = municipalidadJpaRepository.save(entity);
         return updated.toDomain();
     }

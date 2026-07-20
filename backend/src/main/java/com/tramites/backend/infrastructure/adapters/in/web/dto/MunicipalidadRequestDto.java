@@ -2,6 +2,7 @@ package com.tramites.backend.infrastructure.adapters.in.web.dto;
 
 public class MunicipalidadRequestDto {
     private String nombre;
+    private Boolean activo;
 
     public String getNombre() {
         return nombre;
@@ -9,5 +10,13 @@ public class MunicipalidadRequestDto {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 }
