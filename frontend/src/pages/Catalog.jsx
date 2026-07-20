@@ -221,7 +221,7 @@ export default function Catalog() {
                   key={tramite.id}
                   id={`tramite-card-${index}`}
                   tramite={tramite}
-                  onClick={() => navigate(`/tramites/${tramite.id}`)}
+                  onClick={() => navigate(`/tramite/${tramite.id}`)}
                 />
               ))}
             </div>

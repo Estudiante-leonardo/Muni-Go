@@ -24,7 +24,7 @@ export default function TramiteDetail() {
   const [previewPdf, setPreviewPdf] = useState(null);
   const [resumenIA, setResumenIA] = useState('');
 
-  const { selectedMunicipalidadId, setSelectedMunicipalidadId } = React.useContext(MunicipalidadContext);
+  const { selectedMunicipalidadId, setSelectedMunicipalidadId, municipalidades } = React.useContext(MunicipalidadContext);
 
   const tts = useTTS();
 
@@ -35,8 +35,14 @@ export default function TramiteDetail() {
       .then(res => {
         const tramite = res.data.find(t => t.id === parseInt(id));
         if (tramite) {
-          setSelectedTramite(tramite);
-          getResumenIA(tramite).then(setResumenIA);
+          // Validar que la municipalidad del trámite esté en la lista de municipalidades activas
+          const isMuniActive = municipalidades.some(m => m.id === tramite.municipalidadId);
+          if (isMuniActive) {
+            setSelectedTramite(tramite);
+            getResumenIA(tramite).then(setResumenIA);
+          } else {
+            setError('La municipalidad a la que pertenece este trámite se encuentra inactiva.');
+          }
         } else {
           setError('Trámite no encontrado');
         }
@@ -47,7 +53,7 @@ export default function TramiteDetail() {
       .finally(() => {
         setLoading(false);
       });
-  }, [id]);
+  }, [id, municipalidades]);
 
   useEffect(() => {
     if (!selectedTramite || !selectedMunicipalidadId) return;
@@ -57,7 +63,7 @@ export default function TramiteDetail() {
         .then(res => {
           const matchingTramite = res.data.find(t => t.nombre === selectedTramite.nombre);
           if (matchingTramite) {
-            navigate(`/tramites/${matchingTramite.id}`);
+            navigate(`/tramite/${matchingTramite.id}`);
           } else {
             setAlertMessage('Esta municipalidad no cuenta con este trámite específico.');
             setSelectedMunicipalidadId(selectedTramite.municipalidadId);
